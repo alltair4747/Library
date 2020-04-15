@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#BFFF00</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="hintColor">#C0C0C0</color>
+    <color name="snackBarBackground">#000000</color>
+</resources>
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="emailBadFormat">Input is not email address</string>
+    <string name="passwordIsShort">Password is short</string>
+    <string name="passwordsDoesNotMatch">Passwords do not match</string>
+    <string name="fieldIsEmpty">Field is empty</string>
+    <string name="addItemError">Add at least one item before continue</string>
+    <string name="greetingUser">Hello %s!</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="hintSearch">Input key word</string>
+    <string name="selectItems">Select items</string>
+    <string name="keyActivityCode" translatable="false">activityCode</string>
+    <string name="selectDate">Select date</string>
+    <string name="select">Select</string>
+    <string name="noItemsToDisplay">No items to display</string>
+    <string name="noItemsFound">No items found</string>
+</resources>

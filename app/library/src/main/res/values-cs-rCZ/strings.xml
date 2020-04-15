@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="emailBadFormat">Špatná emailová adresa</string>+
+    <string name="passwordIsShort">Heslo je krátké</string>
+    <string name="passwordsDoesNotMatch">Hesla se neshodují</string>
+    <string name="fieldIsEmpty">Vyplň mě</string>
+    <string name="addItemError">Před pokračováním přidej alespoň jednu položku</string>
+    <string name="greetingUser">Ahoj %s!</string>
+    <string name="cancel">Zrušit</string>
+    <string name="hintSearch">Zadej co hledáš</string>
+    <string name="selectItems">Vyber položky</string>
+    <string name="selectDate">Vyberte datum</string>
+    <string name="select">Vybrat</string>
+    <string name="noItemsToDisplay">Žádné položky k zobrazení</string>
+    <string name="noItemsFound">Žádné položky nebyly nalezeny</string>
+</resources>
