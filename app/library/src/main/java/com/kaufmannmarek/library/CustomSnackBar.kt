@@ -4,6 +4,7 @@ package com.kaufmannmarek.library
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
@@ -181,8 +182,14 @@ open class ImageAndTextSnackBar(
     init {
         this.textView.text = text
         this.imageView.setImageResource(image)
+        this.imageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.textColor))
         getSnackBarLayout().addView(customLayout)
         show()
+        Log.i(
+            "output",
+            "počet řádků: " + this.textView.text.toString()
+                .split(System.getProperty("line.separator")!!).size
+        )
     }
 
     /**
@@ -205,4 +212,38 @@ open class ImageAndTextSnackBar(
     fun getImageView(): ImageView {
         return this.imageView
     }
+}
+
+class LoginSnackBar(context: Context, userName: String) : ImageAndTextSnackBar(
+    context,
+    context.getString(R.string.greetingUser, userName),
+    R.drawable.ic_user,
+    1500,
+    true
+)
+
+class SuccessSnackBar(context: Context, text: String) :
+    ImageAndTextSnackBar(context, text, R.drawable.ic_success, 2500, true) {
+
+    constructor(context: Context, text: Int) : this(context, context.getString(text))
+
+}
+
+class FailSnackBar(context: Context, text: String) :
+    ImageAndTextSnackBar(context, text, R.drawable.ic_fail, 4000, true) {
+
+    constructor(context: Context, text: Int) : this(context, context.getString(text))
+
+}
+
+class WarningSnackBar(context: Context, text: String) :
+    ImageAndTextSnackBar(context, text, R.drawable.ic_warning, 2500, true) {
+
+    constructor(context: Context, text: Int) : this(context, context.getString(text))
+}
+
+class NotificationSnackBar(context: Context, text: String) :
+    ImageAndTextSnackBar(context, text, R.drawable.ic_notification, 2500, true) {
+
+    constructor(context: Context, text: Int) : this(context, context.getString(text))
 }
