@@ -7,7 +7,7 @@
     android:paddingEnd="10dp"
     android:paddingBottom="10dp"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:background="@color/dialogBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"

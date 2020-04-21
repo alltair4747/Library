@@ -3,7 +3,7 @@
     android:id="@+id/dialog_background"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/background"
+    android:background="@color/dialogBackground"
     android:paddingStart="10dp"
     android:paddingTop="10dp"
     android:paddingEnd="10dp"
