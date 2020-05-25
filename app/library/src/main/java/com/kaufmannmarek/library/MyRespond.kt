@@ -2,7 +2,7 @@
 
 package com.kaufmannmarek.library
 
-interface CustomRespond {
+interface MyRespond {
 
     /**
      * @param code is result of operation, where 0 means success

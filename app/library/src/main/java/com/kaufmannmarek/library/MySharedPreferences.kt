@@ -12,7 +12,7 @@ import android.content.SharedPreferences
  * @param context of currently active activity
  * @param databaseName is String, which represents name of the database
  */
-open class CustomSharedPreferences(private val context: Context, databaseName: String) {
+open class MySharedPreferences(private val context: Context, databaseName: String) {
     private val sharedPreferences =
         context.getSharedPreferences(databaseName, Context.MODE_PRIVATE)
 

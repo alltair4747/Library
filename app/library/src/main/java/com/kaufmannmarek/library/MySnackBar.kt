@@ -20,7 +20,7 @@ import com.google.android.material.snackbar.Snackbar
  * @param length is int which represents number of milliseconds, when the snackBar will be displayed
  * @param view snackBar will be shown at the bottom of the provided View
  */
-open class SnackBar(
+open class MySnackBar(
     private val context: Context,
     text: String,
     private var showDialog: Boolean,
@@ -116,8 +116,8 @@ open class SnackBar(
  * @param showDialog will display snackBar or wait till function show is called
  * @param length is int which represents number of milliseconds, when the snackBar will be displayed
  */
-open class CustomLayoutSnackBar(context: Context, showDialog: Boolean, length: Int) :
-    SnackBar(context, "", showDialog, length) {
+open class CustomLayoutMySnackBar(context: Context, showDialog: Boolean, length: Int) :
+    MySnackBar(context, "", showDialog, length) {
     private val layout = getSnackBar().view as Snackbar.SnackbarLayout
 
     fun setBackgroundColor(color: Int) {
@@ -150,14 +150,14 @@ open class CustomLayoutSnackBar(context: Context, showDialog: Boolean, length: I
  * @param length is int which represents number of milliseconds, when the snackBar will be displayed
  * @param showDialog will display snackBar or wait till function show is called
  */
-open class ImageAndTextSnackBar(
+open class ImageAndTextMySnackBar(
     context: Context,
     text: String,
     image: Int,
     length: Int,
     showDialog: Boolean
 ) :
-    CustomLayoutSnackBar(context, showDialog, length) {
+    CustomLayoutMySnackBar(context, showDialog, length) {
     private val customLayout = View.inflate(context, R.layout.snack_bar_with_imageview, null)
     private val textView = (this.customLayout.findViewById(R.id.snack_bar_text) as TextView)
     private val imageView = (this.customLayout.findViewById(R.id.snack_bar_icon) as ImageView)
@@ -214,7 +214,7 @@ open class ImageAndTextSnackBar(
     }
 }
 
-class LoginSnackBar(context: Context, userName: String) : ImageAndTextSnackBar(
+class LoginMySnackBar(context: Context, userName: String) : ImageAndTextMySnackBar(
     context,
     context.getString(R.string.greetingUser, userName),
     R.drawable.ic_user,
@@ -222,28 +222,28 @@ class LoginSnackBar(context: Context, userName: String) : ImageAndTextSnackBar(
     true
 )
 
-class SuccessSnackBar(context: Context, text: String) :
-    ImageAndTextSnackBar(context, text, R.drawable.ic_success, 2500, true) {
+class SuccessMySnackBar(context: Context, text: String) :
+    ImageAndTextMySnackBar(context, text, R.drawable.ic_success, 2500, true) {
 
     constructor(context: Context, text: Int) : this(context, context.getString(text))
 
 }
 
-class FailSnackBar(context: Context, text: String) :
-    ImageAndTextSnackBar(context, text, R.drawable.ic_fail, 4000, true) {
+class FailMySnackBar(context: Context, text: String) :
+    ImageAndTextMySnackBar(context, text, R.drawable.ic_fail, 4000, true) {
 
     constructor(context: Context, text: Int) : this(context, context.getString(text))
 
 }
 
-class WarningSnackBar(context: Context, text: String) :
-    ImageAndTextSnackBar(context, text, R.drawable.ic_warning, 2500, true) {
+class WarningMySnackBar(context: Context, text: String) :
+    ImageAndTextMySnackBar(context, text, R.drawable.ic_warning, 2500, true) {
 
     constructor(context: Context, text: Int) : this(context, context.getString(text))
 }
 
-class NotificationSnackBar(context: Context, text: String) :
-    ImageAndTextSnackBar(context, text, R.drawable.ic_notification, 2500, true) {
+class NotificationMySnackBar(context: Context, text: String) :
+    ImageAndTextMySnackBar(context, text, R.drawable.ic_notification, 2500, true) {
 
     constructor(context: Context, text: Int) : this(context, context.getString(text))
 }

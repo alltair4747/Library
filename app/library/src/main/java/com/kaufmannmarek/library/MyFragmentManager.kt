@@ -15,7 +15,7 @@ import java.io.Serializable
  *
  * @param context of currently displayed activity
  */
-class CustomFragmentManager(private val context: Context) {
+class MyFragmentManager(private val context: Context) {
     private val fragmentManager = (this.context as FragmentActivity).supportFragmentManager
     private val fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
@@ -70,7 +70,7 @@ class CustomFragmentManager(private val context: Context) {
         getFragmentTransaction().replace(
             container,
             fragment,
-            CustomString(this.context).getStringFromInt(tag)
+            MyString(this.context).getStringFromInt(tag)
         )
         if (commit)
             commit()
@@ -151,7 +151,7 @@ class CustomFragmentManager(private val context: Context) {
      */
     fun getFragmentByTag(tag: Int): Fragment {
         return getFragmentManager().findFragmentByTag(
-            CustomString(this.context).getStringFromInt(
+            MyString(this.context).getStringFromInt(
                 tag
             )
         )!!

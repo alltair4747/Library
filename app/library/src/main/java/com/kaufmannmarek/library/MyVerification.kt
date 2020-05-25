@@ -16,7 +16,7 @@ import android.widget.ListView
  * @param context of currently displayed activity
  * @param dynamicFocus is condition. If true, after calling verifyInput it will focus the view, where the first error was found. Else not.
  */
-class CustomVerification(private val context: Context, private val dynamicFocus: Boolean) {
+class MyVerification(private val context: Context, private val dynamicFocus: Boolean) {
     private var noErrorFound = true
 
     fun isValidEmailAddress(emailAddress: EditText) {
@@ -88,7 +88,7 @@ class CustomVerification(private val context: Context, private val dynamicFocus:
     fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: Int) {
         if (!checkedTextView.isChecked) {
             setViewFocus(checkedTextView)
-            checkedTextView.error = CustomString(this.context).getStringFromInt(errorText)
+            checkedTextView.error = MyString(this.context).getStringFromInt(errorText)
         }
     }
 
@@ -102,7 +102,7 @@ class CustomVerification(private val context: Context, private val dynamicFocus:
         setViewFocus(editText)
         when (editText.text.toString().isEmpty()) {
             true -> editText.error = this.context.getString(R.string.fieldIsEmpty)
-            else -> editText.error = CustomString(this.context).getStringFromInt(errorText!!)
+            else -> editText.error = MyString(this.context).getStringFromInt(errorText!!)
         }
     }
 
@@ -115,7 +115,7 @@ class CustomVerification(private val context: Context, private val dynamicFocus:
         if (view is ListView && view.childCount == 0 || view is ExpandableListView && view.count == 0) {
             if (this.noErrorFound) {
                 setViewFocus(view)
-                SnackBar(this.context, R.string.addItemError, true, 1500)
+                MySnackBar(this.context, R.string.addItemError, true, 1500)
             }
         }
     }
@@ -140,7 +140,7 @@ class CustomVerification(private val context: Context, private val dynamicFocus:
             false -> {
                 if (this.noErrorFound) {
                     this.noErrorFound = false
-                    SnackBar(this.context, message, true, 1500)
+                    MySnackBar(this.context, message, true, 1500)
                 }
             }
         }

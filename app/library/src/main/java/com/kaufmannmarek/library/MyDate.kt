@@ -8,7 +8,7 @@ import java.util.*
     "unused",
     "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS"
 )
-class CustomDate {
+class MyDate {
     private val dateFormat = SimpleDateFormat("d.M.yyyy", Locale.GERMAN)
     private val defaultDate = getDateFormat().parse("30.12.1899")
 

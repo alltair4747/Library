@@ -6,7 +6,7 @@ import android.content.Context
 import android.view.inputmethod.InputMethodManager
 
 
-class CustomKeyboard(private val context: Context) {
+class MyKeyboard(private val context: Context) {
 
     /**
      * Will hide virtual keyBoard

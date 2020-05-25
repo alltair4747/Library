@@ -4,7 +4,7 @@ package com.kaufmannmarek.library
 import android.content.Context
 import kotlin.random.Random
 
-class CustomString(private val context: Context) {
+class MyString(private val context: Context) {
 
     /**
      * Generates random string with provided length

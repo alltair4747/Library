@@ -13,7 +13,7 @@ import java.io.Serializable
  * @param context of currently displayed activity
  * @param intent is intent of currently displayed activity
  */
-class CustomIntent(private val context: Context, intent: Intent?) {
+class ThisIntent(private val context: Context, intent: Intent?) {
     private val activity = (this.context as Activity)
     private val intent: Intent
 
@@ -36,7 +36,7 @@ class CustomIntent(private val context: Context, intent: Intent?) {
      */
     fun getActivityCode(): Int {
         return getIntent().getIntExtra(
-            CustomString(this.context).getStringFromInt(
+            MyString(this.context).getStringFromInt(
                 R.string.keyActivityCode
             ), 0
         )
@@ -64,7 +64,7 @@ class CustomIntent(private val context: Context, intent: Intent?) {
      */
     fun setSerializable(paramName: Int, serializable: Serializable) {
         getIntent().putExtra(
-            CustomString(this.context).getStringFromInt(paramName),
+            MyString(this.context).getStringFromInt(paramName),
             serializable
         )
     }
@@ -75,7 +75,7 @@ class CustomIntent(private val context: Context, intent: Intent?) {
      */
     fun getSerializable(paramName: Int): Serializable? {
         return getIntent().getSerializableExtra(
-            CustomString(this.context).getStringFromInt(
+            MyString(this.context).getStringFromInt(
                 paramName
             )
         )

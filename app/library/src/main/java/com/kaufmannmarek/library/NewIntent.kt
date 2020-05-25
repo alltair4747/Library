@@ -12,7 +12,7 @@ import java.io.Serializable
  * @param context of currently displayed activity
  * @param destinationActivity is class, which will be displayed after transaction
  */
-class CustomNewIntent(private val context: Context, destinationActivity: Class<*>) {
+class NewIntent(private val context: Context, destinationActivity: Class<*>) {
     private val newIntent = Intent(this.context, destinationActivity)
 
     @Suppress("SameParameterValue")
@@ -23,7 +23,7 @@ class CustomNewIntent(private val context: Context, destinationActivity: Class<*
      * @param value is value, which will be put in intent
      */
     private fun setIntExtra(paramName: Int, value: Int) {
-        getIntent().putExtra(CustomString(this.context).getStringFromInt(paramName), value)
+        getIntent().putExtra(MyString(this.context).getStringFromInt(paramName), value)
     }
 
     /**
@@ -41,7 +41,7 @@ class CustomNewIntent(private val context: Context, destinationActivity: Class<*
      */
     private fun setSerializable(paramName: Int ,serializable: Serializable) {
         getIntent().putExtra(
-            CustomString(this.context).getStringFromInt(paramName),
+            MyString(this.context).getStringFromInt(paramName),
             serializable
         )
     }

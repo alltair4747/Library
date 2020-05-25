@@ -12,7 +12,7 @@ import java.io.Serializable
  * @param bundle are passed arguments during fragment transaction
  * @param context of currently displayed activity
  */
-class CustomArguments(private val bundle: Bundle, private val context: Context) {
+class MyArguments(private val bundle: Bundle, private val context: Context) {
 
     /**
      * @return serializable object put in transaction

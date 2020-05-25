@@ -272,7 +272,7 @@ class DatePickerDialog(
      * @return number of days since the default date. See class CustomDate for details
      */
     fun getIntDate(): Int {
-        return CustomDate().getDifferenceBetweenDays(getStringDate())
+        return MyDate().getDifferenceBetweenDays(getStringDate())
     }
 }
 
