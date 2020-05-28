@@ -57,6 +57,15 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         setIntExtra(R.string.keyActivityCode, activityCode)
     }
 
+    /**
+     * Starts a new activity with correct animation, puts serializable object and may finish a default activity
+     *
+     * @param finishCurrentActivity is condition, which will finish a default activity if true
+     * @param isOnBackPressed is condition, which selects correct animation
+     * @param activityCode is code, which can be retrieved in following activity
+     * @param serializableName is name, under which you can later retrieve serializable object
+     * @param serializable is object to be passed
+     */
     fun start(
         finishCurrentActivity: Boolean,
         isOnBackPressed: Boolean,
@@ -66,6 +75,31 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
     ) {
         setSerializable(serializableName, serializable)
         start(finishCurrentActivity, isOnBackPressed, activityCode)
+    }
+
+    /**
+     * Starts a new activity with correct animation, puts serializable object and may finish a default activity
+     *
+     * @param finishCurrentActivity is condition, which will finish a default activity if true
+     * @param isOnBackPressed is condition, which selects correct animation
+     * @param activityCode is code, which can be retrieved in following activity
+     * @param serializableName is int reference to String, which holds name, under which you can later retrieve serializable object
+     * @param serializable is object to be passed
+     */
+    fun start(
+        finishCurrentActivity: Boolean,
+        isOnBackPressed: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable
+    ) {
+        start(
+            finishCurrentActivity,
+            isOnBackPressed,
+            activityCode,
+            this.context.getString(serializableName),
+            serializable
+        )
     }
 
     /**
