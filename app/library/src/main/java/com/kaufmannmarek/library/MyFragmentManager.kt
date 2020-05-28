@@ -166,16 +166,41 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
+     * @return if the fragment with provided tag is active
+     * @param fragmentTag is tag of fragment, which we examine
+     */
+    fun isFragmentActive(fragmentTag: String): Boolean {
+        return try {
+            getFragmentManager().findFragmentByTag(fragmentTag)!!.isVisible
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * @return if the fragment with provided tag is active
+     * @param fragmentTag is int reference to tag of fragment, which we examine
+     */
+    fun isFragmentActive(fragmentTag: Int): Boolean {
+        return isFragmentActive(MyString(this.context).getStringFromInt(fragmentTag))
+    }
+
+    /**
+     * @return instance of active fragment in fragment manager using a fragment tag.
+     * @param tag is String, which represents required fragment
+     */
+    fun getFragmentByTag(tag: String): Fragment {
+        return getFragmentManager().findFragmentByTag(tag)!!
+    }
+
+    /**
      * @return instance of active fragment in fragment manager using a fragment tag.
      * @param tag is int reference to String, which represents required fragment
      */
     fun getFragmentByTag(tag: Int): Fragment {
-        return getFragmentManager().findFragmentByTag(
-            MyString(this.context).getStringFromInt(
-                tag
-            )
-        )!!
+        return getFragmentByTag(MyString(this.context).getStringFromInt(tag))
     }
+
 
     /**
      * @return instance of fragmentManager of current activity
