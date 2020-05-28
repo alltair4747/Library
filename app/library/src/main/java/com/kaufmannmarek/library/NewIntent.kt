@@ -1,4 +1,5 @@
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package com.kaufmannmarek.library
 
 import android.app.Activity
@@ -33,17 +34,18 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         return this.newIntent
     }
 
+    private fun setSerializable(paramName: String, serializable: Serializable) {
+        getIntent().putExtra(paramName, serializable)
+    }
+
     /**
      * Sets object, which will be passed to a following activity
      *
      * @param paramName is int reference to String used to retrieve serializable
      * @param serializable is object to passed
      */
-    private fun setSerializable(paramName: Int ,serializable: Serializable) {
-        getIntent().putExtra(
-            MyString(this.context).getStringFromInt(paramName),
-            serializable
-        )
+    private fun setSerializable(paramName: Int, serializable: Serializable) {
+        setSerializable(MyString(this.context).getStringFromInt(paramName), serializable)
     }
 
     /**
@@ -55,24 +57,15 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         setIntExtra(R.string.keyActivityCode, activityCode)
     }
 
-    /**
-     * Starts a new activity with provided activity code and with animation entering from left and exiting to right, while finishing a default activity
-     *
-     * @param activityCode is code, which can be retrieved in following activity
-     */
-    fun startWithActivityCode(activityCode: Int) {
-        startWithActivityCode(activityCode, false)
-    }
-
-    /**
-     * Starts a new activity with provided activity code and with correct animation, while finishing a default activity
-     *
-     * @param activityCode is code, which can be retrieved in following activity
-     * @param isOnBackPressed is condition, which selects correct animation
-     */
-    fun startWithActivityCode(activityCode: Int, isOnBackPressed: Boolean) {
-        setActivityCode(activityCode)
-        startNewActivity(true, isOnBackPressed)
+    fun start(
+        finishCurrentActivity: Boolean,
+        isOnBackPressed: Boolean,
+        activityCode: Int,
+        serializableName: String,
+        serializable: Serializable
+    ) {
+        setSerializable(serializableName, serializable)
+        start(finishCurrentActivity, isOnBackPressed, activityCode)
     }
 
     /**
@@ -82,13 +75,13 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param isOnBackPressed is condition, which selects correct animation
      * @param activityCode is code, which can be retrieved in following activity
      */
-    fun startNewActivity(
+    fun start(
         finishCurrentActivity: Boolean,
         isOnBackPressed: Boolean,
         activityCode: Int
     ) {
         setActivityCode(activityCode)
-        startNewActivity(finishCurrentActivity, isOnBackPressed)
+        start(finishCurrentActivity, isOnBackPressed)
     }
 
     /**
@@ -96,8 +89,8 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      *
      * @param finishCurrentActivity is condition, which will finish a default activity if true
      */
-    fun startNewActivity(finishCurrentActivity: Boolean) {
-        startNewActivity(finishCurrentActivity, false, 0)
+    fun start(finishCurrentActivity: Boolean) {
+        start(finishCurrentActivity, false, 0)
     }
 
     /**
@@ -107,7 +100,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param isOnBackPressed is condition, which selects correct animation
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    fun startNewActivity(finishCurrentActivity: Boolean, isOnBackPressed: Boolean) {
+    fun start(finishCurrentActivity: Boolean, isOnBackPressed: Boolean) {
         val currentActivity = this.context as Activity
         currentActivity.startActivity(getIntent())
         if (finishCurrentActivity)
@@ -125,35 +118,11 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
     }
 
     /**
-     * Starts a new activity with provided object, while finishing a default activity
-     *
-     * @param paramName is int reference to String used to retrieve serializable
-     * @param serializable is object, which will passed to new activity
-     */
-    fun startActivityWithSerializable(paramName: Int, serializable: Serializable) {
-        setSerializable(paramName, serializable)
-        startNewActivity(false)
-    }
-
-    /**
-     * Starts a new activity with provided request code and passed object, while finishing a default activity
-     *
-     * @param requestCode is code, which will passed as activity code to another activity
-     * @param paramName is int reference to String used to retrieve serializable
-     * @param serializable is object, which will passed to new activity
-     */
-    fun startActivityWithSerializable(requestCode: Int, paramName: Int, serializable: Serializable) {
-        setActivityCode(requestCode)
-        startActivityWithSerializable(paramName, serializable)
-        startNewActivity(false)
-    }
-
-    /**
      * Starts a new activity with provided request code. After finishing the new activity, a default activity can handle on response action
      *
      * @param requestCode is code, which will passed as activity code to another activity.
      */
-    fun startActivityForResult(requestCode: Int) {
+    fun startForResult(requestCode: Int) {
         setActivityCode(requestCode)
         val currentActivity = this.context as Activity
         currentActivity.startActivityForResult(getIntent(), requestCode)
@@ -169,8 +138,8 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param requestCode is code, which will passed as activity code to another activity
      * @param serializable is object, which will passed to new activity
      */
-    fun startActivityForResult(requestCode: Int, paramName: Int, serializable: Serializable) {
+    fun startForResult(requestCode: Int, paramName: Int, serializable: Serializable) {
         setSerializable(paramName, serializable)
-        startActivityForResult(requestCode)
+        startForResult(requestCode)
     }
 }

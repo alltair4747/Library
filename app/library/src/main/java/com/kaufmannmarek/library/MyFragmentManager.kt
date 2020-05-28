@@ -26,10 +26,10 @@ class MyFragmentManager(private val context: Context) {
      * @param fragment is destination fragment
      * @param container is int reference to view, where the fragment will be displayed
      * @param tag is int reference to String used to retrieve fragment from fragment manager
-     * @param enterFromRight is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from right side
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
-    fun switchFragment(fragment: Fragment, container: Int, tag: Int, enterFromRight: Boolean) {
-        switchFragment(fragment, container, tag, enterFromRight, true)
+    fun switchFragment(fragment: Fragment, container: Int, tag: Int, enterFromLeft: Boolean) {
+        switchFragment(fragment, container, tag, enterFromLeft, true)
     }
 
     /**
@@ -38,17 +38,17 @@ class MyFragmentManager(private val context: Context) {
      * @param fragment is destination fragment
      * @param container is int reference to view, where the fragment will be displayed
      * @param tag is int reference to String used to retrieve fragment from fragment manager
-     * @param enterFromRight is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from right side
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun switchFragment(
         fragment: Fragment,
         container: Int,
         tag: Int,
-        enterFromRight: Boolean,
+        enterFromLeft: Boolean,
         commit: Boolean
     ) {
-        when (enterFromRight) {
+        when (enterFromLeft) {
             true -> {
                 getFragmentTransaction().setCustomAnimations(
                     R.anim.enter_right_to_left,
