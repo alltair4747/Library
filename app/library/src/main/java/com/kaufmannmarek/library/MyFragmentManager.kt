@@ -153,6 +153,11 @@ class MyFragmentManager(private val context: Context) {
      * Perform basic operations before committing fragment transaction
      */
     private fun setTransactionParams(enterFromLeft: Boolean, fragment: Fragment) {
+        setFragmentTransactionAnimation(enterFromLeft)
+        fragment.arguments = getBundle()
+    }
+
+    private fun setFragmentTransactionAnimation(enterFromLeft: Boolean) {
         when (enterFromLeft) {
             true -> {
                 getFragmentTransaction().setCustomAnimations(
@@ -171,7 +176,6 @@ class MyFragmentManager(private val context: Context) {
                 )
             }
         }
-        fragment.arguments = getBundle()
     }
 
     /**
@@ -296,13 +300,13 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
-     * @return if the a container had any fragment inside it. If it had, the top fragment will be removed
+     * @return if the a container had any fragment inside it. If it had, the top fragment will be removed. Current fragment will exit to left side and a old will come from right.
      * @param container is container, from where the fragment should be removed
      */
     fun thereWasFragmentToRemove(container: Int): Boolean {
         val fragment = getFragmentManager().findFragmentById(container)
         if (fragment != null) {
-            fragmentRemove(fragment)
+            fragmentRemove(fragment, false)
             return true
         }
         return false
@@ -312,7 +316,8 @@ class MyFragmentManager(private val context: Context) {
      * Removes a fragment from transaction
      * @param fragment to be removed
      */
-    private fun fragmentRemove(fragment: Fragment) {
+    private fun fragmentRemove(fragment: Fragment, enterFromLeft: Boolean) {
+        setFragmentTransactionAnimation(enterFromLeft)
         getFragmentTransaction().remove(fragment)
         commit()
     }
@@ -321,10 +326,10 @@ class MyFragmentManager(private val context: Context) {
      * Removes a currently visible fragment
      * @param container is container, from where the fragment should be removed
      */
-    fun removeFragment(container: Int) {
+    fun removeFragment(container: Int, enterFromLeft: Boolean) {
         val fragment = getFragmentManager().findFragmentById(container)
         if (fragment != null)
-            fragmentRemove(fragment)
+            fragmentRemove(fragment, enterFromLeft)
     }
 
     /**
