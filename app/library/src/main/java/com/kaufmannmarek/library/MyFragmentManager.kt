@@ -145,6 +145,7 @@ class MyFragmentManager(private val context: Context) {
             fragment,
             tag
         )
+        getFragmentTransaction().addToBackStack(tag)
         if (commit)
             commit()
     }
@@ -270,6 +271,7 @@ class MyFragmentManager(private val context: Context) {
     ) {
         setTransactionParams(enterFromLeft, fragment)
         getFragmentTransaction().add(container, fragment, tag)
+        getFragmentTransaction().addToBackStack(tag)
         if (commit)
             commit()
     }
@@ -320,6 +322,10 @@ class MyFragmentManager(private val context: Context) {
         setFragmentTransactionAnimation(enterFromLeft)
         getFragmentTransaction().remove(fragment)
         commit()
+    }
+
+    fun getNumberOfActiveFragments(): Int {
+        return this.fragmentManager.backStackEntryCount
     }
 
     /**
