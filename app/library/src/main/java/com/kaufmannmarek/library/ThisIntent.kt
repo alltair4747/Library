@@ -35,11 +35,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @return activity code passed to this intent
      */
     fun getActivityCode(): Int {
-        return getIntent().getIntExtra(
-            MyString(this.context).getStringFromInt(
-                R.string.keyActivityCode
-            ), 0
-        )
+        return getInt(R.string.keyActivityCode)
     }
 
     /**
@@ -130,5 +126,57 @@ class ThisIntent(private val context: Context, intent: Intent?) {
                 R.anim.exit_left_to_right
             )
         }
+    }
+
+    /**
+     * @return saved String under paramName
+     * @param paramName is String, under which the value is stored
+     */
+    fun getString(paramName: String): String {
+        return try {
+            getIntent().getStringExtra(paramName)!!
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    /**
+     * @return saved String under paramName
+     * @param paramName is int reference to String, under which the value is stored
+     */
+    fun getString(paramName: Int): String {
+        return getString(MyString(this.context).getStringFromInt(paramName))
+    }
+
+    /**
+     * @return saved Boolean under paramName
+     * @param paramName is String, under which the value is stored
+     */
+    fun getBoolean(paramName: String): Boolean {
+        return getIntent().getBooleanExtra(paramName, false)
+    }
+
+    /**
+     * @return saved Boolean under paramName
+     * @param paramName is int reference to String, under which the value is stored
+     */
+    fun getBoolean(paramName: Int): Boolean {
+        return getBoolean(MyString(this.context).getStringFromInt(paramName))
+    }
+
+    /**
+     * @return saved int under paramName
+     * @param paramName is String, under which the value is stored
+     */
+    fun getInt(paramName: String): Int {
+        return getIntent().getIntExtra(paramName, 0)
+    }
+
+    /**
+     * @return saved int under paramName
+     * @param paramName is int reference to String, under which the value is stored
+     */
+    fun getInt(paramName: Int): Int {
+        return getInt(MyString(this.context).getStringFromInt(paramName))
     }
 }
