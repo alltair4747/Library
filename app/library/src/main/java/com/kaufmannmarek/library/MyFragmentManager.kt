@@ -322,6 +322,7 @@ class MyFragmentManager(private val context: Context) {
         setFragmentTransactionAnimation(enterFromLeft)
         getFragmentTransaction().remove(fragment)
         commit()
+        getFragmentManager().popBackStack()
     }
 
     fun getNumberOfActiveFragments(): Int {
