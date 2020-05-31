@@ -16,15 +16,24 @@ import java.io.Serializable
 class NewIntent(private val context: Context, destinationActivity: Class<*>) {
     private val newIntent = Intent(this.context, destinationActivity)
 
-    @Suppress("SameParameterValue")
+    /**
+     * Put int value to intent
+     *
+     * @param paramName is String used to retrieve int value
+     * @param value is value, which will be put in intent
+     */
+    fun putInt(paramName: String, value: Int) {
+        getIntent().putExtra(paramName, value)
+    }
+
     /**
      * Put int value to intent
      *
      * @param paramName is int reference to String used to retrieve int value
      * @param value is value, which will be put in intent
      */
-    private fun setIntExtra(paramName: Int, value: Int) {
-        getIntent().putExtra(MyString(this.context).getStringFromInt(paramName), value)
+    fun putInt(paramName: Int, value: Int) {
+        putInt(MyString(this.context).getStringFromInt(paramName), value)
     }
 
     /**
@@ -34,7 +43,13 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         return this.newIntent
     }
 
-    private fun setSerializable(paramName: String, serializable: Serializable) {
+    /**
+     * Sets object, which will be passed to a following activity
+     *
+     * @param paramName is String used to retrieve serializable
+     * @param serializable is object to passed
+     */
+    private fun putSerializable(paramName: String, serializable: Serializable) {
         getIntent().putExtra(paramName, serializable)
     }
 
@@ -44,8 +59,8 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param paramName is int reference to String used to retrieve serializable
      * @param serializable is object to passed
      */
-    private fun setSerializable(paramName: Int, serializable: Serializable) {
-        setSerializable(MyString(this.context).getStringFromInt(paramName), serializable)
+    private fun putSerializable(paramName: Int, serializable: Serializable) {
+        putSerializable(MyString(this.context).getStringFromInt(paramName), serializable)
     }
 
     /**
@@ -53,8 +68,8 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      *
      * @param activityCode is code to be passed
      */
-    private fun setActivityCode(activityCode: Int) {
-        setIntExtra(R.string.keyActivityCode, activityCode)
+    private fun putActivityCode(activityCode: Int) {
+        putInt(R.string.keyActivityCode, activityCode)
     }
 
     /**
@@ -73,7 +88,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         serializableName: String,
         serializable: Serializable
     ) {
-        setSerializable(serializableName, serializable)
+        putSerializable(serializableName, serializable)
         start(finishCurrentActivity, isOnBackPressed, activityCode)
     }
 
@@ -114,7 +129,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
         isOnBackPressed: Boolean,
         activityCode: Int
     ) {
-        setActivityCode(activityCode)
+        putActivityCode(activityCode)
         start(finishCurrentActivity, isOnBackPressed)
     }
 
@@ -157,7 +172,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param requestCode is code, which will passed as activity code to another activity.
      */
     fun startForResult(requestCode: Int) {
-        setActivityCode(requestCode)
+        putActivityCode(requestCode)
         val currentActivity = this.context as Activity
         currentActivity.startActivityForResult(getIntent(), requestCode)
         currentActivity.overridePendingTransition(
@@ -173,7 +188,47 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param serializable is object, which will passed to new activity
      */
     fun startForResult(requestCode: Int, paramName: Int, serializable: Serializable) {
-        setSerializable(paramName, serializable)
+        putSerializable(paramName, serializable)
         startForResult(requestCode)
+    }
+
+    /**
+     * Put String value to intent
+     *
+     * @param paramName is  String used to retrieve int value
+     * @param value is value, which will be put in intent
+     */
+    fun putString(paramName: String, value: String) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    /**
+     * Put String value to intent
+     *
+     * @param paramName is int reference to String used to retrieve int value
+     * @param value is value, which will be put in intent
+     */
+    fun putString(paramName: Int, value: String) {
+        putString(MyString(this.context).getStringFromInt(paramName), value)
+    }
+
+    /**
+     * Put boolean value to intent
+     *
+     * @param paramName is int reference to String used to retrieve int value
+     * @param value is value, which will be put in intent
+     */
+    fun putBoolean(paramName: String, value: Boolean) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    /**
+     * Put boolean value to intent
+     *
+     * @param paramName is int reference to String used to retrieve int value
+     * @param value is value, which will be put in intent
+     */
+    fun putBoolean(paramName: Int, value: Boolean) {
+        putBoolean(MyString(this.context).getStringFromInt(paramName), value)
     }
 }
