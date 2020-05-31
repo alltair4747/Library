@@ -213,6 +213,29 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
     }
 
     /**
+     * Put String value to intent
+     *
+     * @param paramName is  String used to retrieve int value
+     * @param value is int reference to String, which will be put in intent
+     */
+    fun putString(paramName: String, value: Int) {
+        putString(paramName, MyString(this.context).getStringFromInt(value))
+    }
+
+    /**
+     * Put String value to intent
+     *
+     * @param paramName is int reference to String used to retrieve int value
+     * @param value is int reference to String, which will be put in intent
+     */
+    fun putString(paramName: Int, value: Int) {
+        putString(
+            MyString(this.context).getStringFromInt(paramName),
+            MyString(this.context).getStringFromInt(value)
+        )
+    }
+
+    /**
      * Put boolean value to intent
      *
      * @param paramName is int reference to String used to retrieve int value
