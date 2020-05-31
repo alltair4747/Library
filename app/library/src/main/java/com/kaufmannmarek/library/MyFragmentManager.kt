@@ -390,6 +390,29 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
+     * Adds String as argument to this transaction
+     *
+     * @param paramName is String, which is used to retrieve String
+     * @param value is int reference to String, which will be added to transaction
+     */
+    fun putString(paramName: String, value: Int) {
+        putString(paramName, MyString(this.context).getStringFromInt(value))
+    }
+
+    /**
+     * Adds String as argument to this transaction
+     *
+     * @param paramName is int reference to String, which is used to retrieve String
+     * @param value is int reference to String, which will be added to transaction
+     */
+    fun putString(paramName: Int, value: Int) {
+        putString(
+            MyString(this.context).getStringFromInt(paramName),
+            MyString(this.context).getStringFromInt(value)
+        )
+    }
+
+    /**
      * Adds int as argument to this transaction
      *
      * @param paramName is String, which is used to retrieve int
