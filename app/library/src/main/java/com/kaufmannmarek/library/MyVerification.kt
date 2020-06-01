@@ -88,7 +88,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
     fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: Int) {
         if (!checkedTextView.isChecked) {
             setViewFocus(checkedTextView)
-            checkedTextView.error = MyString(this.context).getStringFromInt(errorText)
+            checkedTextView.error = MyString(this.context).fromResources(errorText)
         }
     }
 
@@ -102,7 +102,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
         setViewFocus(editText)
         when (editText.text.toString().isEmpty()) {
             true -> editText.error = this.context.getString(R.string.fieldIsEmpty)
-            else -> editText.error = MyString(this.context).getStringFromInt(errorText!!)
+            else -> editText.error = MyString(this.context).fromResources(errorText!!)
         }
     }
 
@@ -115,7 +115,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
         if (view is ListView && view.childCount == 0 || view is ExpandableListView && view.count == 0) {
             if (this.noErrorFound) {
                 setViewFocus(view)
-                MySnackBar(this.context, R.string.addItemError, true, 1500)
+                MyCommonSnackBar(this.context, R.string.addItemError, true, 1500)
             }
         }
     }
@@ -140,7 +140,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
             false -> {
                 if (this.noErrorFound) {
                     this.noErrorFound = false
-                    MySnackBar(this.context, message, true, 1500)
+                    MyCommonSnackBar(this.context, message, true, 1500)
                 }
             }
         }

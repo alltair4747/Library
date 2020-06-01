@@ -42,7 +42,7 @@ class MyString(private val context: Context) {
      * @return String value from provided int reference
      * @param paramName is reference to string
      */
-    fun getStringFromInt(paramName: Int): String {
+    fun fromResources(paramName: Int): String {
         return this.context.getString(paramName)
     }
 

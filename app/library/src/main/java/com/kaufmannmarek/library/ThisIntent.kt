@@ -60,7 +60,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      */
     fun setSerializable(paramName: Int, serializable: Serializable) {
         getIntent().putExtra(
-            MyString(this.context).getStringFromInt(paramName),
+            MyString(this.context).fromResources(paramName),
             serializable
         )
     }
@@ -71,7 +71,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      */
     fun getSerializable(paramName: Int): Serializable? {
         return getIntent().getSerializableExtra(
-            MyString(this.context).getStringFromInt(
+            MyString(this.context).fromResources(
                 paramName
             )
         )
@@ -145,7 +145,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getString(paramName: Int): String {
-        return getString(MyString(this.context).getStringFromInt(paramName))
+        return getString(MyString(this.context).fromResources(paramName))
     }
 
     /**
@@ -161,7 +161,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getBoolean(paramName: Int): Boolean {
-        return getBoolean(MyString(this.context).getStringFromInt(paramName))
+        return getBoolean(MyString(this.context).fromResources(paramName))
     }
 
     /**
@@ -177,6 +177,6 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getInt(paramName: Int): Int {
-        return getInt(MyString(this.context).getStringFromInt(paramName))
+        return getInt(MyString(this.context).fromResources(paramName))
     }
 }

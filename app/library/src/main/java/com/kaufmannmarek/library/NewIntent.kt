@@ -33,7 +33,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param value is value, which will be put in intent
      */
     fun putInt(paramName: Int, value: Int) {
-        putInt(MyString(this.context).getStringFromInt(paramName), value)
+        putInt(MyString(this.context).fromResources(paramName), value)
     }
 
     /**
@@ -60,7 +60,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param serializable is object to passed
      */
     private fun putSerializable(paramName: Int, serializable: Serializable) {
-        putSerializable(MyString(this.context).getStringFromInt(paramName), serializable)
+        putSerializable(MyString(this.context).fromResources(paramName), serializable)
     }
 
     /**
@@ -209,7 +209,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param value is value, which will be put in intent
      */
     fun putString(paramName: Int, value: String) {
-        putString(MyString(this.context).getStringFromInt(paramName), value)
+        putString(MyString(this.context).fromResources(paramName), value)
     }
 
     /**
@@ -219,7 +219,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param value is int reference to String, which will be put in intent
      */
     fun putString(paramName: String, value: Int) {
-        putString(paramName, MyString(this.context).getStringFromInt(value))
+        putString(paramName, MyString(this.context).fromResources(value))
     }
 
     /**
@@ -230,8 +230,8 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      */
     fun putString(paramName: Int, value: Int) {
         putString(
-            MyString(this.context).getStringFromInt(paramName),
-            MyString(this.context).getStringFromInt(value)
+            MyString(this.context).fromResources(paramName),
+            MyString(this.context).fromResources(value)
         )
     }
 
@@ -252,6 +252,6 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      * @param value is value, which will be put in intent
      */
     fun putBoolean(paramName: Int, value: Boolean) {
-        putBoolean(MyString(this.context).getStringFromInt(paramName), value)
+        putBoolean(MyString(this.context).fromResources(paramName), value)
     }
 }

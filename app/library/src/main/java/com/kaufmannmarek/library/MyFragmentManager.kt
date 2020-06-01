@@ -63,7 +63,7 @@ class MyFragmentManager(private val context: Context) {
         replaceFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft,
             activityCode
         )
@@ -93,7 +93,7 @@ class MyFragmentManager(private val context: Context) {
         replaceFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft
         )
     }
@@ -117,7 +117,7 @@ class MyFragmentManager(private val context: Context) {
         replaceFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft,
             commit
         )
@@ -218,7 +218,7 @@ class MyFragmentManager(private val context: Context) {
         addFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft,
             activityCode
         )
@@ -248,7 +248,7 @@ class MyFragmentManager(private val context: Context) {
         addFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft
         )
     }
@@ -295,7 +295,7 @@ class MyFragmentManager(private val context: Context) {
         addFragment(
             fragment,
             container,
-            MyString(this.context).getStringFromInt(tag),
+            MyString(this.context).fromResources(tag),
             enterFromLeft,
             commit
         )
@@ -396,7 +396,7 @@ class MyFragmentManager(private val context: Context) {
      * @param value is int reference to String, which will be added to transaction
      */
     fun putString(paramName: String, value: Int) {
-        putString(paramName, MyString(this.context).getStringFromInt(value))
+        putString(paramName, MyString(this.context).fromResources(value))
     }
 
     /**
@@ -407,8 +407,8 @@ class MyFragmentManager(private val context: Context) {
      */
     fun putString(paramName: Int, value: Int) {
         putString(
-            MyString(this.context).getStringFromInt(paramName),
-            MyString(this.context).getStringFromInt(value)
+            MyString(this.context).fromResources(paramName),
+            MyString(this.context).fromResources(value)
         )
     }
 
@@ -463,7 +463,7 @@ class MyFragmentManager(private val context: Context) {
      * @param fragmentTag is int reference to tag of fragment, which we examine
      */
     fun isFragmentActive(fragmentTag: Int): Boolean {
-        return isFragmentActive(MyString(this.context).getStringFromInt(fragmentTag))
+        return isFragmentActive(MyString(this.context).fromResources(fragmentTag))
     }
 
     /**
@@ -479,7 +479,7 @@ class MyFragmentManager(private val context: Context) {
      * @param tag is int reference to String, which represents required fragment
      */
     fun getFragmentByTag(tag: Int): Fragment {
-        return getFragmentByTag(MyString(this.context).getStringFromInt(tag))
+        return getFragmentByTag(MyString(this.context).fromResources(tag))
     }
 
 

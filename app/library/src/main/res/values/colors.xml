@@ -6,5 +6,6 @@
     <color name="hintColor">#C0C0C0</color>
     <color name="snackBarBackground">@color/colorPrimaryDark</color>
     <color name="dialogBackground">@color/colorPrimaryDark</color>
+    <color name="snackBarTextColor">@color/textColor</color>
 </resources>
 

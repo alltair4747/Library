@@ -1,5 +1,6 @@
 package com.kaufmannmarek.library
 
+import android.content.Context
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,6 +43,33 @@ class MyDate {
      */
     fun getDifferenceBetweenDays(date: String): Int {
         return getNumberOfElapsedDays(date)
+    }
+
+    /**
+     * @return name of day for provided date (f.e. Monday)
+     * @param elapsedDays is number of elapsed days since 30.12.1899
+     */
+    fun getNameOfDay(elapsedDays: Int, context: Context): String {
+        val numberOfDay: Int
+        val remainder = elapsedDays % 7
+        numberOfDay = when (remainder) {
+            0 -> 6
+            7 -> 5
+            6 -> 4
+            5 -> 3
+            4 -> 2
+            3 -> 1
+            else -> 0
+        }
+        return context.resources.getStringArray(R.array.daysOfWeek)[numberOfDay]
+    }
+
+    /**
+     * @return name of day for provided date (f.e. Monday)
+     * @param date is date in d.M.yyyy format, which name of day we want to know
+     */
+    fun getNameOfDay(date: String, context: Context): String {
+        return getNameOfDay(getNumberOfElapsedDays(date), context)
     }
 
 
