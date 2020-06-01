@@ -4,12 +4,13 @@ package com.kaufmannmarek.library
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
+import android.util.TypedValue
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.snackbar.Snackbar
+
 
 /**
  * Create snackBar with provided parameters. Use can change snackBar background color by defining your own color with name "snackBarBackground"
@@ -161,6 +162,7 @@ open class ImageAndTextMySnackBar(
     private val customLayout = View.inflate(context, R.layout.snack_bar_with_imageview, null)
     private val textView = (this.customLayout.findViewById(R.id.snack_bar_text) as TextView)
     private val imageView = (this.customLayout.findViewById(R.id.snack_bar_icon) as ImageView)
+    private var textSize = 30
 
     /**
      * Create snackBar with imageView and textView
@@ -180,15 +182,28 @@ open class ImageAndTextMySnackBar(
     )
 
     init {
-        this.textView.text = text
+        while (!willTextFitInTextView(text))
+            this.textView.text = text
         this.imageView.setImageResource(image)
         this.imageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.textColor))
         getSnackBarLayout().addView(customLayout)
         show()
-        Log.i(
-            "output",
-            "počet řádků: " + this.textView.text.toString()
-                .split(System.getProperty("line.separator")!!).size
+    }
+
+    fun willTextFitInTextView(text: String): Boolean {
+        val textLengthInPixels = textView.paint.measureText(text)
+        val linesCount =
+            textLengthInPixels / ((getContext().resources.displayMetrics.widthPixels * 2 / 3) - getPaddingToPixels())
+        val height = (linesCount - linesCount % 1 + 1) * this.textSize
+        return 80 >= height
+    }
+
+    fun getPaddingToPixels(): Float {
+        val dip = 35f
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            dip,
+            getContext().resources.displayMetrics
         )
     }
 
