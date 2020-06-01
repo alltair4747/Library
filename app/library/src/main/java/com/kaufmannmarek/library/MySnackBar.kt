@@ -162,7 +162,7 @@ open class ImageAndTextMySnackBar(
     private val customLayout = View.inflate(context, R.layout.snack_bar_with_imageview, null)
     private val textView = (this.customLayout.findViewById(R.id.snack_bar_text) as TextView)
     private val imageView = (this.customLayout.findViewById(R.id.snack_bar_icon) as ImageView)
-    private var textSize = 30
+    private var textSize = 30f
 
     /**
      * Create snackBar with imageView and textView
@@ -182,16 +182,18 @@ open class ImageAndTextMySnackBar(
     )
 
     init {
-        while (!willTextFitInTextView(text))
-            this.textView.text = text
+        while (!willTextFitInTextView(text)) {
+            reduceTextSize()
+        }
+        this.textView.text = text
         this.imageView.setImageResource(image)
         this.imageView.setColorFilter(ContextCompat.getColor(getContext(), R.color.textColor))
-        getSnackBarLayout().addView(customLayout)
+        getSnackBarLayout().addView(this.customLayout)
         show()
     }
 
     fun willTextFitInTextView(text: String): Boolean {
-        val textLengthInPixels = textView.paint.measureText(text)
+        val textLengthInPixels = this.textView.paint.measureText(text)
         val linesCount =
             textLengthInPixels / ((getContext().resources.displayMetrics.widthPixels * 2 / 3) - getPaddingToPixels())
         val height = (linesCount - linesCount % 1 + 1) * this.textSize
@@ -205,6 +207,11 @@ open class ImageAndTextMySnackBar(
             dip,
             getContext().resources.displayMetrics
         )
+    }
+
+    fun reduceTextSize() {
+        this.textSize--
+        this.textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, this.textSize)
     }
 
     /**
