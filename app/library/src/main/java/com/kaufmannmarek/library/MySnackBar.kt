@@ -20,7 +20,7 @@ import com.google.android.material.snackbar.Snackbar
  * @param length is int which represents number of milliseconds, when the snackBar will be displayed
  * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
  */
-open class MyCommonSnackBar(
+open class MySnackBar(
     private val context: Context,
     text: String,
     private var show: Boolean,
@@ -123,7 +123,7 @@ open class MyCommonSnackBar(
  * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
  */
 open class MySnackBarCustomLayout(context: Context, show: Boolean, length: Int, view: View?) :
-    MyCommonSnackBar(context, "", show, length, view) {
+    MySnackBar(context, "", show, length, view) {
     private val layout = getSnackBar().view as Snackbar.SnackbarLayout
 
     fun setBackgroundColor(color: Int) {

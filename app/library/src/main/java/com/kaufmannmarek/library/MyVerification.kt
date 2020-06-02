@@ -115,7 +115,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
         if (view is ListView && view.childCount == 0 || view is ExpandableListView && view.count == 0) {
             if (this.noErrorFound) {
                 setViewFocus(view)
-                MyCommonSnackBar(this.context, R.string.addItemError, true, 1500)
+                MySnackBar(this.context, R.string.addItemError, true, 1500)
             }
         }
     }
@@ -140,7 +140,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
             false -> {
                 if (this.noErrorFound) {
                     this.noErrorFound = false
-                    MyCommonSnackBar(this.context, message, true, 1500)
+                    MySnackBar(this.context, message, true, 1500)
                 }
             }
         }
