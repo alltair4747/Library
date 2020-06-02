@@ -90,12 +90,34 @@ open class MySnackBar(
     )
 
     /**
+     * Create snackBar with provided parameters, which will be displayed immediately on the bottom of view. If you want to display it on the bottom of activity, pass null
+     *
+     * @param context of currently displayed activity
+     * @param text is String, which will be displayed
+     * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+     */
+    constructor(context: Context, text: String, view: View?) : this(context, text, true, 2500, view)
+
+    /**
+     * Create snackBar with provided parameters, which will be displayed immediately on the bottom of view. If you want to display it on the bottom of activity, pass null
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String, which will be displayed
+     * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+     */
+    constructor(context: Context, text: Int, view: View?) : this(
+        context,
+        MyString(context).fromResources(text),
+        view
+    )
+
+    /**
      * Create snackBar with provided parameters, which will be displayed immediately on the bottom of activity
      *
      * @param context of currently displayed activity
      * @param text is String, which will be displayed
      */
-    constructor(context: Context, text: String) : this(context, text, true, 2500)
+    constructor(context: Context, text: String) : this(context, text, null)
 
     /**
      * Create snackBar with provided parameters, which will be displayed immediately on the bottom of activity
@@ -106,8 +128,7 @@ open class MySnackBar(
     constructor(context: Context, text: Int) : this(
         context,
         MyString(context).fromResources(text),
-        true,
-        2500
+        null
     )
 
     /**
