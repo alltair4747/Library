@@ -46,6 +46,10 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
         return getInt(this.context.getString(paramName))
     }
 
+    fun getActivityCode(): Int {
+        return getInt(R.string.keyActivityCode)
+    }
+
     /**
      * @return String put in transaction
      * @param paramName is key, under which the String was added in transaction
