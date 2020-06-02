@@ -12,7 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 
 
 /**
- * Create default snackBar with provided parameters. Use can change snackBar background color by defining your own color with name "snackBarBackground" and text color with name "snackBarTextColor"
+ * Create default snackBar with provided parameters
  *
  * @param context of currently displayed activity
  * @param text is String, which will be displayed
@@ -41,12 +41,12 @@ open class MySnackBar(
     }
 
     /**
-     * Create snackBar with provided parameters, which will be displayed at the bottom of the current activity. Use can change snackBar background color by defining your own color with name "snackBarBackground" and text color with name "snackBarTextColor"
+     * Create snackBar with provided parameters, which will be displayed at the bottom of the current activity
      *
      * @param context of currently displayed activity
      * @param text is String, which will be displayed
      * @param show will display snackBar or wait till function show is called
-     * @param length is int which represents number of milliseconds, when the snackBar will be displayed
+     * @param length is int which represents number of milliseconds, when the snackBar will be display
      */
     constructor(context: Context, text: String, show: Boolean, length: Int) : this(
         context,
@@ -57,7 +57,7 @@ open class MySnackBar(
     )
 
     /**
-     * Create snackBar with provided parameters, which will be displayed at the bottom of the current activity. Use can change snackBar background color by defining your own color with name "snackBarBackground" and text color with name "snackBarTextColor"
+     * Create snackBar with provided parameters, which will be displayed at the bottom of the current activity
      *
      * @param context of currently displayed activity
      * @param text is int reference to String, which will be displayed
@@ -73,7 +73,7 @@ open class MySnackBar(
     )
 
     /**
-     * Create snackBar with provided parameters. Use can change snackBar background color by defining your own color with name "snackBarBackground" and text color with name "snackBarTextColor"
+     * Create snackBar with provided parameters
      *
      * @param context of currently displayed activity
      * @param text is String, which will be displayed
@@ -87,6 +87,27 @@ open class MySnackBar(
         show,
         length,
         view
+    )
+
+    /**
+     * Create snackBar with provided parameters, which will be displayed immediately on the bottom of activity
+     *
+     * @param context of currently displayed activity
+     * @param text is String, which will be displayed
+     */
+    constructor(context: Context, text: String) : this(context, text, true, 2500)
+
+    /**
+     * Create snackBar with provided parameters, which will be displayed immediately on the bottom of activity
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String, which will be displayed
+     */
+    constructor(context: Context, text: Int) : this(
+        context,
+        MyString(context).fromResources(text),
+        true,
+        2500
     )
 
     /**
