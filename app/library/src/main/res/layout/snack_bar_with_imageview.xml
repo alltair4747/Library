@@ -26,7 +26,7 @@
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
         android:textColor="@color/textColor"
-        app:autoSizeMaxTextSize="13sp"
+        app:autoSizeMaxTextSize="30sp"
         app:autoSizeMinTextSize="5sp"
         app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform" />
