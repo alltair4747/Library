@@ -46,6 +46,9 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
         return getInt(this.context.getString(paramName))
     }
 
+    /**
+     * @return value saved under String "activityCode"
+     */
     fun getActivityCode(): Int {
         return getInt(R.string.keyActivityCode)
     }
