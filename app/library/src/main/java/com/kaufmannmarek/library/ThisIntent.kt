@@ -97,7 +97,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param resultCode is code, which will be delivered to default activity
      * @param intent are data, from current activity
      */
-    private fun setResult(resultCode: Int, intent: Intent?) {
+    fun setResult(resultCode: Int, intent: Intent?) {
         getActivity().setResult(resultCode, intent)
         finish()
     }

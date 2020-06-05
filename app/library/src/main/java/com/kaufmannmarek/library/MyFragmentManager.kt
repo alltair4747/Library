@@ -433,6 +433,26 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
+     * Adds boolean as argument to this transaction
+     *
+     * @param paramName is String, which is used to retrieve int
+     * @param value is int, which will be added to transaction
+     */
+    fun putBoolean(paramName: String, value: Boolean) {
+        getBundle().putBoolean(paramName, value)
+    }
+
+    /**
+     * Adds boolean as argument to this transaction
+     *
+     * @param paramName is int reference to String, which is used to retrieve int
+     * @param value is int, which will be added to transaction
+     */
+    fun putBoolean(paramName: Int, value: Boolean) {
+        putBoolean(MyString(this.context).fromResources(paramName), value)
+    }
+
+    /**
      * @return if the fragment with provided tag is active
      * @param fragmentTag is tag of fragment, which we examine
      */

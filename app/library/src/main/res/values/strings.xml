@@ -24,4 +24,5 @@
         <item>Saturday</item>
         <item>Sunday</item>
     </string-array>
+    <string name="valueNotFound">Value not found</string>
 </resources>

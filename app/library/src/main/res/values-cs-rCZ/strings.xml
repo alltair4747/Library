@@ -22,4 +22,5 @@
         <item>Sobota</item>
         <item>Neděle</item>
     </string-array>
+    <string name="valueNotFound">Hodnota nenalezena</string>
 </resources>

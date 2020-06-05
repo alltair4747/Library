@@ -5,6 +5,7 @@ package com.kaufmannmarek.library
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import java.io.Serializable
 
 /**
@@ -41,6 +42,13 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
      */
     private fun getIntent(): Intent {
         return this.newIntent
+    }
+
+    /**
+     * @return bundle of the activity
+     */
+    fun getExtras(): Bundle {
+        return getIntent().extras!!
     }
 
     /**

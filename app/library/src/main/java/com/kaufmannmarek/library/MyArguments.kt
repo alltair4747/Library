@@ -57,8 +57,12 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
      * @return String put in transaction
      * @param paramName is key, under which the String was added in transaction
      */
-    fun getString(paramName: String): String? {
-        return this.bundle.getString(paramName)
+    fun getString(paramName: String): String {
+        return try {
+            this.bundle.getString(paramName)!!
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     /**

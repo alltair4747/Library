@@ -29,13 +29,13 @@ open class MySnackBar(
 ) {
     private val snackBar: Snackbar = Snackbar.make(
         when (view == null) {
-            true -> (context as Activity).findViewById(android.R.id.content)
+            true -> (this.context as Activity).findViewById(android.R.id.content)
             false -> view
         }, text, length
     )
 
     init {
-        getSnackBar().view.setBackgroundResource(R.color.snackBarBackground)
+        setBackGroundColor(R.color.snackBarBackground)
         if (this.show)
             show()
     }
@@ -154,6 +154,16 @@ open class MySnackBar(
     fun getContext(): Context {
         return this.context
     }
+
+    /**
+     * Sets snackBar background color
+     * @param color is int reference to Color
+     */
+    fun setBackGroundColor(color: Int) {
+        getSnackBar().view.setBackgroundColor(color)
+    }
+
+
 }
 
 /**
