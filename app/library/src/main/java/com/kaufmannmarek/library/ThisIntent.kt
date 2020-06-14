@@ -95,6 +95,15 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * Will set result of current activity
      *
      * @param resultCode is code, which will be delivered to default activity
+     */
+    fun setResult(resultCode: Int) {
+        setResult(resultCode, null)
+    }
+
+    /**
+     * Will set result of current activity
+     *
+     * @param resultCode is code, which will be delivered to default activity
      * @param intent are data, from current activity
      */
     fun setResult(resultCode: Int, intent: Intent?) {
@@ -103,7 +112,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
     }
 
     /**
-     * Finish correct activity with animation entering from left and exiting to right
+     * Finish activity with animation entering from left and exiting to right
      */
     private fun finish() {
         finish(false)
