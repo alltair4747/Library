@@ -27,7 +27,7 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
      * @param paramName is int reference to String, which is key, under which the object was added in transaction
      */
     fun getSerializable(paramName: Int): Serializable? {
-        return getSerializable(this.context.getString(paramName))
+        return getSerializable(MyString(this.context).fromResources(paramName))
     }
 
     /**
@@ -43,7 +43,7 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
      * @param paramName is int reference to String, which is key, under which the int was added in transaction
      */
     fun getInt(paramName: Int): Int {
-        return getInt(this.context.getString(paramName))
+        return getInt(MyString(this.context).fromResources(paramName))
     }
 
     /**
@@ -70,7 +70,7 @@ class MyArguments(private val bundle: Bundle, private val context: Context) {
      * @param paramName is int reference to String, which is key, under which the String was added in transaction
      */
     fun getString(paramName: Int): String? {
-        return getString(this.context.getString(paramName))
+        return getString(MyString(this.context).fromResources(paramName))
     }
 
 

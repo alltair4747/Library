@@ -120,7 +120,7 @@ class NewIntent(private val context: Context, destinationActivity: Class<*>) {
             finishCurrentActivity,
             isOnBackPressed,
             activityCode,
-            this.context.getString(serializableName),
+            MyString(this.context).fromResources(serializableName),
             serializable
         )
     }

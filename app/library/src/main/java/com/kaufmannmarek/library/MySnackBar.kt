@@ -66,7 +66,7 @@ open class MySnackBar(
      */
     constructor(context: Context, text: Int, show: Boolean, length: Int) : this(
         context,
-        context.getString(text),
+        MyString(context).fromResources(text),
         show,
         length,
         null
@@ -178,6 +178,10 @@ open class MySnackBarCustomLayout(context: Context, show: Boolean, length: Int, 
     MySnackBar(context, "", show, length, view) {
     private val layout = getSnackBar().view as Snackbar.SnackbarLayout
 
+    init {
+        setBackgroundColor(R.color.snackBarBackground)
+    }
+
     fun setBackgroundColor(color: Int) {
         this.layout.setBackgroundColor(ContextCompat.getColor(getContext(), color))
     }
@@ -241,7 +245,7 @@ open class MySnackBarImageAndText(
         view: View?
     ) : this(
         context,
-        context.getString(text),
+        MyString(context).fromResources(text),
         image,
         length,
         show,
@@ -357,7 +361,7 @@ class MySnackBarSuccess(context: Context, text: String, view: View?) :
      */
     constructor(context: Context, text: Int, view: View?) : this(
         context,
-        context.getString(text),
+        MyString(context).fromResources(text),
         view
     )
 
@@ -402,7 +406,7 @@ class MySnackBarFail(context: Context, text: String, view: View?) :
      */
     constructor(context: Context, text: Int, view: View?) : this(
         context,
-        context.getString(text),
+        MyString(context).fromResources(text),
         view
     )
 

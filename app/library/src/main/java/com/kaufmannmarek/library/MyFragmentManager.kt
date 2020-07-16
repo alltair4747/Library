@@ -20,10 +20,6 @@ class MyFragmentManager(private val context: Context) {
     private var fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
 
-    companion object {
-        private var activeFragmentTag: String? = null
-    }
-
     /**
      * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
@@ -152,12 +148,20 @@ class MyFragmentManager(private val context: Context) {
 
     /**
      * Perform basic operations before committing fragment transaction
+     *
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     * @param fragment is a fragment, where the arguments will be passed
      */
     private fun setTransactionParams(enterFromLeft: Boolean, fragment: Fragment) {
         setFragmentTransactionAnimation(enterFromLeft)
         fragment.arguments = getBundle()
     }
 
+    /**
+     * Adds animation to transaction
+     *
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     */
     private fun setFragmentTransactionAnimation(enterFromLeft: Boolean) {
         when (enterFromLeft) {
             true -> {
@@ -316,7 +320,9 @@ class MyFragmentManager(private val context: Context) {
 
     /**
      * Removes a fragment from transaction
+     *
      * @param fragment to be removed
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
      */
     private fun fragmentRemove(fragment: Fragment, enterFromLeft: Boolean) {
         setFragmentTransactionAnimation(enterFromLeft)
@@ -325,13 +331,18 @@ class MyFragmentManager(private val context: Context) {
         getFragmentManager().popBackStack()
     }
 
+    /**
+     * @return number of fragments in fragment manager
+     */
     fun getNumberOfActiveFragments(): Int {
         return this.fragmentManager.backStackEntryCount
     }
 
     /**
      * Removes a currently visible fragment
+     *
      * @param container is container, from where the fragment should be removed
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
      */
     fun removeFragment(container: Int, enterFromLeft: Boolean) {
         val fragment = getFragmentManager().findFragmentById(container)
@@ -366,7 +377,7 @@ class MyFragmentManager(private val context: Context) {
      * @param serializable is object, which will be added to transaction
      */
     fun putSerializable(paramName: Int, serializable: Serializable) {
-        putSerializable(this.context.getString(paramName), serializable)
+        putSerializable(MyString(this.context).fromResources(paramName), serializable)
     }
 
     /**
@@ -386,7 +397,7 @@ class MyFragmentManager(private val context: Context) {
      * @param value is String, which will be added to transaction
      */
     fun putString(paramName: Int, value: String) {
-        putString(this.context.getString(paramName), value)
+        putString(MyString(this.context).fromResources(paramName), value)
     }
 
     /**
@@ -406,9 +417,10 @@ class MyFragmentManager(private val context: Context) {
      * @param value is int reference to String, which will be added to transaction
      */
     fun putString(paramName: Int, value: Int) {
+        val myString = MyString(this.context)
         putString(
-            MyString(this.context).fromResources(paramName),
-            MyString(this.context).fromResources(value)
+            myString.fromResources(paramName),
+            myString.fromResources(value)
         )
     }
 
@@ -429,7 +441,7 @@ class MyFragmentManager(private val context: Context) {
      * @param value is int, which will be added to transaction
      */
     fun putInt(paramName: Int, value: Int) {
-        putInt(this.context.getString(paramName), value)
+        putInt(MyString(this.context).fromResources(paramName), value)
     }
 
     /**
@@ -453,7 +465,7 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
-     * @return if the fragment with provided tag is active
+     * @return if the fragment with provided tag is in fragment manager
      * @param fragmentTag is tag of fragment, which we examine
      */
     fun isFragmentActive(fragmentTag: String): Boolean {
@@ -464,22 +476,8 @@ class MyFragmentManager(private val context: Context) {
         }
     }
 
-    fun getActiveFragmentTag(): String {
-        return if (activeFragmentTag != null)
-            activeFragmentTag!!
-        else
-            "none"
-    }
-
     /**
-     * @return currently active fragment
-     */
-    fun getActiveFragment(): Fragment? {
-        return getFragmentByTag(getActiveFragmentTag())
-    }
-
-    /**
-     * @return if the fragment with provided tag is active
+     * @return if the fragment with provided tag is in fragment manager
      * @param fragmentTag is int reference to tag of fragment, which we examine
      */
     fun isFragmentActive(fragmentTag: Int): Boolean {
@@ -487,19 +485,27 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
-     * @return instance of active fragment in fragment manager using a fragment tag.
+     * @return instance of active fragment in fragment manager using a fragment tag. If the fragment is not present, returns null.
      * @param tag is String, which represents required fragment
      */
-    fun getFragmentByTag(tag: String): Fragment {
-        return getFragmentManager().findFragmentByTag(tag)!!
+    fun getFragmentByTag(tag: String): Fragment? {
+        return getFragmentManager().findFragmentByTag(tag)
+    }
+
+    /**
+     * @return instance of active fragment in fragment manager using a fragment tag. If the fragment is not present, returns null.
+     * @param tag is int reference to String, which represents required fragment
+     */
+    fun getFragmentByTag(tag: Int): Fragment? {
+        return getFragmentByTag(MyString(this.context).fromResources(tag))
     }
 
     /**
      * @return instance of active fragment in fragment manager using a fragment tag.
-     * @param tag is int reference to String, which represents required fragment
+     * @param containerId is id of a container, from where the top fragment will be retrieved
      */
-    fun getFragmentByTag(tag: Int): Fragment {
-        return getFragmentByTag(MyString(this.context).fromResources(tag))
+    fun getFragmentById(containerId: Int): Fragment? {
+        return getFragmentManager().findFragmentById(containerId)
     }
 
 
@@ -517,6 +523,9 @@ class MyFragmentManager(private val context: Context) {
         return this.fragmentTransaction
     }
 
+    /**
+     * @return bundle
+     */
     fun getBundle(): Bundle {
         return this.bundle
     }

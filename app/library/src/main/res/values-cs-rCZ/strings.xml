@@ -22,5 +22,7 @@
         <item>Sobota</item>
         <item>Neděle</item>
     </string-array>
-    <string name="valueNotFound">Hodnota nenalezena</string>
+    <string name="done">Hotovo</string>
+    <string name="stringNotFound">Text nenalezen</string>
+    <string name="dialogIcon">Ikonka dialogu</string>
 </resources>

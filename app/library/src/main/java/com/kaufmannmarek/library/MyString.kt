@@ -43,7 +43,11 @@ class MyString(private val context: Context) {
      * @param paramName is reference to string
      */
     fun fromResources(paramName: Int): String {
-        return this.context.getString(paramName)
+        return try {
+            this.context.getString(paramName)
+        } catch (e: Exception) {
+            this.context.getString(R.string.stringNotFound)
+        }
     }
 
 }

@@ -34,7 +34,7 @@ open class FirestoreCollection(private val context: Context) {
      */
     constructor(context: Context, collectionName: Int) : this(
         context,
-        context.getString(collectionName)
+        MyString(context).fromResources(collectionName)
     )
 
     init {
@@ -129,7 +129,7 @@ class FirestoreDocument(context: Context, private val documentName: String) :
     constructor(context: Context, collectionName: String, documentName: Int) : this(
         context,
         collectionName,
-        context.getString(documentName)
+        MyString(context).fromResources(documentName)
     )
 
     /**
@@ -141,7 +141,7 @@ class FirestoreDocument(context: Context, private val documentName: String) :
      */
     constructor(context: Context, collectionName: Int, documentName: String) : this(
         context,
-        context.getString(collectionName),
+        MyString(context).fromResources(collectionName),
         documentName
     )
 
@@ -154,8 +154,8 @@ class FirestoreDocument(context: Context, private val documentName: String) :
      */
     constructor(context: Context, collectionName: Int, documentName: Int) : this(
         context,
-        context.getString(collectionName),
-        context.getString(documentName)
+        MyString(context).fromResources(collectionName),
+        MyString(context).fromResources(documentName)
     )
 
     /**
@@ -166,7 +166,7 @@ class FirestoreDocument(context: Context, private val documentName: String) :
      */
     constructor(context: Context, documentName: Int) : this(
         context,
-        context.getString(documentName)
+        MyString(context).fromResources(documentName)
     )
 
     /**
@@ -384,7 +384,7 @@ class FireStoreBatch(private val context: Context) {
     ) {
         getBatch().update(
             firestoreDocument.getDocumentReference(),
-            this.context.getString(arrayName),
+            MyString(this.context).fromResources(arrayName),
             FieldValue.arrayRemove(value)
         )
     }
@@ -420,7 +420,11 @@ class FireStoreBatch(private val context: Context) {
         arrayName: Int,
         value: Any
     ) {
-        moveValueToAnotherDocument(firestoreDocument, this.context.getString(arrayName), value)
+        moveValueToAnotherDocument(
+            firestoreDocument,
+            MyString(this.context).fromResources(arrayName),
+            value
+        )
     }
 
     /**
@@ -465,7 +469,7 @@ class FireStoreBatch(private val context: Context) {
     ) {
         moveAndUpdateValueInDocuments(
             destinationFirestoreDocument,
-            this.context.getString(destinationArray),
+            MyString(this.context).fromResources(destinationArray),
             value,
             defaultFirestoreDocument,
             defaultArray,
@@ -496,7 +500,7 @@ class FireStoreBatch(private val context: Context) {
             destinationArray,
             value,
             defaultFirestoreDocument,
-            this.context.getString(defaultArray),
+            MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
     }
@@ -521,10 +525,10 @@ class FireStoreBatch(private val context: Context) {
     ) {
         moveAndUpdateValueInDocuments(
             destinationFirestoreDocument,
-            this.context.getString(destinationArray),
+            MyString(this.context).fromResources(destinationArray),
             value,
             defaultFirestoreDocument,
-            this.context.getString(defaultArray),
+            MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
     }
@@ -573,7 +577,7 @@ class FireStoreBatch(private val context: Context) {
     ) {
         moveAndUpdateValueInDocument(
             firestoreDocument,
-            this.context.getString(destinationArray),
+            MyString(this.context).fromResources(destinationArray),
             value,
             defaultArray,
             defaultValue
@@ -600,7 +604,7 @@ class FireStoreBatch(private val context: Context) {
             firestoreDocument,
             destinationArray,
             value,
-            this.context.getString(defaultArray),
+            MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
     }
@@ -623,9 +627,9 @@ class FireStoreBatch(private val context: Context) {
     ) {
         moveAndUpdateValueInDocument(
             firestoreDocument,
-            this.context.getString(destinationArray),
+            MyString(this.context).fromResources(destinationArray),
             value,
-            this.context.getString(defaultArray),
+            MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
     }
@@ -673,7 +677,7 @@ class FireStoreBatch(private val context: Context) {
             arrayName,
             value,
             defaultDocumentReference,
-            this.context.getString(arrayName),
+            MyString(this.context).fromResources(arrayName),
             value
         )
     }
@@ -749,7 +753,7 @@ class FireStoreBatch(private val context: Context) {
      * @param howMuch is the value, how much the current value will be increased
      */
     fun increaseValue(firestoreDocument: FirestoreDocument, paramName: Int, howMuch: Int) {
-        increaseValue(firestoreDocument, this.context.getString(paramName), howMuch)
+        increaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
     }
 
     /**
@@ -769,7 +773,7 @@ class FireStoreBatch(private val context: Context) {
      * @param paramName is int reference to String, which holds name of variable, where the value is stored
      */
     fun increaseValue(firestoreDocument: FirestoreDocument, paramName: Int) {
-        increaseValue(firestoreDocument, this.context.getString(paramName), 1)
+        increaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), 1)
     }
 
     /**
@@ -795,7 +799,7 @@ class FireStoreBatch(private val context: Context) {
      * @param howMuch is the value, how much the current value will be increased
      */
     fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: Int, howMuch: Int) {
-        decreaseValue(firestoreDocument, this.context.getString(paramName), howMuch)
+        decreaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
     }
 
     /**
@@ -815,7 +819,7 @@ class FireStoreBatch(private val context: Context) {
      * @param paramName is reference to String, which holds the name of variable, where the value is stored
      */
     fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: Int) {
-        decreaseValue(firestoreDocument, this.context.getString(paramName))
+        decreaseValue(firestoreDocument, MyString(this.context).fromResources(paramName))
     }
 
 }

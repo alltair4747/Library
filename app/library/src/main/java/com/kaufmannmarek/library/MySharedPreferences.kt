@@ -24,7 +24,7 @@ open class MySharedPreferences(private val context: Context, databaseName: Strin
      */
     constructor(context: Context, databaseName: Int) : this(
         context,
-        context.getString(databaseName)
+        MyString(context).fromResources(databaseName)
     )
 
     private var editor: SharedPreferences.Editor? = null

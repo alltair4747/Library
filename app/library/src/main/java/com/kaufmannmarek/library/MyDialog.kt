@@ -5,6 +5,11 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,22 +41,23 @@ open class Dialog(
             else -> R.layout.dialog_scroll_view
         }, null
     )
+    private val imageView = this.view.findViewById(R.id.dialog_icon) as ImageView
     private val title = this.view.findViewById(R.id.dialog_title) as TextView
     private val message = this.view.findViewById(R.id.dialog_message) as TextView
     private val content = this.view.findViewById(R.id.dialog_content) as LinearLayout
     private lateinit var dialog: AlertDialog
 
     init {
-        this.title.setCompoundDrawablesWithIntrinsicBounds(
-            icon,
-            0,
-            0,
-            0
-        )
         this.title.text = title
-        this.title.setCompoundDrawablesWithIntrinsicBounds(icon, 0, 0, 0)
+        this.imageView.setImageResource(icon)
         this.message.text = message
         showDialog()
+    }
+
+    fun Context.scaledDrawable(id: Int, width: Int, height: Int): Drawable {
+        val bmp = BitmapFactory.decodeResource(resources, id)
+        val bmpScaled = Bitmap.createScaledBitmap(bmp, width, height, false)
+        return BitmapDrawable(resources, bmpScaled)
     }
 
     /**
@@ -133,21 +139,195 @@ open class Dialog(
  * @param message is text, which will displayed below title
  * @param icon is int reference to drawable, which will displayed next to title
  * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+ * @param buttonText is text, which will displayed on button. If you pass null, it display "Done"
  */
 open class DialogOneButton(
     context: Context,
     title: String,
     message: String,
     icon: Int,
-    hasScrollElement: Boolean
+    hasScrollElement: Boolean,
+    buttonText: String?
 ) : Dialog(context, title, message, icon, hasScrollElement) {
     private val rightButton = getView().findViewById(R.id.dialog_right_button) as Button
 
     init {
-        setRightButtonAction()
-        setRightButtonText(R.string.cancel)
+        setRightButtonText(
+            when (buttonText == null) {
+                true -> {
+                    setRightButtonAction()
+                    MyString(getContext()).fromResources(R.string.done)
+                }
+                else -> buttonText
+            }
+        )
     }
 
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is text, which will displayed on button. If you pass null, it display "Done"
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        buttonText
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is text, which will displayed on button. If you pass null, it display "Done"
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        buttonText
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is text, which will displayed on button. If you pass null, it display "Done"
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        buttonText
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is int reference to String, which will displayed on button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(buttonText)
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is int reference to String, which will displayed on button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(buttonText)
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param buttonText is int reference to String, which will displayed on button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        buttonText: Int
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(buttonText)
+    )
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
     constructor(
         context: Context,
         title: Int,
@@ -156,27 +336,66 @@ open class DialogOneButton(
         hasScrollElement: Boolean
     ) : this(
         context,
-        context.getString(title),
-        context.getString(message),
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
         icon,
-        hasScrollElement
+        hasScrollElement,
+        null
     )
 
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
     constructor(
         context: Context,
         title: Int,
         message: String,
         icon: Int,
         hasScrollElement: Boolean
-    ) : this(context, context.getString(title), message, icon, hasScrollElement)
+    ) : this(
+        context,
+        MyString(context).fromResources(title), message, icon, hasScrollElement, null
+    )
 
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
     constructor(
         context: Context,
         title: String,
         message: Int,
         icon: Int,
         hasScrollElement: Boolean
-    ) : this(context, title, context.getString(message), icon, hasScrollElement)
+    ) : this(context, title, MyString(context).fromResources(message), icon, hasScrollElement, null)
+
+    /**
+     * Creates dialog with one button
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(context, title, message, icon, hasScrollElement, null)
 
     /**
      *@return instance of bottom right button in dialog
@@ -199,8 +418,17 @@ open class DialogOneButton(
      *
      * @param text is String, which will be displayed in the button
      */
+    fun setRightButtonText(text: String) {
+        setButtonText(getRightButton(), text)
+    }
+
+    /**
+     * Sets text to right button
+     *
+     * @param text is int reference to String, which will be displayed in the button
+     */
     fun setRightButtonText(text: Int) {
-        setButtonText(getRightButton(), getContext().getString(text))
+        setRightButtonText(getContext().getString(text))
     }
 
 }
@@ -284,15 +512,18 @@ class DatePickerDialog(
  * @param message is text, which will displayed below title
  * @param icon is int reference to drawable, which will displayed next to title
  * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+ * @param rightButtonText is String, which will be displayed at bottom right button
  */
 open class DialogTwoButtons(
     context: Context,
     title: String,
     message: String,
     icon: Int,
-    hasScrollElement: Boolean
+    hasScrollElement: Boolean,
+    rightButtonText: String?
 ) :
-    DialogOneButton(context, title, message, icon, hasScrollElement) {
+    DialogOneButton(context, title, message, icon, hasScrollElement, rightButtonText) {
+
 
     /**
      * Creates dialog with provided parameters and two buttons
@@ -300,6 +531,164 @@ open class DialogTwoButtons(
      * @param context of currently displayed activity
      * @param title is text, which will displayed at the top of the dialog
      * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        rightButtonText
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText)
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText)
+    )
+
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is text, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText)
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed at bottom right button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText
+    )
+
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
      * @param icon is int reference to drawable, which will displayed next to title
      * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
      */
@@ -311,10 +700,35 @@ open class DialogTwoButtons(
         hasScrollElement: Boolean
     ) : this(
         context,
-        context.getString(title),
+        MyString(context).fromResources(title),
         message,
         icon,
-        hasScrollElement
+        hasScrollElement,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        null
     )
 
     /**
@@ -334,20 +748,43 @@ open class DialogTwoButtons(
         hasScrollElement: Boolean
     ) : this(
         context,
-        context.getString(title),
-        context.getString(message),
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
         icon,
-        hasScrollElement
+        hasScrollElement,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and two buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        hasScrollElement,
+        null
     )
 
     private val leftButton = getView().findViewById(R.id.dialog_left_button) as Button
-    private val leftSpace = getView().findViewById(R.id.dialog_left_space) as Space
 
     init {
         getLeftButton().visibility = View.VISIBLE
-        setLeftButtonText(R.string.cancel)
         setLeftButtonAction()
-        this.leftSpace.visibility = View.GONE
+        (getView().findViewById(R.id.dialog_left_space) as Space).visibility = View.GONE
     }
 
     /**
@@ -378,25 +815,536 @@ open class DialogTwoButtons(
  * Creates dialog with provided parameters and three buttons
  *
  * @param context of currently displayed activity
- * @param title is int reference to String, which will displayed at the top of the dialog
- * @param message is int reference to String, which will displayed below title
+ * @param title is String, which will displayed at the top of the dialog
+ * @param message is String, which will displayed below title
  * @param icon is int reference to drawable, which will displayed next to title
  * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+ * @param rightButtonText is String, which will be displayed on right bottom button
+ * @param middleButtonText is String, which will be displayed on middle bottom button
  */
 class DialogThreeButtons(
     context: Context,
-    title: Int,
-    message: Int,
+    title: String,
+    message: String,
     icon: Int,
-    hasScrollElement: Boolean
+    hasScrollElement: Boolean,
+    rightButtonText: String?,
+    middleButtonText: String?
 ) :
-    DialogTwoButtons(context, title, message, icon, hasScrollElement) {
+    DialogTwoButtons(context, title, message, icon, hasScrollElement, rightButtonText) {
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        null,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        null,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        null,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean
+    ) : this(context, title, message, icon, hasScrollElement, null, null)
+
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?
+    ) : this(context, title, message, icon, hasScrollElement, rightButtonText, null)
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     * @param middleButtonText is String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?,
+        middleButtonText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        middleButtonText
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     * @param middleButtonText is String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?,
+        middleButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        middleButtonText
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is String, which will be displayed on right bottom button
+     * @param middleButtonText is String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: String?,
+        middleButtonText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        rightButtonText,
+        middleButtonText
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        null
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     * @param middleButtonText is int reference to String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int,
+        middleButtonText: Int
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        MyString(context).fromResources(middleButtonText)
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     * @param middleButtonText is int reference to String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int,
+        middleButtonText: Int
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        MyString(context).fromResources(middleButtonText)
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     * @param middleButtonText is int reference to String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int,
+        middleButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        MyString(context).fromResources(middleButtonText)
+    )
+
+    /**
+     * Creates dialog with provided parameters and three buttons
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
+     * @param rightButtonText is int reference to String, which will be displayed on right bottom button
+     * @param middleButtonText is int reference to String, which will be displayed on middle bottom button
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hasScrollElement: Boolean,
+        rightButtonText: Int,
+        middleButtonText: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hasScrollElement,
+        MyString(context).fromResources(rightButtonText),
+        MyString(context).fromResources(middleButtonText)
+    )
+
     private val middleButton = getView().findViewById(R.id.dialog_middle_button) as Button
-    private val middleSpace = getView().findViewById(R.id.dialog_middle_space) as Space
 
     init {
+        if (middleButtonText != null) {
+            getMiddleButton().text = middleButtonText
+        }
         getMiddleButton().visibility = View.VISIBLE
-        this.middleSpace.visibility = View.GONE
+        (getView().findViewById(R.id.dialog_middle_space) as Space).visibility = View.GONE
     }
 
     /**
@@ -406,27 +1354,638 @@ class DialogThreeButtons(
         return this.middleButton
     }
 
+    fun setMiddleButtonText(text: String) {
+        setButtonText(getMiddleButton(), text)
+    }
+
     fun setMiddleButtonText(text: Int) {
-        setButtonText(getMiddleButton(), getContext().getString(text))
+        setMiddleButtonText(MyString(getContext()).fromResources(text))
     }
 }
 
 /**
- * Create ListView dialog in current context with provided items which can be either stored in HashMap or stored under string array in resources
+ * Create ListView dialog in current context with provided items
  *
  * @param context of currently displayed activity
- * @param title is int reference to String, which will be displayed at the top of dialog
- * @param message is int reference to String, which will be displayed under the title
+ * @param title is String, which will be displayed at the top of dialog
+ * @param message is String, which will be displayed under the title
  * @param icon is int reference to drawable, which will be displayed next to title
- * @param editTextToUpdate is reference to editText, which can be updated
+ * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
 class ListViewDialog private constructor(
     context: Context,
-    title: Int,
-    message: Int,
+    title: String,
+    message: String,
     icon: Int,
     private val editTextToUpdate: EditText?
 ) : DialogOneButton(context, title, message, icon, true) {
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        editTextToUpdate
+    ) {
+        this.hashMap = HashMap()
+        try {
+            for (item in arrayList) {
+                this.hashMap[item] = arrayList.indexOf(item)
+            }
+        } catch (e: Exception) {
+            Log.e("MyDialog", "ArrayList must contains Strings only")
+        }
+        setAdapter()
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        arrayList,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        arrayList,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        arrayList,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hashMap: HashMap<String, Any>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        editTextToUpdate
+    ) {
+        this.hashMap = HashMap(hashMap)
+        setAdapter()
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hashMap: HashMap<String, Any>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        hashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hashMap: HashMap<String, Any>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        hashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hashMap: HashMap<String, Any>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        hashMap: HashMap<String, Any>
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        hashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        hashMap: HashMap<String, Any>
+    ) : this(context, MyString(context).fromResources(title), message, icon, hashMap, null)
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        hashMap: HashMap<String, Any>
+    ) : this(context, title, MyString(context).fromResources(message), icon, hashMap, null)
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param hashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        hashMap: HashMap<String, Any>
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        hashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        editTextToUpdate
+    ) {
+        this.hashMap = HashMap()
+        try {
+            val array = getContext().resources.getStringArray(stringArrayReference)
+            for (item in array) {
+                this.hashMap[item] = array.indexOf(item)
+            }
+        } catch (e: Exception) {
+            Log.e("MyDialog", "String array could not be retrieved from provided integer")
+        }
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        stringArrayReference,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        stringArrayReference,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        stringArrayReference,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        stringArrayReference,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        stringArrayReference,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        stringArrayReference,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        stringArrayReference,
+        null
+    )
+
     private val listView = ListView(getContext())
     private val editText: EditText
     private val textView: TextView
@@ -462,79 +2021,6 @@ class ListViewDialog private constructor(
      */
     private fun getAdapter(): Adapter {
         return this.adapter
-    }
-
-    /**
-     * Create ListView dialog in current context with provided items which can be either stored in HashMap or stored under string array in resources
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayReference in int reference to String array, which values will be displayed
-     * @param editTextToUpdate is editText view. If you provided it, will automatically on item click set String as the text and its position in String array as tag. It will also dismiss the dialog
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        arrayReference: Int,
-        editTextToUpdate: EditText?
-    ) : this(context, title, message, icon, editTextToUpdate) {
-        this.hashMap = HashMap()
-        val array = getContext().resources.getStringArray(arrayReference)
-        for (item in array) {
-            this.hashMap[item] = array.indexOf(item)
-        }
-        setAdapter()
-    }
-
-    /**
-     * Create ListView dialog in current context with provided items which can be either stored in HashMap or stored under string array in resources
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList are Strings, which values will be displayed
-     * @param editTextToUpdate is editText view. If you provided it, will automatically on item click set String as the text and its position in arrayList as tag. It will also dismiss the dialog
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        arrayList: ArrayList<String>,
-        editTextToUpdate: EditText?
-    ) : this(context, title, message, icon, editTextToUpdate) {
-        this.hashMap = HashMap()
-        for (item in arrayList) {
-            this.hashMap[item] = arrayList.indexOf(item)
-        }
-        setAdapter()
-    }
-
-    /**
-     * Creates dialog with listView, which is populated by keys from hashMap. Key values can be obtained by calling getItemValue. If you provide an editText, will assign key value to it as tag.
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed as dialog title
-     * @param message is int reference to String, which will be displayed as dialog message
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap are the values
-     * @param editTextToUpdate is editText view. If you provided it, will automatically on item click set key as the text and key value as a tag. It will also dismiss the dialog
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        hashMap: HashMap<String, Any>,
-        editTextToUpdate: EditText?
-    ) : this(context, title, message, icon, editTextToUpdate) {
-        this.hashMap = HashMap(hashMap)
-        setAdapter()
     }
 
     /**
@@ -593,7 +2079,7 @@ private class DialogElements(private val context: Context) {
             0, 0, 0
         )
 
-        editText.hint = this.context.getString(R.string.hintSearch)
+        editText.hint = MyString(context).fromResources(R.string.hintSearch)
         return editText
     }
 
@@ -697,7 +2183,7 @@ private class Adapter(
         notifyDataSetChanged()
         when (count) {
             0 -> {
-                this.textView.text = this.context.getString(
+                this.textView.text = MyString(this.context).fromResources(
                     when (isFiltered) {
                         true -> R.string.noItemsFound
                         false -> R.string.noItemsToDisplay

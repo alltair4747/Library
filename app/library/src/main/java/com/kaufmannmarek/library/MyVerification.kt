@@ -100,10 +100,12 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      */
     private fun errorFoundInEditText(editText: EditText, errorText: Int?) {
         setViewFocus(editText)
-        when (editText.text.toString().isEmpty()) {
-            true -> editText.error = this.context.getString(R.string.fieldIsEmpty)
-            else -> editText.error = MyString(this.context).fromResources(errorText!!)
-        }
+        editText.error = MyString(this.context).fromResources(
+            when (editText.text.toString().isEmpty()) {
+                true -> R.string.fieldIsEmpty
+                false -> errorText!!
+            }
+        )
     }
 
     /**
