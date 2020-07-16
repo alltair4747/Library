@@ -20,6 +20,10 @@ class MyFragmentManager(private val context: Context) {
     private var fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
 
+    companion object {
+        private var lastFragmentTag: String? = null
+    }
+
     /**
      * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
@@ -135,6 +139,7 @@ class MyFragmentManager(private val context: Context) {
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
+        lastFragmentTag = tag
         setTransactionParams(enterFromLeft, fragment)
         getFragmentTransaction().replace(
             container,
@@ -482,6 +487,17 @@ class MyFragmentManager(private val context: Context) {
      */
     fun isFragmentActive(fragmentTag: Int): Boolean {
         return isFragmentActive(MyString(this.context).fromResources(fragmentTag))
+    }
+
+    /**
+     * @return currently active fragment. If there is no active fragment or the fragment was displayed in different activity, it will return null
+     */
+    fun getActiveFragment(): Fragment? {
+        return try {
+            getFragmentByTag(lastFragmentTag!!)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /**
