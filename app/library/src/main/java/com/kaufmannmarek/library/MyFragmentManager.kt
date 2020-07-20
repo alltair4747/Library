@@ -311,6 +311,97 @@ class MyFragmentManager(private val context: Context) {
     }
 
     /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
+     * @param container is int reference to view, where the fragment will be displayed
+     * @param fragmentTag is String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        container: Int,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        commit: Boolean
+    ) {
+        if (getFragmentByTag(fragmentTag) != null)
+            getFragmentManager().popBackStackImmediate(
+                fragmentTag,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+        else {
+            addFragment(fragment, container, fragmentTag, enterFromLeft, commit)
+        }
+    }
+
+    /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
+     * @param container is int reference to view, where the fragment will be displayed
+     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        container: Int,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        commit: Boolean
+    ) {
+        restoreFragment(
+            fragment,
+            container,
+            MyString(this.context).fromResources(fragmentTag),
+            enterFromLeft,
+            commit
+        )
+    }
+
+    /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
+     * @param container is int reference to view, where the fragment will be displayed
+     * @param fragmentTag is String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        container: Int,
+        fragmentTag: String,
+        enterFromLeft: Boolean
+    ) {
+        restoreFragment(fragment, container, fragmentTag, enterFromLeft, true)
+    }
+
+    /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
+     * @param container is int reference to view, where the fragment will be displayed
+     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        container: Int,
+        fragmentTag: Int,
+        enterFromLeft: Boolean
+    ) {
+        restoreFragment(
+            fragment,
+            container,
+            MyString(this.context).fromResources(fragmentTag),
+            enterFromLeft,
+            true
+        )
+    }
+
+    /**
      * @return if the a container had any fragment inside it. If it had, the top fragment will be removed. Current fragment will exit to left side and a old will come from right.
      * @param container is container, from where the fragment should be removed
      */

@@ -12,10 +12,29 @@ import java.io.Serializable
  * This class is used to switch from current activity to another activity
  *
  * @param context of currently displayed activity
- * @param destinationActivity is class, which will be displayed after transaction
  */
-class NewIntent(private val context: Context, destinationActivity: Class<*>) {
-    private val newIntent = Intent(this.context, destinationActivity)
+class NewIntent internal constructor(private val context: Context) {
+    private lateinit var newIntent: Intent
+
+    /**
+     * This class is used to switch from current activity to another activity
+     *
+     * @param context of currently displayed activity
+     * @param intent is defined intent, which will be displayed after transaction
+     */
+    constructor(context: Context, intent: Intent) : this(context) {
+        this.newIntent = intent
+    }
+
+    /**
+     * This class is used to switch from current activity to another activity
+     *
+     * @param context of currently displayed activity
+     * @param destinationActivity is class, which will be displayed after transaction
+     */
+    constructor(context: Context, destinationActivity: Class<*>) : this(context) {
+        this.newIntent = Intent(this.context, destinationActivity)
+    }
 
     /**
      * Put int value to intent
