@@ -1372,7 +1372,7 @@ class DialogThreeButtons(
  * @param icon is int reference to drawable, which will be displayed next to title
  * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
-class ListViewDialog private constructor(
+open class ListViewDialog private constructor(
     context: Context,
     title: String,
     message: String,
@@ -2032,19 +2032,19 @@ class ListViewDialog private constructor(
     }
 
     /**
-     * @return item position in default array. If the item do not exists in array, it will return -1
+     * @return item at provided position in listView
      * @param position is int position in the listView
      */
-    fun getItemValue(position: Int): Any {
-        return this.hashMap[getItem(position)]!!
+    fun getItem(position: Int): Any {
+        return this.hashMap[getItemName(position)]!!
     }
 
     /**
      * @return item stored in provided position of listView
      * @param position is int position in the listView
      */
-    fun getItem(position: Int): String {
-        return this.adapter.getItem(position)
+    fun getItemName(position: Int): String {
+        return getAdapter().getItem(position)
     }
 
     /**
@@ -2060,8 +2060,8 @@ class ListViewDialog private constructor(
      */
     private fun setOnItemClick() {
         this.listView.setOnItemClickListener { _, _, position, _ ->
-            this.editTextToUpdate!!.setText(getItem(position))
-            this.editTextToUpdate.tag = getItemValue(position)
+            this.editTextToUpdate!!.setText(getItemName(position))
+            this.editTextToUpdate.tag = getItem(position)
             dismiss()
         }
     }
