@@ -114,7 +114,7 @@ open class Dialog(
     /**
      * add view to content section of dialog
      */
-    open fun addView(view: View) {
+    fun addView(view: View) {
         this.content.addView(view)
     }
 
@@ -489,15 +489,6 @@ class NotificationDialog(context: Context, title: String, message: String, icon:
         MyString(context).fromResources(message),
         icon
     )
-
-    /**
-     * Will not add any view to this dialog, since no content elements are allowed. Only textView displaying message is allowed
-     *
-     * @param view is any member of view class
-     */
-    override fun addView(view: View) {
-
-    }
 }
 
 
@@ -1440,7 +1431,7 @@ class DialogThreeButtons(
  * @param icon is int reference to drawable, which will be displayed next to title
  * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
-class ListViewDialog private constructor(
+open class ListViewDialog private constructor(
     context: Context,
     title: String,
     message: String,
