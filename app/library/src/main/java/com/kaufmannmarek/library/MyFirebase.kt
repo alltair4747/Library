@@ -191,6 +191,30 @@ class FirestoreDocument(context: Context, private val documentName: String) :
     }
 
     /**
+     * Replace oldValue with newValue in array
+     *
+     * @param oldValue is value to be removed
+     * @param newValue is value to be added
+     * @param arrayName is String, which holds name of the array, where the operation will be performed
+     */
+    fun updateFieldValue(oldValue: Any, newValue: Any, arrayName: String): Task<*> {
+        val fireStoreBatch = FireStoreBatch(this.getContext())
+        fireStoreBatch.updateValueInArray(this, arrayName, oldValue, newValue)
+        return fireStoreBatch.commit()
+    }
+
+    /**
+     * Replace oldValue with newValue in array
+     *
+     * @param oldValue is value to be removed
+     * @param newValue is value to be added
+     * @param arrayName is int reference to String, which holds name of the array, where the operation will be performed
+     */
+    fun updateFieldValue(oldValue: Any, newValue: Any, arrayName: Int): Task<*> {
+        return updateFieldValue(oldValue, newValue, MyString(getContext()).fromResources(arrayName))
+    }
+
+    /**
      * @return if the task is successful, it will delete document
      */
     fun deleteDocument(): Task<*> {
