@@ -5,10 +5,6 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +23,7 @@ import androidx.core.widget.addTextChangedListener
  * @param icon is int reference to drawable, which will displayed next to title
  * @param hasScrollElement is condition. If true, it use layout without scrollView. Else it will
  */
+
 open class Dialog(
     private val context: Context,
     title: String,
@@ -51,13 +48,17 @@ open class Dialog(
         this.title.text = title
         this.imageView.setImageResource(icon)
         this.message.text = message
+        if (hasScrollElement)
+            this.message.maxHeight = getMessageMaxHeight()
         showDialog()
     }
 
-    fun Context.scaledDrawable(id: Int, width: Int, height: Int): Drawable {
-        val bmp = BitmapFactory.decodeResource(resources, id)
-        val bmpScaled = Bitmap.createScaledBitmap(bmp, width, height, false)
-        return BitmapDrawable(resources, bmpScaled)
+    /**
+     * Gets maximum height for textView
+     */
+    fun getMessageMaxHeight(): Int {
+        val myScreen = MyScreen(this.context)
+        return myScreen.dpToPx((myScreen.getScreenHeightDensityPoints() - 205))
     }
 
     /**
@@ -70,6 +71,7 @@ open class Dialog(
     fun setDialogBackground(backgroundColor: Int) {
         this.view.setBackgroundColor(backgroundColor)
     }
+
 
     /**
      * @return context of the dialog
@@ -112,7 +114,7 @@ open class Dialog(
     /**
      * add view to content section of dialog
      */
-    fun addView(view: View) {
+    open fun addView(view: View) {
         this.content.addView(view)
     }
 
@@ -430,8 +432,74 @@ open class DialogOneButton(
     fun setRightButtonText(text: Int) {
         setRightButtonText(getContext().getString(text))
     }
-
 }
+
+/**
+ * Creates dialog with title (text and icon) and message with dismiss button
+ *
+ * @param context of activity, where the dialog will displayed
+ * @param title is String, which will displayed at the top of the dialog
+ * @param message is String, which will displayed below title
+ * @param icon is int reference to drawable, which will displayed next to title
+ */
+class NotificationDialog(context: Context, title: String, message: String, icon: Int) :
+    DialogOneButton(context, title, message, icon, false) {
+
+    /**
+     * Creates dialog with title (text and icon) and message with dismiss button
+     *
+     * @param context of activity, where the dialog will displayed
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     */
+    constructor(context: Context, title: String, message: Int, icon: Int) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon
+    )
+
+    /**
+     * Creates dialog with title (text and icon) and message with dismiss button
+     *
+     * @param context of activity, where the dialog will displayed
+     * @param title is String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     */
+    constructor(context: Context, title: Int, message: String, icon: Int) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon
+    )
+
+    /**
+     * Creates dialog with title (text and icon) and message with dismiss button
+     *
+     * @param context of activity, where the dialog will displayed
+     * @param title is int reference to String, which will displayed at the top of the dialog
+     * @param message is int reference to String, which will displayed below title
+     * @param icon is int reference to drawable, which will displayed next to title
+     */
+    constructor(context: Context, title: Int, message: Int, icon: Int) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon
+    )
+
+    /**
+     * Will not add any view to this dialog, since no content elements are allowed. Only textView displaying message is allowed
+     *
+     * @param view is any member of view class
+     */
+    override fun addView(view: View) {
+
+    }
+}
+
 
 /**
  * Creates dialog with date picker. After selecting the date a pressing corresponding button, it will set date and tag with number of elapsed days to provided editText
@@ -1372,7 +1440,7 @@ class DialogThreeButtons(
  * @param icon is int reference to drawable, which will be displayed next to title
  * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
-open class ListViewDialog private constructor(
+class ListViewDialog private constructor(
     context: Context,
     title: String,
     message: String,
@@ -2032,19 +2100,19 @@ open class ListViewDialog private constructor(
     }
 
     /**
-     * @return item at provided position in listView
+     * @return item position in default array. If the item do not exists in array, it will return -1
      * @param position is int position in the listView
      */
-    fun getItem(position: Int): Any {
-        return this.hashMap[getItemName(position)]!!
+    fun getItemValue(position: Int): Any {
+        return this.hashMap[getItem(position)]!!
     }
 
     /**
      * @return item stored in provided position of listView
      * @param position is int position in the listView
      */
-    fun getItemName(position: Int): String {
-        return getAdapter().getItem(position)
+    fun getItem(position: Int): String {
+        return this.adapter.getItem(position)
     }
 
     /**
@@ -2060,8 +2128,8 @@ open class ListViewDialog private constructor(
      */
     private fun setOnItemClick() {
         this.listView.setOnItemClickListener { _, _, position, _ ->
-            this.editTextToUpdate!!.setText(getItemName(position))
-            this.editTextToUpdate.tag = getItem(position)
+            this.editTextToUpdate!!.setText(getItem(position))
+            this.editTextToUpdate.tag = getItemValue(position)
             dismiss()
         }
     }

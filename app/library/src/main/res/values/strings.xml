@@ -27,4 +27,8 @@
     <string name="done">Done</string>
     <string name="stringNotFound">String not found</string>
     <string name="dialogIcon">Dialog icon</string>
+    <string name="permissionNotGranted">Not granted</string>
+    <string name="camera">Camera</string>
+    <string name="permissionNotFound">Permission not found</string>
+    <string name="permissionRequest">Permission request</string>
 </resources>

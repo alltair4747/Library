@@ -126,11 +126,11 @@ class ThisIntent(private val context: Context, intent: Intent?) {
     fun finish(isOnBackPressed: Boolean) {
         getActivity().finish()
         when (isOnBackPressed) {
-            true -> getActivity().overridePendingTransition(
+            false -> getActivity().overridePendingTransition(
                 R.anim.enter_right_to_left,
                 R.anim.exit_right_to_left
             )
-            false -> getActivity().overridePendingTransition(
+            true -> getActivity().overridePendingTransition(
                 R.anim.enter_left_to_right,
                 R.anim.exit_left_to_right
             )

@@ -25,4 +25,8 @@
     <string name="done">Hotovo</string>
     <string name="stringNotFound">Text nenalezen</string>
     <string name="dialogIcon">Ikonka dialogu</string>
+    <string name="permissionNotGranted">Neuděleno</string>
+    <string name="camera">Fotoaparát</string>
+    <string name="permissionNotFound">Oprávnění nenalezeno</string>
+    <string name="permissionRequest">Žádost o oprávnění</string>
 </resources>
