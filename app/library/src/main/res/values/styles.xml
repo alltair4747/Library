@@ -1,0 +1,6 @@
+<resources>
+    <declare-styleable name="MaxHeightLinearLayout">
+        <attr name="maxHeightDp" format="integer" />
+    </declare-styleable>
+
+</resources>

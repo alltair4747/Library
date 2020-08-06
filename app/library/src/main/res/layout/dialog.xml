@@ -1,84 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constrained"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/dialogBackground">
 
-    <ImageView
-        android:id="@+id/dialog_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="22dp"
-        android:contentDescription="@string/dialogIcon"
-        android:scaleType="fitXY"
-        android:tint="@color/textColor"
-        app:layout_constraintEnd_toStartOf="@+id/dialog_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/dialog_title"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="5dp"
-        android:paddingStart="10dp"
-        android:textAllCaps="true"
-        android:textColor="@color/textColor"
-        app:autoSizeMaxTextSize="30sp"
-        app:autoSizeMinTextSize="5sp"
-        app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dialog_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry" />
-
-
-    <EditText
-        android:id="@+id/dialog_message"
+    <LinearLayout
+        android:id="@+id/dialog_title_section"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="10dp"
-        android:background="@null"
-        android:cursorVisible="false"
-        android:importantForAutofill="no"
-        android:inputType="none"
-        android:paddingTop="20dp"
-        android:scrollbars="vertical"
-        android:textColor="@color/textColor"
-        android:textSize="22sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_title"
-        tools:ignore="LabelFor" />
+        android:layout_marginBottom="22dp"
+        android:orientation="horizontal"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="5dp">
 
-    <LinearLayout
+        <ImageView
+            android:id="@+id/dialog_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/dialogIcon"
+            android:scaleType="fitXY"
+            android:tint="@color/textColor" />
+
+        <TextView
+            android:id="@+id/dialog_title"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingStart="10dp"
+            android:textAllCaps="true"
+            android:textColor="@color/textColor"
+            app:autoSizeMaxTextSize="30sp"
+            app:autoSizeMinTextSize="5sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+            tools:ignore="RtlSymmetry" />
+
+    </LinearLayout>
+
+    <com.kaufmannmarek.library.MaxHeightLinearLayout
         android:id="@id/dialog_content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@id/dialog_title_section"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_message" />
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp">
+
+        <TextView
+            android:id="@+id/dialog_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:scrollbars="vertical"
+            android:textColor="@color/textColor"
+            android:textSize="22sp" />
+
+    </com.kaufmannmarek.library.MaxHeightLinearLayout>
 
     <LinearLayout
+        android:id="@+id/dialog_button_section"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:layout_below="@id/dialog_content"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal"
-        android:weightSum="3"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dialog_content">
-
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:weightSum="3">
 
         <Button
             android:id="@+id/dialog_left_button"
@@ -92,21 +82,13 @@
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="5sp"
             app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintBottom_toTopOf="@+id/dialog_left_space"
-            app:layout_constraintEnd_toStartOf="@+id/dialog_icon"
-            app:layout_constraintStart_toStartOf="@+id/dialog_icon"
-            app:layout_constraintTop_toTopOf="@+id/dialog_left_space" />
+            app:autoSizeTextType="uniform" />
 
         <Space
             android:id="@+id/dialog_left_space"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/dialog_middle_space"
-            app:layout_constraintStart_toStartOf="@+id/dialog_left_button"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_icon" />
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/dialog_middle_button"
@@ -119,21 +101,13 @@
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="5sp"
             app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintBottom_toTopOf="@+id/dialog_left_button"
-            app:layout_constraintEnd_toStartOf="@+id/dialog_icon"
-            app:layout_constraintStart_toStartOf="@+id/dialog_icon"
-            app:layout_constraintTop_toTopOf="@+id/dialog_left_button" />
+            app:autoSizeTextType="uniform" />
 
         <Space
             android:id="@+id/dialog_middle_space"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_right_button" />
+            android:layout_weight="1" />
 
         <Button
             android:id="@+id/dialog_right_button"
@@ -147,13 +121,14 @@
             app:autoSizeMaxTextSize="20sp"
             app:autoSizeMinTextSize="5sp"
             app:autoSizeStepGranularity="1sp"
-            app:autoSizeTextType="uniform"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_message" />
+            app:autoSizeTextType="uniform" />
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
+
+
+
 
 
 

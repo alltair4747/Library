@@ -3,16 +3,19 @@
 package com.kaufmannmarek.library
 
 import android.content.Context
+import android.net.Uri
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 
 /**
  * Creates object, which allow operations with firestore collections.
  *
  * @param context of currently displayed activity
  */
-open class FirestoreCollection(private val context: Context) {
+open class MyFirestoreCollection(private val context: Context) {
     private var firestore: FirebaseFirestore? = null
     private var collectionName: String? = null
 
@@ -102,8 +105,8 @@ open class FirestoreCollection(private val context: Context) {
  * @param context of currently displayed activity
  * @param documentName is the name of the document, where the operations will be performed
  */
-class FirestoreDocument(context: Context, private val documentName: String) :
-    FirestoreCollection(context) {
+class MyFirestoreDocument(context: Context, private val documentName: String) :
+    MyFirestoreCollection(context) {
 
     /**
      * Create object, which allows operations with firestore documents
@@ -198,7 +201,7 @@ class FirestoreDocument(context: Context, private val documentName: String) :
      * @param arrayName is String, which holds name of the array, where the operation will be performed
      */
     fun updateFieldValue(oldValue: Any, newValue: Any, arrayName: String): Task<*> {
-        val fireStoreBatch = FireStoreBatch(this.getContext())
+        val fireStoreBatch = MyFireStoreBatch(this.getContext())
         fireStoreBatch.updateValueInArray(this, arrayName, oldValue, newValue)
         return fireStoreBatch.commit()
     }
@@ -337,7 +340,7 @@ class FirestoreDocument(context: Context, private val documentName: String) :
  *
  * @param context of current activity
  */
-class FireStoreBatch(private val context: Context) {
+class MyFireStoreBatch(private val context: Context) {
     private var batch: WriteBatch? = null
 
     /**
@@ -359,36 +362,36 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds update document operation to the batch queue
      *
-     * @param firestoreDocument is object, which defines collection and document, which should be updated
+     * @param myFirestoreDocument is object, which defines collection and document, which should be updated
      * @param newData are data, which will be putted into the document. All existing data in the document will be erased by this operation
      */
-    fun updateDocument(firestoreDocument: FirestoreDocument, newData: HashMap<String, Any>) {
-        getBatch().set(firestoreDocument.getDocumentReference(), newData)
+    fun updateDocument(myFirestoreDocument: MyFirestoreDocument, newData: HashMap<String, Any>) {
+        getBatch().set(myFirestoreDocument.getDocumentReference(), newData)
     }
 
     /**
      * Adds delete document operation to the batch queue
      *
-     * @param firestoreDocument is object, which defines collection and document, which should be deleted
+     * @param myFirestoreDocument is object, which defines collection and document, which should be deleted
      */
-    fun deleteDocument(firestoreDocument: FirestoreDocument) {
-        getBatch().delete(firestoreDocument.getDocumentReference())
+    fun deleteDocument(myFirestoreDocument: MyFirestoreDocument) {
+        getBatch().delete(myFirestoreDocument.getDocumentReference())
     }
 
     /**
      * Adds remove value from array in a document operation to the batch
      *
-     * @param firestoreDocument is object, which defines document in collection, where the value currently is
+     * @param myFirestoreDocument is object, which defines document in collection, where the value currently is
      * @param arrayName is name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
     fun removeElementFromDocumentArray(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any
     ) {
         getBatch().update(
-            firestoreDocument.getDocumentReference(),
+            myFirestoreDocument.getDocumentReference(),
             arrayName,
             FieldValue.arrayRemove(value)
         )
@@ -397,17 +400,17 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds remove value from array in a document operation to the batch
      *
-     * @param firestoreDocument is object, which defines document in collection, where the value currently is
+     * @param myFirestoreDocument is object, which defines document in collection, where the value currently is
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
     fun removeElementFromDocumentArray(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any
     ) {
         getBatch().update(
-            firestoreDocument.getDocumentReference(),
+            myFirestoreDocument.getDocumentReference(),
             MyString(this.context).fromResources(arrayName),
             FieldValue.arrayRemove(value)
         )
@@ -416,17 +419,17 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in array in a document operation to the batch.
      *
-     * @param firestoreDocument is object, which defines document in collection, where the value currently is
+     * @param myFirestoreDocument is object, which defines document in collection, where the value currently is
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
     fun moveValueToAnotherDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any
     ) {
         getBatch().update(
-            firestoreDocument.getDocumentReference(),
+            myFirestoreDocument.getDocumentReference(),
             arrayName,
             FieldValue.arrayUnion(value)
         )
@@ -435,17 +438,17 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in array in a document operation to the batch. If the value doe
      *
-     * @param firestoreDocument is object, which defines document in collection, where the value currently is
+     * @param myFirestoreDocument is object, which defines document in collection, where the value currently is
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
     fun moveValueToAnotherDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any
     ) {
         moveValueToAnotherDocument(
-            firestoreDocument,
+            myFirestoreDocument,
             MyString(this.context).fromResources(arrayName),
             value
         )
@@ -454,48 +457,48 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in array in a document operation and remove value in different document operation to the batch.
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultMyFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      * @param defaultArray is the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocuments(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         destinationArray: String,
         value: Any,
-        defaultFirestoreDocument: FirestoreDocument,
+        defaultMyFirestoreDocument: MyFirestoreDocument,
         defaultArray: String,
         defaultValue: Any
     ) {
-        removeElementFromDocumentArray(defaultFirestoreDocument, defaultArray, defaultValue)
-        moveValueToAnotherDocument(destinationFirestoreDocument, destinationArray, value)
+        removeElementFromDocumentArray(defaultMyFirestoreDocument, defaultArray, defaultValue)
+        moveValueToAnotherDocument(destinationMyFirestoreDocument, destinationArray, value)
     }
 
     /**
      * Adds add value in array in a document operation and remove value in different document operation to the batch.
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the reference to String, which holds name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultMyFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      * @param defaultArray is the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocuments(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         destinationArray: Int,
         value: Any,
-        defaultFirestoreDocument: FirestoreDocument,
+        defaultMyFirestoreDocument: MyFirestoreDocument,
         defaultArray: String,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            destinationFirestoreDocument,
+            destinationMyFirestoreDocument,
             MyString(this.context).fromResources(destinationArray),
             value,
-            defaultFirestoreDocument,
+            defaultMyFirestoreDocument,
             defaultArray,
             defaultValue
         )
@@ -504,26 +507,26 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in array in a document operation and remove value in different document operation to the batch.
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultMyFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      * @param defaultArray is the reference to String, which holds the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocuments(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         destinationArray: String,
         value: Any,
-        defaultFirestoreDocument: FirestoreDocument,
+        defaultMyFirestoreDocument: MyFirestoreDocument,
         defaultArray: Int,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            destinationFirestoreDocument,
+            destinationMyFirestoreDocument,
             destinationArray,
             value,
-            defaultFirestoreDocument,
+            defaultMyFirestoreDocument,
             MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
@@ -532,26 +535,26 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in array in a document operation and remove value in different document operation to the batch.
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the reference to String, which holds name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultMyFirestoreDocument is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      * @param defaultArray is the reference to String, which holds the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocuments(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         destinationArray: Int,
         value: Any,
-        defaultFirestoreDocument: FirestoreDocument,
+        defaultMyFirestoreDocument: MyFirestoreDocument,
         defaultArray: Int,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            destinationFirestoreDocument,
+            destinationMyFirestoreDocument,
             MyString(this.context).fromResources(destinationArray),
             value,
-            defaultFirestoreDocument,
+            defaultMyFirestoreDocument,
             MyString(this.context).fromResources(defaultArray),
             defaultValue
         )
@@ -560,24 +563,24 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in one array in and remove value in another array in a same document operation to the batch.
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
      * @param defaultArray is the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         destinationArray: String,
         value: Any,
         defaultArray: String,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            firestoreDocument,
+            myFirestoreDocument,
             destinationArray,
             value,
-            firestoreDocument,
+            myFirestoreDocument,
             defaultArray,
             defaultValue
         )
@@ -586,21 +589,21 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in one array in and remove value in another array in a same document operation to the batch.
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is reference to String, which holds name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
      * @param defaultArray is the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         destinationArray: Int,
         value: Any,
         defaultArray: String,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocument(
-            firestoreDocument,
+            myFirestoreDocument,
             MyString(this.context).fromResources(destinationArray),
             value,
             defaultArray,
@@ -611,21 +614,21 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in one array in and remove value in another array in a same document operation to the batch.
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
      * @param defaultArray is the reference to String, which holds the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         destinationArray: String,
         value: Any,
         defaultArray: Int,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocument(
-            firestoreDocument,
+            myFirestoreDocument,
             destinationArray,
             value,
             MyString(this.context).fromResources(defaultArray),
@@ -636,21 +639,21 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Adds add value in one array in and remove value in another array in a same document operation to the batch.
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param destinationArray is the reference to String, which holds name of the array, where the value should placed
      * @param value is the value, which will be placed in the destinationArray
      * @param defaultArray is the reference to String, which holds the name of the array, from where the defaultValue should removed
      * @param defaultValue is the value, which will be removed from the defaultArray
      */
     fun moveAndUpdateValueInDocument(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         destinationArray: Int,
         value: Any,
         defaultArray: Int,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocument(
-            firestoreDocument,
+            myFirestoreDocument,
             MyString(this.context).fromResources(destinationArray),
             value,
             MyString(this.context).fromResources(defaultArray),
@@ -661,22 +664,22 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Moves a value from document to another document with same array name
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param arrayName is name of the array, where the value is currently placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultDocumentReference is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultDocumentReferenceMy is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      */
     fun moveValueToAnotherDocument(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any,
-        defaultDocumentReference: FirestoreDocument
+        defaultDocumentReferenceMy: MyFirestoreDocument
     ) {
         moveAndUpdateValueInDocuments(
-            destinationFirestoreDocument,
+            destinationMyFirestoreDocument,
             arrayName,
             value,
-            defaultDocumentReference,
+            defaultDocumentReferenceMy,
             arrayName,
             value
         )
@@ -685,22 +688,22 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Moves a value from document to another document with same array name
      *
-     * @param destinationFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param destinationMyFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param arrayName is the reference to String, which holds name of the array, where the value is currently placed
      * @param value is the value, which will be placed in the destinationArray
-     * @param defaultDocumentReference is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
+     * @param defaultDocumentReferenceMy is object, which defines document in collection, where is a defaultArray, from where a defaultValue should be removed
      */
     fun moveValueToAnotherDocument(
-        destinationFirestoreDocument: FirestoreDocument,
+        destinationMyFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any,
-        defaultDocumentReference: FirestoreDocument
+        defaultDocumentReferenceMy: MyFirestoreDocument
     ) {
         moveAndUpdateValueInDocuments(
-            destinationFirestoreDocument,
+            destinationMyFirestoreDocument,
             arrayName,
             value,
-            defaultDocumentReference,
+            defaultDocumentReferenceMy,
             MyString(this.context).fromResources(arrayName),
             value
         )
@@ -709,22 +712,22 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Updates a value from document to another document with same array name
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param arrayName is name of the array, where the value is currently placed
      * @param value is the value, which will be placed in the array
      * @param defaultValue is the value, which will be remove in the array
      */
     fun updateValueInArray(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            firestoreDocument,
+            myFirestoreDocument,
             arrayName,
             value,
-            firestoreDocument,
+            myFirestoreDocument,
             arrayName,
             defaultValue
         )
@@ -733,22 +736,22 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Updates a value from document to another document with same array name
      *
-     * @param firestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
+     * @param myFirestoreDocument is object, which defines document in collection, where is a destinationArray, where a value should be placed
      * @param arrayName is the reference to String, which holds name of the array, where the value is currently placed
      * @param value is the value, which will be placed in the array
      * @param defaultValue is the value, which will be remove in the array
      */
     fun updateValueInArray(
-        firestoreDocument: FirestoreDocument,
+        myFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any,
         defaultValue: Any
     ) {
         moveAndUpdateValueInDocuments(
-            firestoreDocument,
+            myFirestoreDocument,
             arrayName,
             value,
-            firestoreDocument,
+            myFirestoreDocument,
             arrayName,
             defaultValue
         )
@@ -757,13 +760,13 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Add increase value operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is name of variable, where the value is stored
      * @param howMuch is the value, how much the current value will be increased
      */
-    fun increaseValue(firestoreDocument: FirestoreDocument, paramName: String, howMuch: Int) {
+    fun increaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: String, howMuch: Int) {
         getBatch().update(
-            firestoreDocument.getDocumentReference(),
+            myFirestoreDocument.getDocumentReference(),
             paramName,
             FieldValue.increment(howMuch.toLong())
         )
@@ -772,44 +775,44 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Add increase value operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is int reference to String, which holds the name of variable, where the value is stored
      * @param howMuch is the value, how much the current value will be increased
      */
-    fun increaseValue(firestoreDocument: FirestoreDocument, paramName: Int, howMuch: Int) {
-        increaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
+    fun increaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: Int, howMuch: Int) {
+        increaseValue(myFirestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
     }
 
     /**
      * Add increase value by one operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is the name of variable, where the value is stored
      */
-    fun increaseValue(firestoreDocument: FirestoreDocument, paramName: String) {
-        increaseValue(firestoreDocument, paramName, 1)
+    fun increaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: String) {
+        increaseValue(myFirestoreDocument, paramName, 1)
     }
 
     /**
      * Add increase value by one operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is int reference to String, which holds name of variable, where the value is stored
      */
-    fun increaseValue(firestoreDocument: FirestoreDocument, paramName: Int) {
-        increaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), 1)
+    fun increaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: Int) {
+        increaseValue(myFirestoreDocument, MyString(this.context).fromResources(paramName), 1)
     }
 
     /**
      * Add decrease value operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is name of variable, where the value is stored
      * @param howMuch is the value, how much the current value will be increased
      */
-    fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: String, howMuch: Int) {
+    fun decreaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: String, howMuch: Int) {
         getBatch().update(
-            firestoreDocument.getDocumentReference(),
+            myFirestoreDocument.getDocumentReference(),
             paramName,
             FieldValue.increment(-howMuch.toLong())
         )
@@ -818,32 +821,58 @@ class FireStoreBatch(private val context: Context) {
     /**
      * Add decrease value operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is reference to String, which holds the name of variable, where the value is stored
      * @param howMuch is the value, how much the current value will be increased
      */
-    fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: Int, howMuch: Int) {
-        decreaseValue(firestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
+    fun decreaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: Int, howMuch: Int) {
+        decreaseValue(myFirestoreDocument, MyString(this.context).fromResources(paramName), howMuch)
     }
 
     /**
      * Add decrease value by one operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is name of variable, where the value is stored
      */
-    fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: String) {
-        decreaseValue(firestoreDocument, paramName, 1)
+    fun decreaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: String) {
+        decreaseValue(myFirestoreDocument, paramName, 1)
     }
 
     /**
      * Add decrease value by one operation
      *
-     * @param firestoreDocument is document, where the parameter is stored
+     * @param myFirestoreDocument is document, where the parameter is stored
      * @param paramName is reference to String, which holds the name of variable, where the value is stored
      */
-    fun decreaseValue(firestoreDocument: FirestoreDocument, paramName: Int) {
-        decreaseValue(firestoreDocument, MyString(this.context).fromResources(paramName))
+    fun decreaseValue(myFirestoreDocument: MyFirestoreDocument, paramName: Int) {
+        decreaseValue(myFirestoreDocument, MyString(this.context).fromResources(paramName))
     }
+
+}
+
+class MyFirebaseStorage(private val context: Context) {
+    private var storageReference: StorageReference? = null
+
+    /**
+     * @return reference to firebase storage
+     */
+    fun getStorageReference(): StorageReference {
+        if (this.storageReference == null)
+            this.storageReference = FirebaseStorage.getInstance().reference
+        return this.storageReference!!
+    }
+
+    /**
+     * @return task of uploading
+     */
+    fun addFile(directory: String, uriToFile: Uri): Task<*> {
+        return getStorageReference().child(directory).putFile(uriToFile)
+    }
+
+    fun addFile(directory: Int, uriToFile: Uri): Task<*> {
+        return addFile(MyString(this.context).fromResources(directory), uriToFile)
+    }
+
 
 }

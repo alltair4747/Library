@@ -5,6 +5,7 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+
 
 /**
  * Creates dialog with provided parameters
@@ -27,7 +29,7 @@ import androidx.core.widget.addTextChangedListener
 open class Dialog(
     private val context: Context,
     title: String,
-    message: String,
+    message: String?,
     icon: Int,
     hasScrollElement: Boolean
 ) {
@@ -41,24 +43,28 @@ open class Dialog(
     private val imageView = this.view.findViewById(R.id.dialog_icon) as ImageView
     private val title = this.view.findViewById(R.id.dialog_title) as TextView
     private val message = this.view.findViewById(R.id.dialog_message) as TextView
-    private val content = this.view.findViewById(R.id.dialog_content) as LinearLayout
+    private val contentLayout =
+        this.view.findViewById(getContentReference()) as MaxHeightLinearLayout
     private lateinit var dialog: AlertDialog
 
     init {
-        this.title.text = title
         this.imageView.setImageResource(icon)
-        this.message.text = message
-        if (hasScrollElement)
-            this.message.maxHeight = getMessageMaxHeight()
+        this.title.text = title
+        if (message != null) {
+            this.message.text = message
+            this.message.movementMethod = ScrollingMovementMethod()
+        } else
+            this.message.visibility = View.GONE
+        setDialogMaxHeight()
         showDialog()
     }
 
     /**
-     * Gets maximum height for textView
+     * Gets maximum height for content section
      */
-    fun getMessageMaxHeight(): Int {
+    fun setDialogMaxHeight() {
         val myScreen = MyScreen(this.context)
-        return myScreen.dpToPx((myScreen.getScreenHeightDensityPoints() - 205))
+        getContentLayout().setMaxHeightDp((myScreen.getScreenHeightDensityPoints() - 200))
     }
 
     /**
@@ -70,6 +76,11 @@ open class Dialog(
 
     fun setDialogBackground(backgroundColor: Int) {
         this.view.setBackgroundColor(backgroundColor)
+    }
+
+
+    fun getContentReference(): Int {
+        return R.id.dialog_content
     }
 
 
@@ -114,8 +125,12 @@ open class Dialog(
     /**
      * add view to content section of dialog
      */
-    fun addView(view: View) {
-        this.content.addView(view)
+    open fun addContentView(view: View) {
+        getContentLayout().addView(view)
+    }
+
+    fun getContentLayout(): MaxHeightLinearLayout {
+        return this.contentLayout
     }
 
     /**
@@ -489,6 +504,15 @@ class NotificationDialog(context: Context, title: String, message: String, icon:
         MyString(context).fromResources(message),
         icon
     )
+
+    /**
+     * Will not add any view to this dialog, since no content elements are allowed. Only textView displaying message is allowed
+     *
+     * @param view is any member of view class
+     */
+    override fun addContentView(view: View) {
+
+    }
 }
 
 
@@ -515,7 +539,7 @@ class DatePickerDialog(
     private val datePicker = DatePicker(getContext())
 
     init {
-        addView(getDatePicker())
+        addContentView(getDatePicker())
         setRightButtonText(R.string.select)
         if (this.editTextToUpdate != null) {
             getRightButton().setOnClickListener {
@@ -1431,7 +1455,7 @@ class DialogThreeButtons(
  * @param icon is int reference to drawable, which will be displayed next to title
  * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
-open class ListViewDialog private constructor(
+class ListViewDialog private constructor(
     context: Context,
     title: String,
     message: String,
@@ -1869,6 +1893,7 @@ open class ListViewDialog private constructor(
         } catch (e: Exception) {
             Log.e("MyDialog", "String array could not be retrieved from provided integer")
         }
+        setAdapter()
     }
 
     /**
@@ -2070,9 +2095,9 @@ open class ListViewDialog private constructor(
                 }
             }
         }
-        addView(this.editText)
-        addView(this.textView)
-        addView(this.listView)
+        addContentView(this.editText)
+        addContentView(this.textView)
+        addContentView(this.listView)
     }
 
     /**
@@ -2202,10 +2227,9 @@ class CheckableTextViewsDialog(
                 }
             )
         }
-        addView(this.editText)
-        addView(this.textView)
-        this.listView.adapter = this.adapter
-        addView(this.listView)
+        addContentView(this.editText)
+        addContentView(this.textView)
+        addContentView(this.listView)
     }
 
     /**
