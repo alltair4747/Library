@@ -108,7 +108,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      */
     fun setResult(resultCode: Int, intent: Intent?) {
         getActivity().setResult(resultCode, intent)
-        finish()
+        finish(true)
     }
 
     /**
