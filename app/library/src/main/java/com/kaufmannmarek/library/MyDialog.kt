@@ -1455,7 +1455,8 @@ class DialogThreeButtons(
  * @param icon is int reference to drawable, which will be displayed next to title
  * @param editTextToUpdate is reference to editText, which will be updated on item select
  */
-class ListViewDialog private constructor(
+@Suppress("LeakingThis")
+open class ListViewDialog private constructor(
     context: Context,
     title: String,
     message: String,
