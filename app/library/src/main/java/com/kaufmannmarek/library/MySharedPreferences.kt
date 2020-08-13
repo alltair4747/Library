@@ -265,4 +265,22 @@ open class MySharedPreferences(private val context: Context, databaseName: Strin
             this.editor = getSharedPreferences().edit()
         return this.editor!!
     }
+
+    /**
+     * Clear all data saved in this sharedPreferences database
+     *
+     * @param commit if true, the database will clear immediately
+     */
+    fun clear(commit: Boolean) {
+        getEditor().clear()
+        if (commit)
+            applyChanges()
+    }
+
+    /**
+     * Clear all data saved in this sharedPreferences database
+     */
+    fun clear() {
+        clear(false)
+    }
 }
