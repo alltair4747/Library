@@ -194,6 +194,22 @@ class MyFirestoreDocument(context: Context, private val documentName: String) :
     }
 
     /**
+     * @return query to documents
+     * @param documentsIds is list of documents id that should be retrieved
+     */
+    fun getMultipleDocumentsReference(documentsIds: MutableList<String>): Query {
+        return getReference().whereIn(FieldPath.documentId(), documentsIds)
+    }
+
+    /**
+     * @return result of getting multiple documents
+     * @param documentsIds is list of documents id that should be retrieved
+     */
+    fun getMultipleDocuments(documentsIds: MutableList<String>): Task<*> {
+        return getMultipleDocumentsReference(documentsIds).get()
+    }
+
+    /**
      * Replace oldValue with newValue in array
      *
      * @param oldValue is value to be removed
