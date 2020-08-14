@@ -1,7 +1,9 @@
 @file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package com.kaufmannmarek.library
 
 import android.content.Context
+import android.util.Log
 import kotlin.random.Random
 
 class MyString(private val context: Context) {
@@ -46,6 +48,7 @@ class MyString(private val context: Context) {
         return try {
             this.context.getString(paramName)
         } catch (e: Exception) {
+            Log.e("MyString", "$paramName is not valid reference to any String")
             this.context.getString(R.string.stringNotFound)
         }
     }

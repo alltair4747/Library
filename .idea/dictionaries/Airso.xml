@@ -2,6 +2,7 @@
   <dictionary name="Airso">
     <words>
       <w>firestore</w>
+      <w>pswd</w>
     </words>
   </dictionary>
 </component>

@@ -15,19 +15,9 @@ import com.google.firebase.storage.StorageReference
  *
  * @param context of currently displayed activity
  */
-open class MyFirestoreCollection(private val context: Context) {
+open class MyFirestoreCollection(private val context: Context, collectionName: String?) {
     private var firestore: FirebaseFirestore? = null
     private var collectionName: String? = null
-
-    /**
-     * Creates object, which allow operations with firestore collections.
-     *
-     * @param context of currently displayed activity
-     * @param collectionName is name of collection
-     */
-    constructor(context: Context, collectionName: String) : this(context) {
-        setCollectionName(collectionName)
-    }
 
     /**
      * Creates object, which allow operations with firestore collections.
@@ -41,8 +31,12 @@ open class MyFirestoreCollection(private val context: Context) {
     )
 
     init {
-        if (this.collectionName == null)
-            setCollectionName(getActiveUid())
+        setCollectionName(
+            when (collectionName != null) {
+                true -> collectionName
+                false -> getActiveUid()
+            }
+        )
     }
 
     /**
@@ -100,27 +94,62 @@ open class MyFirestoreCollection(private val context: Context) {
 }
 
 /**
- * Create object, which allows operations with firestore documents in collection, which name is uid of currently logged user
+ * Creates fireStore object, which can read multiple documents at once from provided collection
  *
  * @param context of currently displayed activity
- * @param documentName is the name of the document, where the operations will be performed
+ * @param collectionName is String, which represents id of the collection, where the documents will be retrieved
  */
-class MyFirestoreDocument(context: Context, private val documentName: String) :
-    MyFirestoreCollection(context) {
+class MyFireStoreDocuments(context: Context, collectionName: String?) :
+    MyFirestoreCollection(context, collectionName) {
 
     /**
-     * Create object, which allows operations with firestore documents
+     * Creates fireStore object, which can read multiple documents at once from provided collection
      *
      * @param context of currently displayed activity
-     * @param collectionName is the name of the collection, where the document is stored
-     * @param documentName is the name of the document, where the operations will be performed
+     * @param collectionName is int reference to String, which represents id of the collection, where the documents will be retrieved
      */
-    constructor(context: Context, collectionName: String, documentName: String) : this(
+    constructor(context: Context, collectionName: Int) : this(
         context,
-        documentName
-    ) {
-        setCollectionName(collectionName)
+        MyString(context).fromResources(collectionName)
+    )
+
+    /**
+     * Creates fireStore object, which can read multiple documents at once from collection, which id is uid of currently log in user
+     *
+     * @param context of currently displayed activity
+     */
+    constructor(context: Context) : this(context, null)
+
+    /**
+     * @return query to documents
+     * @param documentsIds is list of documents id that should be retrieved
+     */
+    fun getMultipleDocumentsReference(documentsIds: MutableList<String>): Query {
+        return getReference().whereIn(FieldPath.documentId(), documentsIds)
     }
+
+    /**
+     * @return result of getting multiple documents
+     * @param documentsIds is list of documents id that should be retrieved
+     */
+    fun getMultipleDocuments(documentsIds: MutableList<String>): Task<*> {
+        return getMultipleDocumentsReference(documentsIds).get()
+    }
+}
+
+/**
+ * Create object, which allows operations with firestore documents
+ *
+ * @param context of currently displayed activity
+ * @param collectionName is the name of the collection, where the document is stored
+ * @param documentName is the name of the document, where the operations will be performed
+ */
+class MyFirestoreDocument(
+    context: Context,
+    collectionName: String?,
+    private val documentName: String
+) :
+    MyFirestoreCollection(context, collectionName) {
 
     /**
      * Create object, which allows operations with firestore documents
@@ -167,8 +196,21 @@ class MyFirestoreDocument(context: Context, private val documentName: String) :
      * @param context of currently displayed activity
      * @param documentName is the name of the document, where the operations will be performed
      */
+    constructor(context: Context, documentName: String) : this(
+        context,
+        null,
+        documentName
+    )
+
+    /**
+     * Create object, which allows operations with firestore documents in collection, which name is uid of currently logged user
+     *
+     * @param context of currently displayed activity
+     * @param documentName is the name of the document, where the operations will be performed
+     */
     constructor(context: Context, documentName: Int) : this(
         context,
+        null,
         MyString(context).fromResources(documentName)
     )
 
@@ -191,22 +233,6 @@ class MyFirestoreDocument(context: Context, private val documentName: String) :
      */
     fun getDocument(): Task<*> {
         return getDocumentReference().get()
-    }
-
-    /**
-     * @return query to documents
-     * @param documentsIds is list of documents id that should be retrieved
-     */
-    fun getMultipleDocumentsReference(documentsIds: MutableList<String>): Query {
-        return getReference().whereIn(FieldPath.documentId(), documentsIds)
-    }
-
-    /**
-     * @return result of getting multiple documents
-     * @param documentsIds is list of documents id that should be retrieved
-     */
-    fun getMultipleDocuments(documentsIds: MutableList<String>): Task<*> {
-        return getMultipleDocumentsReference(documentsIds).get()
     }
 
     /**

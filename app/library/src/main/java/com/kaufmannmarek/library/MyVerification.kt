@@ -18,11 +18,18 @@ import android.widget.ListView
  */
 class MyVerification(private val context: Context, private val dynamicFocus: Boolean) {
     private var noErrorFound = true
+    private lateinit var myString: MyString
 
     fun isValidEmailAddress(emailAddress: EditText) {
         if (!Patterns.EMAIL_ADDRESS.matcher(emailAddress.text.toString()).matches()) {
             errorFoundInEditText(emailAddress, R.string.emailBadFormat)
         }
+    }
+
+    fun getMyString(): MyString {
+        if (!::myString.isInitialized)
+            this.myString = MyString(this.context)
+        return this.myString
     }
 
     /**
@@ -88,7 +95,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
     fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: Int) {
         if (!checkedTextView.isChecked) {
             setViewFocus(checkedTextView)
-            checkedTextView.error = MyString(this.context).fromResources(errorText)
+            checkedTextView.error = this.myString.fromResources(errorText)
         }
     }
 
@@ -132,20 +139,29 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
     }
 
     /**
-     * Checks, if the provided boolean is true
+     * Checks, if the provided boolean is true and display snackBar with message
      *
      * @param boolean is provided boolean
      * @param message is int reference to String, which will displayed in snackBar
      */
-    fun booleanIsTrue(boolean: Boolean, message: Int) {
+    fun booleanIsTrue(boolean: Boolean, message: Int?) {
         when (boolean) {
             false -> {
                 if (this.noErrorFound) {
                     this.noErrorFound = false
-                    MySnackBar(this.context, message, true, 1500)
+                    if (message != null)
+                        MySnackBar(this.context, message, true, 1500)
                 }
             }
         }
     }
 
+    /**
+     * Checks, if the provided boolean is true
+     *
+     * @param boolean is provided boolean
+     */
+    fun booleanIsTrue(boolean: Boolean) {
+        booleanIsTrue(boolean, null)
+    }
 }
