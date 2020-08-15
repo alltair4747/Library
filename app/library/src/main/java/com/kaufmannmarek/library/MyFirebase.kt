@@ -11,7 +11,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
 /**
- * Creates object, which allow operations with firestore collections.
+ * Creates object, which allow operations with firestore collection
  *
  * @param context of currently displayed activity
  */
@@ -20,7 +20,7 @@ open class MyFirestoreCollection(private val context: Context, collectionName: S
     private var collectionName: String? = null
 
     /**
-     * Creates object, which allow operations with firestore collections.
+     * Creates object, which allow operations with firestore collection
      *
      * @param context of currently displayed activity
      * @param collectionName is int reference to String, which holds name of collection
@@ -29,6 +29,13 @@ open class MyFirestoreCollection(private val context: Context, collectionName: S
         context,
         MyString(context).fromResources(collectionName)
     )
+
+    /**
+     * Creates object, which allow operations with firestore collection, which id is uid of currently logged in user
+     *
+     * @param context of currently displayed activity
+     */
+    constructor(context: Context) : this(context, null)
 
     init {
         setCollectionName(
