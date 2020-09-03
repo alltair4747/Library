@@ -5,6 +5,7 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.text.method.ScrollingMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
@@ -44,7 +45,7 @@ open class Dialog(
     private val title = this.view.findViewById(R.id.dialog_title) as TextView
     private val message = this.view.findViewById(R.id.dialog_message) as TextView
     private val contentLayout =
-        this.view.findViewById(getContentReference()) as MaxHeightLinearLayout
+        this.view.findViewById(R.id.dialog_content) as MaxHeightLinearLayout
     private lateinit var dialog: AlertDialog
 
     init {
@@ -77,12 +78,6 @@ open class Dialog(
     fun setDialogBackground(backgroundColor: Int) {
         this.view.setBackgroundColor(backgroundColor)
     }
-
-
-    fun getContentReference(): Int {
-        return R.id.dialog_content
-    }
-
 
     /**
      * @return context of the dialog
@@ -129,6 +124,9 @@ open class Dialog(
         getContentLayout().addView(view)
     }
 
+    /**
+     * @return LinearLayout, where the additional content is placed
+     */
     fun getContentLayout(): MaxHeightLinearLayout {
         return this.contentLayout
     }
@@ -1437,10 +1435,20 @@ class DialogThreeButtons(
         return this.middleButton
     }
 
+    /**
+     * Assign provided String as text to middle button of the dialog
+     *
+     * @param text to be assigned
+     */
     fun setMiddleButtonText(text: String) {
         setButtonText(getMiddleButton(), text)
     }
 
+    /**
+     * Assign provided String as text to middle button of the dialog
+     *
+     * @param text is int reference to String, which will be assigned
+     */
     fun setMiddleButtonText(text: Int) {
         setMiddleButtonText(MyString(getContext()).fromResources(text))
     }
@@ -2179,68 +2187,6 @@ private class DialogElements(private val context: Context) {
 
 }
 
-/**
- * Creates dialog with listView, which is populated by checkable textViews
- *
- * @param context of currently displayed activity
- * @param message is text, which will be displayed below title
- * @param icon is int reference to drawable, which will be displayed next to title
- * @param data are Strings, which will be displayed in checkable textViews
- * @param alreadySelectedItems are String, which were already selected on previous open of this dialog
- */
-class CheckableTextViewsDialog(
-    context: Context,
-    message: String,
-    icon: Int,
-    data: ArrayList<String>,
-    alreadySelectedItems: ArrayList<String>?
-) : DialogTwoButtons(
-    context,
-    R.string.selectItems,
-    message,
-    icon,
-    true
-) {
-
-    private val listView = ListView(getContext())
-    private val adapter = AdapterCheckBox(getContext(), data, alreadySelectedItems)
-    private val textView: TextView
-    private val editText: EditText
-
-    init {
-        val dialogElements = DialogElements(getContext())
-        this.editText = dialogElements.getSearchEditText()
-        this.textView = dialogElements.getNoItemFoundTextView()
-        this.editText.addTextChangedListener {
-            this.adapter.setData(
-                if (this.editText.text.isEmpty())
-                    data
-                else {
-                    val filteredValues = ArrayList<String>()
-                    for (index in 0 until data.size) {
-                        @SuppressLint("DefaultLocale")
-                        if (data[index].toLowerCase()
-                                .contains(this.editText.text.toString().toLowerCase())
-                        )
-                            filteredValues.add(data[index])
-                    }
-                    filteredValues
-                }
-            )
-        }
-        addContentView(this.editText)
-        addContentView(this.textView)
-        addContentView(this.listView)
-    }
-
-    /**
-     * @return Strings, which were already selected
-     */
-    fun getSelectedItems(): ArrayList<String> {
-        return this.adapter.getSelectedItems()
-    }
-}
-
 private class Adapter(
     private val context: Context,
     hashMap: HashMap<String, Any>,
@@ -2351,114 +2297,534 @@ private class Adapter(
     }
 }
 
-private class AdapterCheckBox(
-    private val context: Context,
-    arrayList: ArrayList<String>,
-    selectedItems: ArrayList<String>?
-) :
-    BaseAdapter() {
-    private val layoutInflater = LayoutInflater.from(this.context)
-    private var selectedItems: ArrayList<String> = when (selectedItems == null) {
-        true -> ArrayList()
-        else -> selectedItems
-    }
-    private lateinit var displayedValues: ArrayList<String>
+/**
+ * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+ * @param context of currently displayed activity
+ * @param title is String, which will be displayed at a top of the dialog
+ * @param message is String, which will be displayed under the title
+ * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+ * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+ */
+class CheckBoxesDialog(
+    context: Context,
+    title: String,
+    message: String,
+    sourceData: HashMap<String, String>,
+    alreadySelectedItems: ArrayList<String>?
+) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        sourceData: HashMap<String, String>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        sourceData,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        sourceData: HashMap<String, String>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        sourceData,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        sourceData: HashMap<String, String>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        sourceData,
+        alreadySelectedItems
+    )
+
+    private val listView = ListView(getContext())
+    private val adapter = Adapter(getContext(), sourceData, alreadySelectedItems)
+    private val editText = EditText(getContext())
 
     init {
-        setData(arrayList)
+        this.editText.hint = getContext().getString(R.string.hintSearch)
+        this.editText.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor))
+        this.editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.hintColor))
+        this.editText.addTextChangedListener {
+            this.adapter.setData(
+                if (this.editText.text.isEmpty())
+                    sourceData
+                else {
+                    val filteredValues = HashMap<String, String>()
+                    for (key in sourceData.keys) {
+                        @SuppressLint("DefaultLocale")
+                        if (sourceData[key]!!.toLowerCase()
+                                .contains(this.editText.text.toString().toLowerCase())
+                        )
+                            filteredValues[key] = sourceData[key]!!
+                    }
+                    filteredValues
+                }
+            )
+        }
+        addContentView(this.editText)
+        this.listView.adapter = this.adapter
+        addContentView(this.listView)
     }
 
     /**
-     * @param arrayList are data to be displayed
-     * sets data to display
-     */
-    fun setData(arrayList: ArrayList<String>) {
-        this.displayedValues = arrayList
-        notifyDataSetChanged()
-    }
-
-    /**
-     * @return selected items
+     * @return arrayList of keys, which were selected in the dialog
      */
     fun getSelectedItems(): ArrayList<String> {
-        return this.selectedItems
+        return this.adapter.getSelectedItems()
     }
 
-    /**
-     * Get a View that displays the data at the specified position in the data set. You can either
-     * create a View manually or inflate it from an XML layout file. When the View is inflated, the
-     * parent View (GridView, ListView...) will apply default layout parameters unless you use
-     * [android.view.LayoutInflater.inflate]
-     * to specify a root view and to prevent attachment to the root.
-     *
-     * @param position The position of the item within the adapter's data set of the item whose view
-     * we want.
-     * @param convertView The old view to reuse, if possible. Note: You should check that this view
-     * is non-null and of an appropriate type before using. If it is not possible to convert
-     * this view to display the correct data, this method can create a new view.
-     * Heterogeneous lists can specify their number of view types, so that this View is
-     * always of the right type (see [.getViewTypeCount] and
-     * [.getItemViewType]).
-     * @param parent The parent that this view will eventually be attached to
-     * @return A View corresponding to the data at the specified position.
-     */
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View?
-        val viewHolder: ViewHolder
-        if (convertView == null) {
-            view = this.layoutInflater.inflate(R.layout.item_dialog_checkbox, parent, false)
-            viewHolder = ViewHolder(view)
-            view.tag = viewHolder
-        } else {
-            view = convertView
-            viewHolder = view.tag as ViewHolder
+    private class Adapter(
+        private val context: Context,
+        hashMap: HashMap<String, String>,
+        selectedItems: ArrayList<String>?
+    ) :
+        BaseAdapter() {
+        private val layoutInflater = LayoutInflater.from(this.context)
+        private var selectedItems: ArrayList<String> = when (selectedItems == null) {
+            true -> ArrayList()
+            else -> selectedItems
         }
-        viewHolder.checkBox.text = getItem(position)
-        viewHolder.checkBox.isChecked = this.selectedItems.contains(getItem(position))
-        viewHolder.checkBox.setOnClickListener {
-            if (viewHolder.checkBox.isChecked) {
-                this.selectedItems.remove(getItem(position))
-                viewHolder.checkBox.isChecked = false
-            } else {
-                this.selectedItems.add(getItem(position))
-                viewHolder.checkBox.isChecked = true
+        private lateinit var items: ArrayList<String>
+        private var keysAndItems: HashMap<String, String>? = null
+
+        init {
+            setData(hashMap)
+        }
+
+        /**
+         * @param hashMap its key values will be displayed
+         * sets data to display
+         */
+        fun setData(hashMap: HashMap<String, String>) {
+            setHashMap(hashMap)
+            this.items = ArrayList()
+            for (key in getHashMap().keys) {
+                items.add(key)
             }
+            notifyDataSetChanged()
         }
-        return view!!
-    }
 
-    /**
-     * Get the data item associated with the specified position in the data set.
-     *
-     * @param position Position of the item whose data we want within the adapter's
-     * data set.
-     * @return The data at the specified position.
-     */
-    override fun getItem(position: Int): String {
-        return this.displayedValues[position]
-    }
+        private fun setHashMap(hashMap: HashMap<String, String>) {
+            this.keysAndItems = null
+            this.keysAndItems = hashMap
+        }
 
-    /**
-     * Get the row id associated with the specified position in the list.
-     *
-     * @param position The position of the item within the adapter's data set whose row id we want.
-     * @return The id of the item at the specified position.
-     */
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+        private fun getHashMap(): HashMap<String, String> {
+            return this.keysAndItems!!
+        }
 
-    /**
-     * How many items are in the data set represented by this Adapter.
-     *
-     * @return Count of items.
-     */
-    override fun getCount(): Int {
-        return this.displayedValues.size
-    }
+        fun getValueToDisplay(position: Int): String {
+            return getHashMap()[getItem(position)]!!
+        }
 
-    private class ViewHolder(view: View) {
-        val checkBox = view.findViewById(R.id.check_box) as CheckedTextView
+        /**
+         * @return selected items keys
+         */
+        fun getSelectedItems(): ArrayList<String> {
+            return this.selectedItems
+        }
+
+        /**
+         * Get a View that displays the data at the specified position in the data set. You can either
+         * create a View manually or inflate it from an XML layout file. When the View is inflated, the
+         * parent View (GridView, ListView...) will apply default layout parameters unless you use
+         * [android.view.LayoutInflater.inflate]
+         * to specify a root view and to prevent attachment to the root.
+         *
+         * @param position The position of the item within the adapter's data set of the item whose view
+         * we want.
+         * @param convertView The old view to reuse, if possible. Note: You should check that this view
+         * is non-null and of an appropriate type before using. If it is not possible to convert
+         * this view to display the correct data, this method can create a new view.
+         * Heterogeneous lists can specify their number of view types, so that this View is
+         * always of the right type (see [.getViewTypeCount] and
+         * [.getItemViewType]).
+         * @param parent The parent that this view will eventually be attached to
+         * @return A View corresponding to the data at the specified position.
+         */
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view: View?
+            val viewHolder: ViewHolder
+            if (convertView == null) {
+                view = this.layoutInflater.inflate(R.layout.item_dialog_checkbox, parent, false)
+                viewHolder = ViewHolder(view)
+                view.tag = viewHolder
+            } else {
+                view = convertView
+                viewHolder = view.tag as ViewHolder
+            }
+            viewHolder.checkBox.text = getValueToDisplay(position)
+            viewHolder.checkBox.tag = getItem(position)
+            viewHolder.checkBox.isChecked = this.selectedItems.contains(getItem(position))
+            viewHolder.checkBox.setOnClickListener {
+                if (viewHolder.checkBox.isChecked) {
+                    this.selectedItems.remove(getItem(position))
+                    viewHolder.checkBox.isChecked = false
+                } else {
+                    this.selectedItems.add(getItem(position))
+                    viewHolder.checkBox.isChecked = true
+                }
+            }
+            return view!!
+        }
+
+        /**
+         * Get the data item associated with the specified position in the data set.
+         *
+         * @param position Position of the item whose data we want within the adapter's
+         * data set.
+         * @return The data at the specified position.
+         */
+        override fun getItem(position: Int): String {
+            return this.items[position]
+        }
+
+        /**
+         * Get the row id associated with the specified position in the list.
+         *
+         * @param position The position of the item within the adapter's data set whose row id we want.
+         * @return The id of the item at the specified position.
+         */
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        /**
+         * How many items are in the data set represented by this Adapter.
+         *
+         * @return Count of items.
+         */
+        override fun getCount(): Int {
+            return this.items.size
+        }
+
+        private class ViewHolder(view: View) {
+            val checkBox = view.findViewById(R.id.check_box) as CheckedTextView
+        }
     }
 }
+
+/**
+ * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
+ * @param context of currently displayed activity
+ * @param title is String, which will be displayed at a top of the dialog
+ * @param message is String, which will be displayed under the title
+ * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+ * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+ */
+class CheckBoxesWithIconsDialog(
+    context: Context,
+    title: String,
+    message: String,
+    sourceData: HashMap<String, DialogItem>,
+    alreadySelectedItems: ArrayList<String>?
+) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        sourceData: HashMap<String, DialogItem>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        sourceData,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        sourceData: HashMap<String, DialogItem>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        sourceData,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        sourceData: HashMap<String, DialogItem>,
+        alreadySelectedItems: ArrayList<String>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        sourceData,
+        alreadySelectedItems
+    )
+
+    private val listView = ListView(getContext())
+    private val adapter = Adapter(getContext(), sourceData, alreadySelectedItems)
+    private val editText = EditText(getContext())
+
+    init {
+        this.editText.hint = getContext().getString(R.string.hintSearch)
+        this.editText.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor))
+        this.editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.hintColor))
+        this.editText.addTextChangedListener {
+            this.adapter.setData(
+                if (this.editText.text.isEmpty())
+                    sourceData
+                else {
+                    val filteredValues = HashMap<String, DialogItem>()
+                    for (key in sourceData.keys) {
+                        @SuppressLint("DefaultLocale")
+                        if (sourceData[key]!!.text.toLowerCase()
+                                .contains(this.editText.text.toString().toLowerCase())
+                        )
+                            filteredValues[key] = sourceData[key]!!
+                    }
+                    filteredValues
+                }
+            )
+        }
+        addContentView(this.editText)
+        this.listView.adapter = this.adapter
+        addContentView(this.listView)
+    }
+
+    /**
+     * @return arrayList of keys, which were selected in the dialog
+     */
+    fun getSelectedItems(): ArrayList<String> {
+        return this.adapter.getSelectedItems()
+    }
+
+    private class Adapter(
+        private val context: Context,
+        hashMap: HashMap<String, DialogItem>,
+        selectedItems: ArrayList<String>?
+    ) :
+        BaseAdapter() {
+        private val layoutInflater = LayoutInflater.from(this.context)
+        private var selectedItems: ArrayList<String> = when (selectedItems == null) {
+            true -> ArrayList()
+            else -> selectedItems
+        }
+        private lateinit var items: ArrayList<String>
+        private var keysAndItems: HashMap<String, DialogItem>? = null
+
+        init {
+            setData(hashMap)
+        }
+
+        /**
+         * @param hashMap its key values will be displayed
+         * sets data to display
+         */
+        fun setData(hashMap: HashMap<String, DialogItem>) {
+            setHashMap(hashMap)
+            this.items = ArrayList()
+            for (key in getHashMap().keys) {
+                items.add(key)
+            }
+            notifyDataSetChanged()
+        }
+
+        private fun setHashMap(hashMap: HashMap<String, DialogItem>) {
+            this.keysAndItems = null
+            this.keysAndItems = hashMap
+        }
+
+        private fun getHashMap(): HashMap<String, DialogItem> {
+            return this.keysAndItems!!
+        }
+
+        private fun getDialogItem(position: Int): DialogItem {
+            return getHashMap()[getItem(position)]!!
+        }
+
+        fun getItemText(position: Int): String {
+            return getDialogItem(position).text
+        }
+
+        fun getItemDrawable(position: Int): Drawable {
+            return getDialogItem(position).drawable
+        }
+
+        /**
+         * @return selected items keys
+         */
+        fun getSelectedItems(): ArrayList<String> {
+            return this.selectedItems
+        }
+
+        /**
+         * Get a View that displays the data at the specified position in the data set. You can either
+         * create a View manually or inflate it from an XML layout file. When the View is inflated, the
+         * parent View (GridView, ListView...) will apply default layout parameters unless you use
+         * [android.view.LayoutInflater.inflate]
+         * to specify a root view and to prevent attachment to the root.
+         *
+         * @param position The position of the item within the adapter's data set of the item whose view
+         * we want.
+         * @param convertView The old view to reuse, if possible. Note: You should check that this view
+         * is non-null and of an appropriate type before using. If it is not possible to convert
+         * this view to display the correct data, this method can create a new view.
+         * Heterogeneous lists can specify their number of view types, so that this View is
+         * always of the right type (see [.getViewTypeCount] and
+         * [.getItemViewType]).
+         * @param parent The parent that this view will eventually be attached to
+         * @return A View corresponding to the data at the specified position.
+         */
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view: View?
+            val viewHolder: ViewHolder
+            if (convertView == null) {
+                view = this.layoutInflater.inflate(
+                    R.layout.item_dialog_checkbox_imageview,
+                    parent,
+                    false
+                )
+                viewHolder = ViewHolder(view)
+                view.tag = viewHolder
+            } else {
+                view = convertView
+                viewHolder = view.tag as ViewHolder
+            }
+            viewHolder.checkBox.text = getItemText(position)
+            viewHolder.imageView.background = getItemDrawable(position)
+            viewHolder.checkBox.tag = getItem(position)
+            viewHolder.checkBox.isChecked = this.selectedItems.contains(getItem(position))
+            viewHolder.checkBox.setOnClickListener {
+                if (viewHolder.checkBox.isChecked) {
+                    this.selectedItems.remove(getItem(position))
+                    viewHolder.checkBox.isChecked = false
+                } else {
+                    this.selectedItems.add(getItem(position))
+                    viewHolder.checkBox.isChecked = true
+                }
+            }
+            return view!!
+        }
+
+        /**
+         * Get the data item associated with the specified position in the data set.
+         *
+         * @param position Position of the item whose data we want within the adapter's
+         * data set.
+         * @return The data at the specified position.
+         */
+        override fun getItem(position: Int): String {
+            return this.items[position]
+        }
+
+        /**
+         * Get the row id associated with the specified position in the list.
+         *
+         * @param position The position of the item within the adapter's data set whose row id we want.
+         * @return The id of the item at the specified position.
+         */
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        /**
+         * How many items are in the data set represented by this Adapter.
+         *
+         * @return Count of items.
+         */
+        override fun getCount(): Int {
+            return this.items.size
+        }
+
+        private class ViewHolder(view: View) {
+            val checkBox = view.findViewById(R.id.check_box) as CheckedTextView
+            val imageView = view.findViewById(R.id.image_view) as ImageView
+        }
+    }
+}
+
+/**
+ * Creates object for CheckBoxWithImageViewDialog
+ *
+ * @param text is String, which describes the item
+ * @param drawable is image, which will be displayed next to text
+ */
+data class DialogItem(val text: String, val drawable: Drawable) {
+    constructor(
+        context: Context,
+        text: Int,
+        drawable: Drawable
+    ) : this(MyString(context).fromResources(text), drawable)
+}
+
+
+
 

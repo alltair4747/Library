@@ -6,12 +6,22 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
-    android:layout_marginEnd="10dp">
+    android:layout_marginEnd="10dp"
+    android:weightSum="8">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/textColor"
+        tools:ignore="ContentDescription" />
 
     <CheckedTextView
         android:id="@+id/check_box"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="7"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checked="false"
         android:paddingStart="10dp"
