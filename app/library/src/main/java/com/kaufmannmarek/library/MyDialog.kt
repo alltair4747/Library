@@ -2309,7 +2309,7 @@ class CheckBoxesDialog(
     context: Context,
     title: String,
     message: String,
-    sourceData: HashMap<String, String>,
+    sourceData: LinkedHashMap<String, String>,
     alreadySelectedItems: ArrayList<String>?
 ) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
 
@@ -2325,7 +2325,7 @@ class CheckBoxesDialog(
         context: Context,
         title: String,
         message: Int,
-        sourceData: HashMap<String, String>,
+        sourceData: LinkedHashMap<String, String>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2347,7 +2347,7 @@ class CheckBoxesDialog(
         context: Context,
         title: Int,
         message: String,
-        sourceData: HashMap<String, String>,
+        sourceData: LinkedHashMap<String, String>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2369,7 +2369,7 @@ class CheckBoxesDialog(
         context: Context,
         title: Int,
         message: Int,
-        sourceData: HashMap<String, String>,
+        sourceData: LinkedHashMap<String, String>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2392,7 +2392,7 @@ class CheckBoxesDialog(
                 if (this.editText.text.isEmpty())
                     sourceData
                 else {
-                    val filteredValues = HashMap<String, String>()
+                    val filteredValues = LinkedHashMap<String, String>()
                     for (key in sourceData.keys) {
                         @SuppressLint("DefaultLocale")
                         if (sourceData[key]!!.toLowerCase()
@@ -2418,7 +2418,7 @@ class CheckBoxesDialog(
 
     private class Adapter(
         private val context: Context,
-        hashMap: HashMap<String, String>,
+        hashMap: LinkedHashMap<String, String>,
         selectedItems: ArrayList<String>?
     ) :
         BaseAdapter() {
@@ -2428,7 +2428,7 @@ class CheckBoxesDialog(
             else -> selectedItems
         }
         private lateinit var items: ArrayList<String>
-        private var keysAndItems: HashMap<String, String>? = null
+        private var keysAndItems: LinkedHashMap<String, String>? = null
 
         init {
             setData(hashMap)
@@ -2438,21 +2438,21 @@ class CheckBoxesDialog(
          * @param hashMap its key values will be displayed
          * sets data to display
          */
-        fun setData(hashMap: HashMap<String, String>) {
+        fun setData(hashMap: LinkedHashMap<String, String>) {
             setHashMap(hashMap)
             this.items = ArrayList()
             for (key in getHashMap().keys) {
-                items.add(key)
+                this.items.add(key)
             }
             notifyDataSetChanged()
         }
 
-        private fun setHashMap(hashMap: HashMap<String, String>) {
+        private fun setHashMap(hashMap: LinkedHashMap<String, String>) {
             this.keysAndItems = null
             this.keysAndItems = hashMap
         }
 
-        private fun getHashMap(): HashMap<String, String> {
+        private fun getHashMap(): LinkedHashMap<String, String> {
             return this.keysAndItems!!
         }
 
@@ -2559,7 +2559,7 @@ class CheckBoxesWithIconsDialog(
     context: Context,
     title: String,
     message: String,
-    sourceData: HashMap<String, DialogItem>,
+    sourceData: LinkedHashMap<String, DialogItem>,
     alreadySelectedItems: ArrayList<String>?
 ) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
 
@@ -2575,7 +2575,7 @@ class CheckBoxesWithIconsDialog(
         context: Context,
         title: String,
         message: Int,
-        sourceData: HashMap<String, DialogItem>,
+        sourceData: LinkedHashMap<String, DialogItem>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2597,7 +2597,7 @@ class CheckBoxesWithIconsDialog(
         context: Context,
         title: Int,
         message: String,
-        sourceData: HashMap<String, DialogItem>,
+        sourceData: LinkedHashMap<String, DialogItem>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2619,7 +2619,7 @@ class CheckBoxesWithIconsDialog(
         context: Context,
         title: Int,
         message: Int,
-        sourceData: HashMap<String, DialogItem>,
+        sourceData: LinkedHashMap<String, DialogItem>,
         alreadySelectedItems: ArrayList<String>?
     ) : this(
         context,
@@ -2642,7 +2642,7 @@ class CheckBoxesWithIconsDialog(
                 if (this.editText.text.isEmpty())
                     sourceData
                 else {
-                    val filteredValues = HashMap<String, DialogItem>()
+                    val filteredValues = LinkedHashMap<String, DialogItem>()
                     for (key in sourceData.keys) {
                         @SuppressLint("DefaultLocale")
                         if (sourceData[key]!!.text.toLowerCase()
@@ -2668,7 +2668,7 @@ class CheckBoxesWithIconsDialog(
 
     private class Adapter(
         private val context: Context,
-        hashMap: HashMap<String, DialogItem>,
+        hashMap: LinkedHashMap<String, DialogItem>,
         selectedItems: ArrayList<String>?
     ) :
         BaseAdapter() {
@@ -2678,7 +2678,7 @@ class CheckBoxesWithIconsDialog(
             else -> selectedItems
         }
         private lateinit var items: ArrayList<String>
-        private var keysAndItems: HashMap<String, DialogItem>? = null
+        private var keysAndItems: LinkedHashMap<String, DialogItem>? = null
 
         init {
             setData(hashMap)
@@ -2688,21 +2688,21 @@ class CheckBoxesWithIconsDialog(
          * @param hashMap its key values will be displayed
          * sets data to display
          */
-        fun setData(hashMap: HashMap<String, DialogItem>) {
+        fun setData(hashMap: LinkedHashMap<String, DialogItem>) {
             setHashMap(hashMap)
             this.items = ArrayList()
             for (key in getHashMap().keys) {
-                items.add(key)
+                this.items.add(key)
             }
             notifyDataSetChanged()
         }
 
-        private fun setHashMap(hashMap: HashMap<String, DialogItem>) {
+        private fun setHashMap(hashMap: LinkedHashMap<String, DialogItem>) {
             this.keysAndItems = null
             this.keysAndItems = hashMap
         }
 
-        private fun getHashMap(): HashMap<String, DialogItem> {
+        private fun getHashMap(): LinkedHashMap<String, DialogItem> {
             return this.keysAndItems!!
         }
 
@@ -2824,7 +2824,3 @@ data class DialogItem(val text: String, val drawable: Drawable) {
         drawable: Drawable
     ) : this(MyString(context).fromResources(text), drawable)
 }
-
-
-
-
