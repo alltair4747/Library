@@ -2302,36 +2302,366 @@ private class Adapter(
  * @param context of currently displayed activity
  * @param title is String, which will be displayed at a top of the dialog
  * @param message is String, which will be displayed under the title
- * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
- * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
  */
-class CheckBoxesDialog(
+class CheckBoxesDialog private constructor(
     context: Context,
     title: String,
-    message: String,
-    sourceData: LinkedHashMap<String, String>,
-    alreadySelectedItems: ArrayList<String>?
+    message: String
 ) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        linkedHashMap: LinkedHashMap<Int, DialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        setupDialog(linkedHashMap, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        linkedHashMap: LinkedHashMap<Int, DialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        linkedHashMap: LinkedHashMap<Int, DialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        linkedHashMap: LinkedHashMap<Int, DialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        val linkedHashMap = LinkedHashMap<Int, DialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = LinkedHashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in 0 until arrayList.size) {
+                defaultHashMap[arrayList[index]] = index
+                sortedArrayList.add(arrayList[index])
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                linkedHashMap[defaultHashMap[param]!!] =
+                    DialogItem(defaultHashMap[param]!!, param, null)
+            }
+        } else {
+            for (index in 0 until arrayList.size) {
+                linkedHashMap[index] = DialogItem(index, arrayList[index], null)
+            }
+        }
+        setupDialog(linkedHashMap, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
 
     /**
      * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
      * @param context of currently displayed activity
      * @param title is String, which will be displayed at a top of the dialog
      * @param message is int reference to String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
      */
     constructor(
         context: Context,
         title: String,
         message: Int,
-        sourceData: LinkedHashMap<String, String>,
-        alreadySelectedItems: ArrayList<String>?
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
     ) : this(
         context,
         title,
         MyString(context).fromResources(message),
-        sourceData,
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        val linkedHashMap = LinkedHashMap<Int, DialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = HashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in array.indices) {
+                sortedArrayList.add(array[index])
+                defaultHashMap[array[index]] = index
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                linkedHashMap[defaultHashMap[param]!!] =
+                    DialogItem(defaultHashMap[param]!!, param, null)
+            }
+        } else {
+            for (index in array.indices) {
+                linkedHashMap[index] = DialogItem(index, array[index], null)
+            }
+        }
+        setupDialog(linkedHashMap, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
         alreadySelectedItems
     )
 
@@ -2340,20 +2670,23 @@ class CheckBoxesDialog(
      * @param context of currently displayed activity
      * @param title is int reference to String, which will be displayed at a top of the dialog
      * @param message is String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
      */
     constructor(
         context: Context,
         title: Int,
         message: String,
-        sourceData: LinkedHashMap<String, String>,
-        alreadySelectedItems: ArrayList<String>?
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
     ) : this(
         context,
-        MyString(context).fromResources(title),
+        title,
         message,
-        sourceData,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
         alreadySelectedItems
     )
 
@@ -2362,43 +2695,53 @@ class CheckBoxesDialog(
      * @param context of currently displayed activity
      * @param title is int reference to String, which will be displayed at a top of the dialog
      * @param message is int reference to String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
      */
     constructor(
         context: Context,
         title: Int,
         message: Int,
-        sourceData: LinkedHashMap<String, String>,
-        alreadySelectedItems: ArrayList<String>?
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
     ) : this(
         context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        sourceData,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
         alreadySelectedItems
     )
 
-    private val listView = ListView(getContext())
-    private val adapter = Adapter(getContext(), sourceData, alreadySelectedItems)
-    private val editText = EditText(getContext())
 
-    init {
+    private val listView = ListView(getContext())
+    private lateinit var adapter: Adapter
+    private val editText = EditText(getContext())
+    private lateinit var linkedHashMap: LinkedHashMap<Int, DialogItem>
+
+    private fun setupDialog(
+        linkedHashMap: LinkedHashMap<Int, DialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) {
+        this.linkedHashMap = linkedHashMap
+        this.adapter = Adapter(getContext(), this.linkedHashMap, alreadySelectedItems)
         this.editText.hint = getContext().getString(R.string.hintSearch)
         this.editText.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor))
         this.editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.hintColor))
         this.editText.addTextChangedListener {
             this.adapter.setData(
                 if (this.editText.text.isEmpty())
-                    sourceData
+                    this.linkedHashMap
                 else {
-                    val filteredValues = LinkedHashMap<String, String>()
-                    for (key in sourceData.keys) {
+                    val filteredValues = LinkedHashMap<Int, DialogItem>()
+                    for (key in this.linkedHashMap.keys) {
                         @SuppressLint("DefaultLocale")
-                        if (sourceData[key]!!.toLowerCase()
+                        if (this.linkedHashMap[key]!!.text.toLowerCase()
                                 .contains(this.editText.text.toString().toLowerCase())
                         )
-                            filteredValues[key] = sourceData[key]!!
+                            filteredValues[key] = this.linkedHashMap[key]!!
                     }
                     filteredValues
                 }
@@ -2412,23 +2755,23 @@ class CheckBoxesDialog(
     /**
      * @return arrayList of keys, which were selected in the dialog
      */
-    fun getSelectedItems(): ArrayList<String> {
+    fun getSelectedItems(): ArrayList<Int> {
         return this.adapter.getSelectedItems()
     }
 
     private class Adapter(
         private val context: Context,
-        hashMap: LinkedHashMap<String, String>,
-        selectedItems: ArrayList<String>?
+        hashMap: LinkedHashMap<Int, DialogItem>,
+        selectedItems: ArrayList<Int>?
     ) :
         BaseAdapter() {
         private val layoutInflater = LayoutInflater.from(this.context)
-        private var selectedItems: ArrayList<String> = when (selectedItems == null) {
+        private var selectedItems: ArrayList<Int> = when (selectedItems == null) {
             true -> ArrayList()
             else -> selectedItems
         }
-        private lateinit var items: ArrayList<String>
-        private var keysAndItems: LinkedHashMap<String, String>? = null
+        private lateinit var items: ArrayList<DialogItem>
+        private var keysAndItems: LinkedHashMap<Int, DialogItem>? = null
 
         init {
             setData(hashMap)
@@ -2438,32 +2781,40 @@ class CheckBoxesDialog(
          * @param hashMap its key values will be displayed
          * sets data to display
          */
-        fun setData(hashMap: LinkedHashMap<String, String>) {
+        fun setData(hashMap: LinkedHashMap<Int, DialogItem>) {
             setHashMap(hashMap)
             this.items = ArrayList()
             for (key in getHashMap().keys) {
-                this.items.add(key)
+                this.items.add(getHashMap()[key]!!)
             }
             notifyDataSetChanged()
         }
 
-        private fun setHashMap(hashMap: LinkedHashMap<String, String>) {
+        private fun setHashMap(hashMap: LinkedHashMap<Int, DialogItem>) {
             this.keysAndItems = null
             this.keysAndItems = hashMap
         }
 
-        private fun getHashMap(): LinkedHashMap<String, String> {
+        private fun getHashMap(): LinkedHashMap<Int, DialogItem> {
             return this.keysAndItems!!
         }
 
         fun getValueToDisplay(position: Int): String {
-            return getHashMap()[getItem(position)]!!
+            return getItem(position).text
+        }
+
+        fun getItemOriginalPosition(position: Int): Int {
+            return getItem(position).position
+        }
+
+        fun getItemDrawable(position: Int): Drawable? {
+            return getItem(position).drawable
         }
 
         /**
          * @return selected items keys
          */
-        fun getSelectedItems(): ArrayList<String> {
+        fun getSelectedItems(): ArrayList<Int> {
             return this.selectedItems
         }
 
@@ -2498,276 +2849,22 @@ class CheckBoxesDialog(
             }
             viewHolder.checkBox.text = getValueToDisplay(position)
             viewHolder.checkBox.tag = getItem(position)
-            viewHolder.checkBox.isChecked = this.selectedItems.contains(getItem(position))
-            viewHolder.checkBox.setOnClickListener {
-                if (viewHolder.checkBox.isChecked) {
-                    this.selectedItems.remove(getItem(position))
-                    viewHolder.checkBox.isChecked = false
-                } else {
-                    this.selectedItems.add(getItem(position))
-                    viewHolder.checkBox.isChecked = true
-                }
-            }
-            return view!!
-        }
-
-        /**
-         * Get the data item associated with the specified position in the data set.
-         *
-         * @param position Position of the item whose data we want within the adapter's
-         * data set.
-         * @return The data at the specified position.
-         */
-        override fun getItem(position: Int): String {
-            return this.items[position]
-        }
-
-        /**
-         * Get the row id associated with the specified position in the list.
-         *
-         * @param position The position of the item within the adapter's data set whose row id we want.
-         * @return The id of the item at the specified position.
-         */
-        override fun getItemId(position: Int): Long {
-            return position.toLong()
-        }
-
-        /**
-         * How many items are in the data set represented by this Adapter.
-         *
-         * @return Count of items.
-         */
-        override fun getCount(): Int {
-            return this.items.size
-        }
-
-        private class ViewHolder(view: View) {
-            val checkBox = view.findViewById(R.id.check_box) as CheckedTextView
-        }
-    }
-}
-
-/**
- * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
- * @param context of currently displayed activity
- * @param title is String, which will be displayed at a top of the dialog
- * @param message is String, which will be displayed under the title
- * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
- * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
- */
-class CheckBoxesWithIconsDialog(
-    context: Context,
-    title: String,
-    message: String,
-    sourceData: LinkedHashMap<String, DialogItem>,
-    alreadySelectedItems: ArrayList<String>?
-) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        sourceData: LinkedHashMap<String, DialogItem>,
-        alreadySelectedItems: ArrayList<String>?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        sourceData,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        sourceData: LinkedHashMap<String, DialogItem>,
-        alreadySelectedItems: ArrayList<String>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        sourceData,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist from imageView and checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param sourceData is hashMap, which must consists from unique keys and its values, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Strings, which represents keys, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        sourceData: LinkedHashMap<String, DialogItem>,
-        alreadySelectedItems: ArrayList<String>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        sourceData,
-        alreadySelectedItems
-    )
-
-    private val listView = ListView(getContext())
-    private val adapter = Adapter(getContext(), sourceData, alreadySelectedItems)
-    private val editText = EditText(getContext())
-
-    init {
-        this.editText.hint = getContext().getString(R.string.hintSearch)
-        this.editText.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor))
-        this.editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.hintColor))
-        this.editText.addTextChangedListener {
-            this.adapter.setData(
-                if (this.editText.text.isEmpty())
-                    sourceData
-                else {
-                    val filteredValues = LinkedHashMap<String, DialogItem>()
-                    for (key in sourceData.keys) {
-                        @SuppressLint("DefaultLocale")
-                        if (sourceData[key]!!.text.toLowerCase()
-                                .contains(this.editText.text.toString().toLowerCase())
-                        )
-                            filteredValues[key] = sourceData[key]!!
-                    }
-                    filteredValues
-                }
-            )
-        }
-        addContentView(this.editText)
-        this.listView.adapter = this.adapter
-        addContentView(this.listView)
-    }
-
-    /**
-     * @return arrayList of keys, which were selected in the dialog
-     */
-    fun getSelectedItems(): ArrayList<String> {
-        return this.adapter.getSelectedItems()
-    }
-
-    private class Adapter(
-        private val context: Context,
-        hashMap: LinkedHashMap<String, DialogItem>,
-        selectedItems: ArrayList<String>?
-    ) :
-        BaseAdapter() {
-        private val layoutInflater = LayoutInflater.from(this.context)
-        private var selectedItems: ArrayList<String> = when (selectedItems == null) {
-            true -> ArrayList()
-            else -> selectedItems
-        }
-        private lateinit var items: ArrayList<String>
-        private var keysAndItems: LinkedHashMap<String, DialogItem>? = null
-
-        init {
-            setData(hashMap)
-        }
-
-        /**
-         * @param hashMap its key values will be displayed
-         * sets data to display
-         */
-        fun setData(hashMap: LinkedHashMap<String, DialogItem>) {
-            setHashMap(hashMap)
-            this.items = ArrayList()
-            for (key in getHashMap().keys) {
-                this.items.add(key)
-            }
-            notifyDataSetChanged()
-        }
-
-        private fun setHashMap(hashMap: LinkedHashMap<String, DialogItem>) {
-            this.keysAndItems = null
-            this.keysAndItems = hashMap
-        }
-
-        private fun getHashMap(): LinkedHashMap<String, DialogItem> {
-            return this.keysAndItems!!
-        }
-
-        private fun getDialogItem(position: Int): DialogItem {
-            return getHashMap()[getItem(position)]!!
-        }
-
-        fun getItemText(position: Int): String {
-            return getDialogItem(position).text
-        }
-
-        fun getItemDrawable(position: Int): Drawable {
-            return getDialogItem(position).drawable
-        }
-
-        /**
-         * @return selected items keys
-         */
-        fun getSelectedItems(): ArrayList<String> {
-            return this.selectedItems
-        }
-
-        /**
-         * Get a View that displays the data at the specified position in the data set. You can either
-         * create a View manually or inflate it from an XML layout file. When the View is inflated, the
-         * parent View (GridView, ListView...) will apply default layout parameters unless you use
-         * [android.view.LayoutInflater.inflate]
-         * to specify a root view and to prevent attachment to the root.
-         *
-         * @param position The position of the item within the adapter's data set of the item whose view
-         * we want.
-         * @param convertView The old view to reuse, if possible. Note: You should check that this view
-         * is non-null and of an appropriate type before using. If it is not possible to convert
-         * this view to display the correct data, this method can create a new view.
-         * Heterogeneous lists can specify their number of view types, so that this View is
-         * always of the right type (see [.getViewTypeCount] and
-         * [.getItemViewType]).
-         * @param parent The parent that this view will eventually be attached to
-         * @return A View corresponding to the data at the specified position.
-         */
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-            val view: View?
-            val viewHolder: ViewHolder
-            if (convertView == null) {
-                view = this.layoutInflater.inflate(
-                    R.layout.item_dialog_checkbox_imageview,
-                    parent,
-                    false
-                )
-                viewHolder = ViewHolder(view)
-                view.tag = viewHolder
+            if (getItemDrawable(position) != null) {
+                viewHolder.imageView.visibility = View.VISIBLE
+                viewHolder.imageView.background = getItemDrawable(position)
+                viewHolder.checkBox.setPadding(45, 0, 0, 0)
             } else {
-                view = convertView
-                viewHolder = view.tag as ViewHolder
+                viewHolder.imageView.visibility = View.GONE
+                viewHolder.checkBox.setPadding(10, 0, 0, 0)
             }
-            viewHolder.checkBox.text = getItemText(position)
-            viewHolder.imageView.background = getItemDrawable(position)
-            viewHolder.checkBox.tag = getItem(position)
-            viewHolder.checkBox.isChecked = this.selectedItems.contains(getItem(position))
+            viewHolder.checkBox.isChecked =
+                this.selectedItems.contains(getItemOriginalPosition(position))
             viewHolder.checkBox.setOnClickListener {
                 if (viewHolder.checkBox.isChecked) {
-                    this.selectedItems.remove(getItem(position))
+                    this.selectedItems.remove(getItemOriginalPosition(position))
                     viewHolder.checkBox.isChecked = false
                 } else {
-                    this.selectedItems.add(getItem(position))
+                    this.selectedItems.add(getItemOriginalPosition(position))
                     viewHolder.checkBox.isChecked = true
                 }
             }
@@ -2781,7 +2878,7 @@ class CheckBoxesWithIconsDialog(
          * data set.
          * @return The data at the specified position.
          */
-        override fun getItem(position: Int): String {
+        override fun getItem(position: Int): DialogItem {
             return this.items[position]
         }
 
@@ -2812,15 +2909,46 @@ class CheckBoxesWithIconsDialog(
 }
 
 /**
- * Creates object for CheckBoxWithImageViewDialog
+ * Creates object for CheckBoxDialog
  *
+ * @param position is position of item in original array
  * @param text is String, which describes the item
  * @param drawable is image, which will be displayed next to text
  */
-data class DialogItem(val text: String, val drawable: Drawable) {
+data class DialogItem(val position: Int, val text: String, val drawable: Drawable?) {
+
+    /**
+     * Creates object for CheckBoxDialog
+     *
+     * @param position is position of item in original array
+     * @param text is String, which describes the item
+     */
+    constructor(position: Int, text: String) : this(position, text, null)
+
+    /**
+     * Creates object for CheckBoxDialog
+     *
+     * @param context of currently displayed activity
+     * @param position is position of item in original array
+     * @param text is int reference to String, which describes the item
+     */
+    constructor(context: Context, position: Int, text: Int) : this(
+        position,
+        MyString(context).fromResources(text)
+    )
+
+    /**
+     * Creates object for CheckBoxDialog
+     *
+     * @param context of currently displayed activity
+     * @param context of currently displayed activity
+     * @param position is position of item in original array
+     * @param text is int reference to String, which describes the item
+     */
     constructor(
         context: Context,
+        position: Int,
         text: Int,
         drawable: Drawable
-    ) : this(MyString(context).fromResources(text), drawable)
+    ) : this(position, MyString(context).fromResources(text), drawable)
 }
