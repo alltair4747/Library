@@ -4,6 +4,7 @@ package com.kaufmannmarek.library
 
 import android.content.Context
 import android.util.Log
+import org.json.JSONArray
 import org.json.JSONObject
 
 /**
@@ -307,5 +308,45 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
      */
     fun addLong(paramName: Int, value: Long) {
         addLong(this.myString.fromResources(paramName), value)
+    }
+
+    /**
+     * Adds JSONObject to jsonObject
+     *
+     * @param paramName is String, which represents name, under which the value should be saved
+     * @param value is JSONObject, which will be saved to jsonObject under provided paramName
+     */
+    fun addJSONObject(paramName: String, value: JSONObject) {
+        get().put(paramName, value)
+    }
+
+    /**
+     * Adds JSONObject to jsonObject
+     *
+     * @param paramName is int reference to String, which represents name, under which the value should be saved
+     * @param value is JSONObject, which will be saved to jsonObject under provided paramName
+     */
+    fun addJSONObject(paramName: Int, value: JSONObject) {
+        addJSONObject(this.myString.fromResources(paramName), value)
+    }
+
+    /**
+     * Adds JSONArray to jsonObject
+     *
+     * @param paramName is String, which represents name, under which the value should be saved
+     * @param value is JSONArray, which will be saved to jsonObject under provided paramName
+     */
+    fun addJSONArray(paramName: String, value: JSONArray) {
+        get().put(paramName, value)
+    }
+
+    /**
+     * Adds JSONArray to jsonObject
+     *
+     * @param paramName is int reference to String, which represents name, under which the value should be saved
+     * @param value is JSONArray, which will be saved to jsonObject under provided paramName
+     */
+    fun addJSONArray(paramName: Int, value: JSONArray) {
+        addJSONArray(this.myString.fromResources(paramName), value)
     }
 }
