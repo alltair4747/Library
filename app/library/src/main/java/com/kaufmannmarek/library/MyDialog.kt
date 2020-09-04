@@ -2289,8 +2289,6 @@ open class ListViewDialog private constructor(
         val dialogElements = DialogElements(getContext())
         val editText = dialogElements.getSearchEditText()
         val textView = dialogElements.getNoItemFoundTextView()
-        if (this.editTextToUpdate != null)
-            setOnItemClick()
         editText.addTextChangedListener {
             if (editText.text.isEmpty())
                 getAdapter().setData(sourceArrayList)
@@ -2310,6 +2308,8 @@ open class ListViewDialog private constructor(
         addContentView(listView)
         this.adapter = Adapter(getContext(), sourceArrayList, textView, listView)
         listView.adapter = this.adapter
+        if (this.editTextToUpdate != null)
+            setOnItemClick()
     }
 
     /**
