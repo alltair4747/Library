@@ -2344,6 +2344,14 @@ open class ListViewDialog private constructor(
     }
 
     /**
+     * @return text of item stored in provided position of listView
+     * @param position is int position in the listView
+     */
+    fun getItemText(position: Int): String {
+        return getItem(position).text
+    }
+
+    /**
      * @return listView in the dialog
      */
     fun getListView(): ListView {
