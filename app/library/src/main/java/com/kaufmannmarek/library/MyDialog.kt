@@ -2953,10 +2953,11 @@ class CheckBoxesDialog private constructor(
     ) {
         val listView = ListView(getContext())
         val dialogElements = DialogElements(getContext())
+        val textView = dialogElements.getNoItemFoundTextView()
         val editText = dialogElements.getSearchEditText()
         this.adapter = Adapter(
             getContext(),
-            dialogElements.getNoItemFoundTextView(),
+            textView,
             listView,
             sourceArrayList,
             alreadySelectedItems
@@ -2979,6 +2980,7 @@ class CheckBoxesDialog private constructor(
             )
         }
         addContentView(editText)
+        addContentView(textView)
         listView.adapter = this.adapter
         addContentView(listView)
     }
