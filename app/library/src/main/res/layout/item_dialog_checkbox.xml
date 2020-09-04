@@ -6,7 +6,9 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="10dp"
     android:layout_marginTop="10dp"
-    android:layout_marginEnd="10dp">
+    android:layout_marginEnd="10dp"
+    android:orientation="horizontal"
+    tools:ignore="RtlSymmetry">
 
     <ImageView
         android:id="@+id/image_view"
@@ -14,7 +16,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
         android:background="@color/textColor"
-        tools:ignore="ContentDescription,RtlSymmetry" />
+        tools:ignore="ContentDescription" />
 
     <CheckedTextView
         android:id="@+id/check_box"
@@ -25,6 +27,7 @@
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checked="false"
         android:gravity="center_vertical"
+        android:paddingStart="5dp"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:textAlignment="gravity"
@@ -32,7 +35,6 @@
         app:autoSizeMaxTextSize="18sp"
         app:autoSizeMinTextSize="5sp"
         app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform"
-        tools:ignore="RtlSymmetry" />
+        app:autoSizeTextType="uniform" />
 
 </LinearLayout>

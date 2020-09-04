@@ -7,7 +7,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.method.ScrollingMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +14,10 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
 
 /**
@@ -1480,6 +1483,7 @@ open class ListViewDialog private constructor(
      * @param message is String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
      * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      * @param editTextToUpdate is reference to editText, which will be updated on item select
      */
     constructor(
@@ -1488,6 +1492,7 @@ open class ListViewDialog private constructor(
         message: String,
         icon: Int,
         arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
         editTextToUpdate: EditText?
     ) : this(
         context,
@@ -1496,413 +1501,31 @@ open class ListViewDialog private constructor(
         icon,
         editTextToUpdate
     ) {
-        this.hashMap = HashMap()
-        try {
-            for (item in arrayList) {
-                this.hashMap[item] = arrayList.indexOf(item)
+        val newArrayList = ArrayList<ListViewDialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = LinkedHashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in 0 until arrayList.size) {
+                defaultHashMap[arrayList[index]] = index
+                sortedArrayList.add(arrayList[index])
             }
-        } catch (e: Exception) {
-            Log.e("MyDialog", "ArrayList must contains Strings only")
-        }
-        setAdapter()
-    }
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        icon: Int,
-        arrayList: ArrayList<String>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        icon,
-        arrayList,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        icon: Int,
-        arrayList: ArrayList<String>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        icon,
-        arrayList,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        arrayList: ArrayList<String>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        icon,
-        arrayList,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        icon: Int,
-        arrayList: ArrayList<String>
-    ) : this(
-        context,
-        title,
-        message,
-        icon,
-        arrayList,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        icon: Int,
-        arrayList: ArrayList<String>
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        icon,
-        arrayList,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        icon: Int,
-        arrayList: ArrayList<String>
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        icon,
-        arrayList,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param arrayList its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        arrayList: ArrayList<String>
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        icon,
-        arrayList,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        icon: Int,
-        hashMap: HashMap<String, Any>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        title,
-        message,
-        icon,
-        editTextToUpdate
-    ) {
-        this.hashMap = HashMap(hashMap)
-        setAdapter()
-    }
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        icon: Int,
-        hashMap: HashMap<String, Any>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        icon,
-        hashMap,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        icon: Int,
-        hashMap: HashMap<String, Any>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        icon,
-        hashMap,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        hashMap: HashMap<String, Any>,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        icon,
-        hashMap,
-        editTextToUpdate
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        icon: Int,
-        hashMap: HashMap<String, Any>
-    ) : this(
-        context,
-        title,
-        message,
-        icon,
-        hashMap,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        icon: Int,
-        hashMap: HashMap<String, Any>
-    ) : this(context, MyString(context).fromResources(title), message, icon, hashMap, null)
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        icon: Int,
-        hashMap: HashMap<String, Any>
-    ) : this(context, title, MyString(context).fromResources(message), icon, hashMap, null)
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at the top of dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param hashMap its elements will be displayed
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        icon: Int,
-        hashMap: HashMap<String, Any>
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        icon,
-        hashMap,
-        null
-    )
-
-    /**
-     * Create ListView dialog in current context with provided items
-     *
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at the top of dialog
-     * @param message is String, which will be displayed under the title
-     * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
-     * @param editTextToUpdate is reference to editText, which will be updated on item select
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        icon: Int,
-        stringArrayReference: Int,
-        editTextToUpdate: EditText?
-    ) : this(
-        context,
-        title,
-        message,
-        icon,
-        editTextToUpdate
-    ) {
-        this.hashMap = HashMap()
-        try {
-            val array = getContext().resources.getStringArray(stringArrayReference)
-            for (item in array) {
-                this.hashMap[item] = array.indexOf(item)
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                newArrayList.add(ListViewDialogItem(defaultHashMap[param]!!, param, param, null))
             }
-        } catch (e: Exception) {
-            Log.e("MyDialog", "String array could not be retrieved from provided integer")
+        } else {
+            for (index in 0 until arrayList.size) {
+                newArrayList.add(
+                    ListViewDialogItem(
+                        index,
+                        arrayList[index],
+                        arrayList[index],
+                        null
+                    )
+                )
+            }
         }
-        setAdapter()
+        setupDialog(newArrayList)
     }
 
     /**
@@ -1912,7 +1535,8 @@ open class ListViewDialog private constructor(
      * @param title is int reference to String, which will be displayed at the top of dialog
      * @param message is String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      * @param editTextToUpdate is reference to editText, which will be updated on item select
      */
     constructor(
@@ -1920,14 +1544,16 @@ open class ListViewDialog private constructor(
         title: Int,
         message: String,
         icon: Int,
-        stringArrayReference: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
         editTextToUpdate: EditText?
     ) : this(
         context,
         MyString(context).fromResources(title),
         message,
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         editTextToUpdate
     )
 
@@ -1938,7 +1564,8 @@ open class ListViewDialog private constructor(
      * @param title is String, which will be displayed at the top of dialog
      * @param message is int reference to String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      * @param editTextToUpdate is reference to editText, which will be updated on item select
      */
     constructor(
@@ -1946,14 +1573,16 @@ open class ListViewDialog private constructor(
         title: String,
         message: Int,
         icon: Int,
-        stringArrayReference: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
         editTextToUpdate: EditText?
     ) : this(
         context,
         title,
         MyString(context).fromResources(message),
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         editTextToUpdate
     )
 
@@ -1964,7 +1593,8 @@ open class ListViewDialog private constructor(
      * @param title is int reference to String, which will be displayed at the top of dialog
      * @param message is int reference to String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      * @param editTextToUpdate is reference to editText, which will be updated on item select
      */
     constructor(
@@ -1972,14 +1602,16 @@ open class ListViewDialog private constructor(
         title: Int,
         message: Int,
         icon: Int,
-        stringArrayReference: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
         editTextToUpdate: EditText?
     ) : this(
         context,
         MyString(context).fromResources(title),
         MyString(context).fromResources(message),
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         editTextToUpdate
     )
 
@@ -1990,20 +1622,23 @@ open class ListViewDialog private constructor(
      * @param title is String, which will be displayed at the top of dialog
      * @param message is String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      */
     constructor(
         context: Context,
         title: String,
         message: String,
         icon: Int,
-        stringArrayReference: Int
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean
     ) : this(
         context,
         title,
         message,
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         null
     )
 
@@ -2014,20 +1649,23 @@ open class ListViewDialog private constructor(
      * @param title is int reference to String, which will be displayed at the top of dialog
      * @param message is String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      */
     constructor(
         context: Context,
         title: Int,
         message: String,
         icon: Int,
-        stringArrayReference: Int
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean
     ) : this(
         context,
         MyString(context).fromResources(title),
         message,
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         null
     )
 
@@ -2038,20 +1676,23 @@ open class ListViewDialog private constructor(
      * @param title is String, which will be displayed at the top of dialog
      * @param message is int reference to String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      */
     constructor(
         context: Context,
         title: String,
         message: Int,
         icon: Int,
-        stringArrayReference: Int
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean
     ) : this(
         context,
         title,
         MyString(context).fromResources(message),
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         null
     )
 
@@ -2062,51 +1703,613 @@ open class ListViewDialog private constructor(
      * @param title is int reference to String, which will be displayed at the top of dialog
      * @param message is int reference to String, which will be displayed under the title
      * @param icon is int reference to drawable, which will be displayed next to title
-     * @param stringArrayReference its elements will be displayed
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
      */
     constructor(
         context: Context,
         title: Int,
         message: Int,
         icon: Int,
-        stringArrayReference: Int
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean
     ) : this(
         context,
         MyString(context).fromResources(title),
         MyString(context).fromResources(message),
         icon,
-        stringArrayReference,
+        arrayList,
+        sortAlphabetically,
         null
     )
 
-    private val listView = ListView(getContext())
-    private val editText: EditText
-    private val textView: TextView
-    private var hashMap = HashMap<String, Any>()
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        editTextToUpdate
+    ) {
+        val arrayList = ArrayList<ListViewDialogItem>()
+        for (key in linkedHashMap.keys) {
+            arrayList.add(linkedHashMap[key]!!)
+        }
+        setupDialog(arrayList)
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        linkedHashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        linkedHashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        linkedHashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(context, title, message, icon, editTextToUpdate) {
+        val arrayList = ArrayList<ListViewDialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = HashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in array.indices) {
+                sortedArrayList.add(array[index])
+                defaultHashMap[array[index]] = index
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                arrayList.add(ListViewDialogItem(defaultHashMap[param]!!, param, param, null))
+            }
+        } else {
+            for (index in array.indices) {
+                arrayList.add(ListViewDialogItem(index, array[index], array[index], null))
+            }
+        }
+        setupDialog(arrayList)
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null
+    )
+
     private lateinit var adapter: Adapter
 
-    init {
+    /**
+     * Assign adapter to the listView and sets all required elements
+     */
+    private fun setupDialog(sourceArrayList: ArrayList<ListViewDialogItem>) {
+        val listView = ListView(getContext())
         val dialogElements = DialogElements(getContext())
-        this.editText = dialogElements.getSearchEditText()
-        this.textView = dialogElements.getNoItemFoundTextView()
+        val editText = dialogElements.getSearchEditText()
+        val textView = dialogElements.getNoItemFoundTextView()
         if (this.editTextToUpdate != null)
             setOnItemClick()
-        this.editText.addTextChangedListener {
-            if (this.editText.text.isEmpty())
-                getAdapter().setData(this.hashMap)
+        editText.addTextChangedListener {
+            if (editText.text.isEmpty())
+                getAdapter().setData(sourceArrayList)
             else {
-                val newHashMap = HashMap<String, Any>()
-                for (key in this.hashMap.keys) {
-                    @SuppressLint("DefaultLocale")
-                    if (key.toLowerCase().contains(editText.text.toString().toLowerCase()))
-                        newHashMap[key] = this.hashMap[key]!!
-                    getAdapter().setData(newHashMap)
+                val arrayList = ArrayList<ListViewDialogItem>()
+                for (item in sourceArrayList) {
+                    if (item.text.toLowerCase(Locale.GERMANY)
+                            .contains(editText.text.toString().toLowerCase(Locale.GERMANY))
+                    )
+                        arrayList.add(item)
                 }
+                getAdapter().setData(arrayList)
             }
         }
-        addContentView(this.editText)
-        addContentView(this.textView)
-        addContentView(this.listView)
+        addContentView(editText)
+        addContentView(textView)
+        addContentView(listView)
+        this.adapter = Adapter(getContext(), sourceArrayList, textView, listView)
+        listView.adapter = this.adapter
     }
 
     /**
@@ -2117,26 +2320,26 @@ open class ListViewDialog private constructor(
     }
 
     /**
-     * Assign adapter to the listView
-     */
-    private fun setAdapter() {
-        this.adapter = Adapter(getContext(), this.hashMap, this.textView, this.listView)
-        this.listView.adapter = this.adapter
-    }
-
-    /**
      * @return item position in default array. If the item do not exists in array, it will return -1
      * @param position is int position in the listView
      */
     fun getItemValue(position: Int): Any {
-        return this.hashMap[getItem(position)]!!
+        return this.adapter.getItemValue(position)
+    }
+
+    /**
+     * @return item position in provided unsorted array. If the array was not sorted, the position will equal position in the dialog
+     * @param position is int position in the listView
+     */
+    fun getItemOriginalPosition(position: Int): Int {
+        return this.adapter.getItemOriginalPosition(position)
     }
 
     /**
      * @return item stored in provided position of listView
      * @param position is int position in the listView
      */
-    fun getItem(position: Int): String {
+    fun getItem(position: Int): ListViewDialogItem {
         return this.adapter.getItem(position)
     }
 
@@ -2144,7 +2347,7 @@ open class ListViewDialog private constructor(
      * @return listView in the dialog
      */
     fun getListView(): ListView {
-        return this.listView
+        return this.adapter.getListView()
     }
 
 
@@ -2152,670 +2355,56 @@ open class ListViewDialog private constructor(
      * Sets on item click
      */
     private fun setOnItemClick() {
-        this.listView.setOnItemClickListener { _, _, position, _ ->
-            this.editTextToUpdate!!.setText(getItem(position))
+        getListView().setOnItemClickListener { _, _, position, _ ->
+            this.editTextToUpdate!!.setText(this.adapter.getItemText(position))
             this.editTextToUpdate.tag = getItemValue(position)
             dismiss()
         }
     }
-}
-
-private class DialogElements(private val context: Context) {
-
-    fun getSearchEditText(): EditText {
-        val editText = EditText(this.context)
-        editText.setHintTextColor(ContextCompat.getColor(this.context, R.color.hintColor))
-        editText.setTextColor(ContextCompat.getColor(this.context, R.color.textColor))
-        editText.textSize = 18f
-        editText.setCompoundDrawablesWithIntrinsicBounds(
-            R.drawable.round_search_white_18dp,
-            0, 0, 0
-        )
-
-        editText.hint = MyString(context).fromResources(R.string.hintSearch)
-        return editText
-    }
-
-    fun getNoItemFoundTextView(): TextView {
-        val textView = TextView(this.context)
-        textView.setTextColor(ContextCompat.getColor(this.context, R.color.textColor))
-        textView.textSize = 18f
-        textView.setPadding(15, 15, 0, 5)
-        textView.visibility = View.GONE
-        return textView
-    }
-
-}
-
-private class Adapter(
-    private val context: Context,
-    hashMap: HashMap<String, Any>,
-    private val textView: TextView,
-    private val listView: ListView
-) : BaseAdapter() {
-    private val layoutInflater = LayoutInflater.from(context)
-    private val arrayList: ArrayList<String> = ArrayList()
-
-    init {
-        setData(hashMap)
-    }
-
-    fun setData(hashMap: HashMap<String, Any>) {
-        setData(hashMap, false)
-    }
-
-    fun setData(hashMap: HashMap<String, Any>, isFiltered: Boolean) {
-        this.arrayList.clear()
-        for (key in hashMap.keys) {
-            this.arrayList.add(key)
-        }
-        this.arrayList.sort()
-        notifyDataSetChanged()
-        when (count) {
-            0 -> {
-                this.textView.text = MyString(this.context).fromResources(
-                    when (isFiltered) {
-                        true -> R.string.noItemsFound
-                        false -> R.string.noItemsToDisplay
-                    }
-                )
-                this.textView.visibility = View.VISIBLE
-                this.listView.visibility = View.GONE
-            }
-            else -> {
-                this.textView.visibility = View.GONE
-                this.listView.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    /**
-     * Get a View that displays the data at the specified position in the data set. You can either
-     * create a View manually or inflate it from an XML layout file. When the View is inflated, the
-     * parent View (GridView, ListView...) will apply default layout parameters unless you use
-     * [android.view.LayoutInflater.inflate]
-     * to specify a root view and to prevent attachment to the root.
-     *
-     * @param position The position of the item within the adapter's data set of the item whose view
-     * we want.
-     * @param convertView The old view to reuse, if possible. Note: You should check that this view
-     * is non-null and of an appropriate type before using. If it is not possible to convert
-     * this view to display the correct data, this method can create a new view.
-     * Heterogeneous lists can specify their number of view types, so that this View is
-     * always of the right type (see [.getViewTypeCount] and
-     * [.getItemViewType]).
-     * @param parent The parent that this view will eventually be attached to
-     * @return A View corresponding to the data at the specified position.
-     */
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        val view: View?
-        val viewHolder: ViewHolder
-        if (convertView == null) {
-            view = this.layoutInflater.inflate(R.layout.item_dialog_textview, parent, false)
-            viewHolder = ViewHolder(view)
-            view.tag = viewHolder
-        } else {
-            view = convertView
-            viewHolder = view.tag as ViewHolder
-        }
-        viewHolder.dialogItem.text = getItem(position)
-        return view!!
-    }
-
-    /**
-     * Get the data item associated with the specified position in the data set.
-     *
-     * @param position Position of the item whose data we want within the adapter's
-     * data set.
-     * @return The data at the specified position.
-     */
-    override fun getItem(position: Int): String {
-        return this.arrayList[position]
-    }
-
-    /**
-     * Get the row id associated with the specified position in the list.
-     *
-     * @param position The position of the item within the adapter's data set whose row id we want.
-     * @return The id of the item at the specified position.
-     */
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-
-    /**
-     * How many items are in the data set represented by this Adapter.
-     *
-     * @return Count of items.
-     */
-    override fun getCount(): Int {
-        return this.arrayList.count()
-    }
-
-    private class ViewHolder(view: View) {
-        val dialogItem = view.findViewById(R.id.item_dialog) as TextView
-    }
-}
-
-/**
- * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
- * @param context of currently displayed activity
- * @param title is String, which will be displayed at a top of the dialog
- * @param message is String, which will be displayed under the title
- */
-class CheckBoxesDialog private constructor(
-    context: Context,
-    title: String,
-    message: String
-) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        linkedHashMap: LinkedHashMap<Int, DialogItem>,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(context, title, message) {
-        setupDialog(linkedHashMap, alreadySelectedItems)
-    }
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        linkedHashMap: LinkedHashMap<Int, DialogItem>,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        linkedHashMap,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        linkedHashMap: LinkedHashMap<Int, DialogItem>,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        linkedHashMap,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView. Use DialogItem to create objects to populate your own linkedHashMap
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        linkedHashMap: LinkedHashMap<Int, DialogItem>,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        linkedHashMap,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param arrayList is ArrayList, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        arrayList: ArrayList<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(context, title, message) {
-        val linkedHashMap = LinkedHashMap<Int, DialogItem>()
-        if (sortAlphabetically) {
-            val defaultHashMap = LinkedHashMap<String, Int>()
-            val sortedArrayList = ArrayList<String>()
-            for (index in 0 until arrayList.size) {
-                defaultHashMap[arrayList[index]] = index
-                sortedArrayList.add(arrayList[index])
-            }
-            sortedArrayList.sort()
-            for (param in sortedArrayList) {
-                linkedHashMap[defaultHashMap[param]!!] =
-                    DialogItem(defaultHashMap[param]!!, param, null)
-            }
-        } else {
-            for (index in 0 until arrayList.size) {
-                linkedHashMap[index] = DialogItem(index, arrayList[index], null)
-            }
-        }
-        setupDialog(linkedHashMap, alreadySelectedItems)
-    }
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param arrayList is ArrayList, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        arrayList: ArrayList<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        arrayList,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param arrayList is ArrayList, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        arrayList: ArrayList<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        arrayList,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param arrayList is ArrayList, which will be displayed in the dialog
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        arrayList: ArrayList<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        arrayList,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param array is String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        array: Array<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(context, title, message) {
-        val linkedHashMap = LinkedHashMap<Int, DialogItem>()
-        if (sortAlphabetically) {
-            val defaultHashMap = HashMap<String, Int>()
-            val sortedArrayList = ArrayList<String>()
-            for (index in array.indices) {
-                sortedArrayList.add(array[index])
-                defaultHashMap[array[index]] = index
-            }
-            sortedArrayList.sort()
-            for (param in sortedArrayList) {
-                linkedHashMap[defaultHashMap[param]!!] =
-                    DialogItem(defaultHashMap[param]!!, param, null)
-            }
-        } else {
-            for (index in array.indices) {
-                linkedHashMap[index] = DialogItem(index, array[index], null)
-            }
-        }
-        setupDialog(linkedHashMap, alreadySelectedItems)
-    }
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param array is String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        array: Array<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        message,
-        array,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param array is String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        array: Array<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        MyString(context).fromResources(message),
-        array,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param array is String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        array: Array<String>,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        MyString(context).fromResources(title),
-        MyString(context).fromResources(message),
-        array,
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param arrayReference is int reference to String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: String,
-        arrayReference: Int,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        message,
-        context.resources.getStringArray(arrayReference),
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param arrayReference is int reference to String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: String,
-        message: Int,
-        arrayReference: Int,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        message,
-        context.resources.getStringArray(arrayReference),
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is String, which will be displayed under the title
-     * @param arrayReference is int reference to String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: String,
-        arrayReference: Int,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        message,
-        context.resources.getStringArray(arrayReference),
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-    /**
-     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
-     * @param context of currently displayed activity
-     * @param title is int reference to String, which will be displayed at a top of the dialog
-     * @param message is int reference to String, which will be displayed under the title
-     * @param arrayReference is int reference to String array, which will be displayed in the dialog
-     * @param sortAlphabetically if true, the array values will be sorted alphabetically
-     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
-     */
-    constructor(
-        context: Context,
-        title: Int,
-        message: Int,
-        arrayReference: Int,
-        sortAlphabetically: Boolean,
-        alreadySelectedItems: ArrayList<Int>?
-    ) : this(
-        context,
-        title,
-        message,
-        context.resources.getStringArray(arrayReference),
-        sortAlphabetically,
-        alreadySelectedItems
-    )
-
-
-    private val listView = ListView(getContext())
-    private lateinit var adapter: Adapter
-    private val editText = EditText(getContext())
-    private lateinit var linkedHashMap: LinkedHashMap<Int, DialogItem>
-
-    private fun setupDialog(
-        linkedHashMap: LinkedHashMap<Int, DialogItem>,
-        alreadySelectedItems: ArrayList<Int>?
-    ) {
-        this.linkedHashMap = linkedHashMap
-        this.adapter = Adapter(getContext(), this.linkedHashMap, alreadySelectedItems)
-        this.editText.hint = getContext().getString(R.string.hintSearch)
-        this.editText.setTextColor(ContextCompat.getColor(getContext(), R.color.textColor))
-        this.editText.setHintTextColor(ContextCompat.getColor(getContext(), R.color.hintColor))
-        this.editText.addTextChangedListener {
-            this.adapter.setData(
-                if (this.editText.text.isEmpty())
-                    this.linkedHashMap
-                else {
-                    val filteredValues = LinkedHashMap<Int, DialogItem>()
-                    for (key in this.linkedHashMap.keys) {
-                        @SuppressLint("DefaultLocale")
-                        if (this.linkedHashMap[key]!!.text.toLowerCase()
-                                .contains(this.editText.text.toString().toLowerCase())
-                        )
-                            filteredValues[key] = this.linkedHashMap[key]!!
-                    }
-                    filteredValues
-                }
-            )
-        }
-        addContentView(this.editText)
-        this.listView.adapter = this.adapter
-        addContentView(this.listView)
-    }
-
-    /**
-     * @return arrayList of keys, which were selected in the dialog
-     */
-    fun getSelectedItems(): ArrayList<Int> {
-        return this.adapter.getSelectedItems()
-    }
 
     private class Adapter(
         private val context: Context,
-        hashMap: LinkedHashMap<Int, DialogItem>,
-        selectedItems: ArrayList<Int>?
-    ) :
-        BaseAdapter() {
-        private val layoutInflater = LayoutInflater.from(this.context)
-        private var selectedItems: ArrayList<Int> = when (selectedItems == null) {
-            true -> ArrayList()
-            else -> selectedItems
-        }
-        private lateinit var items: ArrayList<DialogItem>
-        private var keysAndItems: LinkedHashMap<Int, DialogItem>? = null
+        private var arrayList: ArrayList<ListViewDialogItem>,
+        private val textView: TextView,
+        private val listView: ListView
+    ) : BaseAdapter() {
+        private val layoutInflater = LayoutInflater.from(context)
+
 
         init {
-            setData(hashMap)
+            setData(this.arrayList)
         }
 
-        /**
-         * @param hashMap its key values will be displayed
-         * sets data to display
-         */
-        fun setData(hashMap: LinkedHashMap<Int, DialogItem>) {
-            setHashMap(hashMap)
-            this.items = ArrayList()
-            for (key in getHashMap().keys) {
-                this.items.add(getHashMap()[key]!!)
-            }
+        fun setData(arrayList: ArrayList<ListViewDialogItem>) {
+            setData(arrayList, false)
+        }
+
+        fun setData(arrayList: ArrayList<ListViewDialogItem>, isFiltered: Boolean) {
+            this.arrayList = arrayList
             notifyDataSetChanged()
-        }
-
-        private fun setHashMap(hashMap: LinkedHashMap<Int, DialogItem>) {
-            this.keysAndItems = null
-            this.keysAndItems = hashMap
-        }
-
-        private fun getHashMap(): LinkedHashMap<Int, DialogItem> {
-            return this.keysAndItems!!
-        }
-
-        fun getValueToDisplay(position: Int): String {
-            return getItem(position).text
-        }
-
-        fun getItemOriginalPosition(position: Int): Int {
-            return getItem(position).position
-        }
-
-        fun getItemDrawable(position: Int): Drawable? {
-            return getItem(position).drawable
+            when (count) {
+                0 -> {
+                    this.textView.text = MyString(this.context).fromResources(
+                        when (isFiltered) {
+                            true -> R.string.noItemsFound
+                            false -> R.string.noItemsToDisplay
+                        }
+                    )
+                    this.textView.visibility = View.VISIBLE
+                    this.listView.visibility = View.GONE
+                }
+                else -> {
+                    this.textView.visibility = View.GONE
+                    this.listView.visibility = View.VISIBLE
+                }
+            }
         }
 
         /**
-         * @return selected items keys
+         * @return instance of listView
          */
-        fun getSelectedItems(): ArrayList<Int> {
-            return this.selectedItems
+        fun getListView(): ListView {
+            return this.listView
         }
 
         /**
@@ -2840,7 +2429,701 @@ class CheckBoxesDialog private constructor(
             val view: View?
             val viewHolder: ViewHolder
             if (convertView == null) {
-                view = this.layoutInflater.inflate(R.layout.item_dialog_checkbox, parent, false)
+                view = this.layoutInflater.inflate(R.layout.item_dialog_textview, parent, false)
+                viewHolder = ViewHolder(view)
+                view.tag = viewHolder
+            } else {
+                view = convertView
+                viewHolder = view.tag as ViewHolder
+            }
+            if (getItemDrawable(position) != null) {
+                viewHolder.imageView.background = getItemDrawable(position)
+                viewHolder.imageView.visibility = View.VISIBLE
+            } else
+                viewHolder.imageView.visibility = View.GONE
+            viewHolder.dialogItem.text = getItemText(position)
+            return view!!
+        }
+
+        /**
+         * Get the data item associated with the specified position in the data set.
+         *
+         * @param position Position of the item whose data we want within the adapter's
+         * data set.
+         * @return The data at the specified position.
+         */
+        override fun getItem(position: Int): ListViewDialogItem {
+            return this.arrayList[position]
+        }
+
+        /**
+         * @return String to display for the dialogItem
+         * @param position is row number of the item in the listView
+         */
+        fun getItemText(position: Int): String {
+            return getItem(position).text
+        }
+
+        /**
+         * @return value to retrieve associated with the dialogItem
+         * @param position is row number of the item in the listView
+         */
+        fun getItemValue(position: Int): Any {
+            return getItem(position).value
+        }
+
+        /**
+         * @return item position in provided unsorted array. If the array was not sorted, the position will equal position in the dialog
+         * @param position is row number of the item in the listView
+         */
+        fun getItemOriginalPosition(position: Int): Int {
+            return getItem(position).position
+        }
+
+        /**
+         * @return drawable associated with the dialogItem. If there is no drawable, returns null
+         * @param position is row number of the item in the listView
+         */
+        fun getItemDrawable(position: Int): Drawable? {
+            return getItem(position).drawable
+        }
+
+        /**
+         * Get the row id associated with the specified position in the list.
+         *
+         * @param position The position of the item within the adapter's data set whose row id we want.
+         * @return The id of the item at the specified position.
+         */
+        override fun getItemId(position: Int): Long {
+            return position.toLong()
+        }
+
+        /**
+         * How many items are in the data set represented by this Adapter.
+         *
+         * @return Count of items.
+         */
+        override fun getCount(): Int {
+            return this.arrayList.count()
+        }
+
+        private class ViewHolder(view: View) {
+            val dialogItem = view.findViewById(R.id.item_dialog) as TextView
+            val imageView = view.findViewById(R.id.image_view) as ImageView
+        }
+    }
+}
+
+/**
+ * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+ * @param context of currently displayed activity
+ * @param title is String, which will be displayed at a top of the dialog
+ * @param message is String, which will be displayed under the title
+ */
+class CheckBoxesDialog private constructor(
+    context: Context,
+    title: String,
+    message: String
+) : DialogTwoButtons(context, title, message, R.drawable.round_check_box_white_24dp, true) {
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        linkedHashMap: LinkedHashMap<Int, CheckBoxDialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        val arrayList = ArrayList<CheckBoxDialogItem>()
+        for (key in linkedHashMap.keys) {
+            arrayList.add(linkedHashMap[key]!!)
+        }
+        setupDialog(arrayList, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        linkedHashMap: LinkedHashMap<Int, CheckBoxDialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        linkedHashMap: LinkedHashMap<Int, CheckBoxDialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param linkedHashMap is linkedHashMap with values saved under keys. The values will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        linkedHashMap: LinkedHashMap<Int, CheckBoxDialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        linkedHashMap,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        val newArrayList = ArrayList<CheckBoxDialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = LinkedHashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in 0 until arrayList.size) {
+                defaultHashMap[arrayList[index]] = index
+                sortedArrayList.add(arrayList[index])
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                newArrayList.add(CheckBoxDialogItem(defaultHashMap[param]!!, param, null))
+            }
+        } else {
+            for (index in 0 until arrayList.size) {
+                newArrayList.add(CheckBoxDialogItem(index, arrayList[index], null))
+            }
+        }
+        setupDialog(newArrayList, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayList is ArrayList, which will be displayed in the dialog
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        arrayList,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(context, title, message) {
+        val arrayList = ArrayList<CheckBoxDialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = HashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in array.indices) {
+                sortedArrayList.add(array[index])
+                defaultHashMap[array[index]] = index
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                arrayList.add(CheckBoxDialogItem(defaultHashMap[param]!!, param, null))
+            }
+        } else {
+            for (index in array.indices) {
+                arrayList.add(CheckBoxDialogItem(index, array[index], null))
+            }
+        }
+        setupDialog(arrayList, alreadySelectedItems)
+    }
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param array is String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        array,
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    /**
+     * Creates dialog with a listView inside it. The list contains items, which consist checkable textView
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at a top of the dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param arrayReference is int reference to String array, which will be displayed in the dialog
+     * @param sortAlphabetically if true, the array values will be sorted alphabetically
+     * @param alreadySelectedItems is arrayList of Ints, which represents elements, which were selected in previous instance of the dialog. Providing these keys will check the items with provided keys
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        arrayReference: Int,
+        sortAlphabetically: Boolean,
+        alreadySelectedItems: ArrayList<Int>?
+    ) : this(
+        context,
+        title,
+        message,
+        context.resources.getStringArray(arrayReference),
+        sortAlphabetically,
+        alreadySelectedItems
+    )
+
+    private lateinit var adapter: Adapter
+
+    /**
+     * Sets all required elements of the listViewDialog
+     */
+    private fun setupDialog(
+        sourceArrayList: ArrayList<CheckBoxDialogItem>,
+        alreadySelectedItems: ArrayList<Int>?
+    ) {
+        val listView = ListView(getContext())
+        val dialogElements = DialogElements(getContext())
+        val editText = dialogElements.getSearchEditText()
+        this.adapter = Adapter(
+            getContext(),
+            dialogElements.getNoItemFoundTextView(),
+            listView,
+            sourceArrayList,
+            alreadySelectedItems
+        )
+        editText.addTextChangedListener {
+            this.adapter.setData(
+                if (editText.text.isEmpty())
+                    sourceArrayList
+                else {
+                    val filteredArrayList = ArrayList<CheckBoxDialogItem>()
+                    for (item in sourceArrayList) {
+                        @SuppressLint("DefaultLocale")
+                        if (item.text.toLowerCase()
+                                .contains(editText.text.toString().toLowerCase())
+                        )
+                            filteredArrayList.add(item)
+                    }
+                    filteredArrayList
+                }
+            )
+        }
+        addContentView(editText)
+        listView.adapter = this.adapter
+        addContentView(listView)
+    }
+
+    /**
+     * @return arrayList of keys, which were selected in the dialog
+     */
+    fun getSelectedItems(): ArrayList<Int> {
+        return this.adapter.getSelectedItems()
+    }
+
+    /**
+     * @return adapter assigned to listView
+     */
+    private fun getAdapter(): Adapter {
+        return this.adapter
+    }
+
+    /**
+     * @return listView, where the items are displayed
+     */
+    fun getListView(): ListView {
+        return getAdapter().getListView()
+    }
+
+    /**
+     * @return value displayed in provided row position
+     * @param position in the listView
+     */
+    fun getValueToDisplay(position: Int): String {
+        return getAdapter().getItem(position).text
+    }
+
+    /**
+     * @return position of the item in original array. If the array was not sorted, it equals to the position in dialog
+     * @param position in the listView
+     */
+    fun getItemOriginalPosition(position: Int): Int {
+        return getAdapter().getItem(position).position
+    }
+
+    /**
+     * @return drawable associated with the item
+     * @param position in the listView
+     */
+    fun getItemDrawable(position: Int): Drawable? {
+        return getAdapter().getItem(position).drawable
+    }
+
+    private class Adapter(
+        private val context: Context,
+        private val noItemFoundTextView: TextView,
+        private val listView: ListView,
+        arrayList: ArrayList<CheckBoxDialogItem>,
+        selectedItems: ArrayList<Int>?
+    ) :
+        BaseAdapter() {
+        private val layoutInflater = LayoutInflater.from(this.context)
+        private var selectedItems: ArrayList<Int> = when (selectedItems == null) {
+            true -> ArrayList()
+            else -> selectedItems
+        }
+        private lateinit var arrayList: ArrayList<CheckBoxDialogItem>
+
+        init {
+            setData(arrayList)
+        }
+
+        /**
+         * @param arrayList are values to populate listView
+         * sets data to display
+         */
+        fun setData(arrayList: ArrayList<CheckBoxDialogItem>) {
+            this.arrayList = arrayList
+            notifyDataSetChanged()
+            when (count) {
+                0 -> {
+                    this.noItemFoundTextView.text =
+                        MyString(this.context).fromResources(R.string.noItemsFound)
+                    this.noItemFoundTextView.visibility = View.VISIBLE
+                    this.listView.visibility = View.GONE
+                }
+                else -> {
+                    this.noItemFoundTextView.visibility = View.GONE
+                    this.listView.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        /**
+         * @return adapter assigned to listView
+         */
+        fun getValueToDisplay(position: Int): String {
+            return getItem(position).text
+        }
+
+        /**
+         * @return position of the item in original array. If the array was not sorted, it equals to the position in dialog
+         * @param position in the listView
+         */
+        fun getItemOriginalPosition(position: Int): Int {
+            return getItem(position).position
+        }
+
+        /**
+         * @return drawable associated with the item
+         * @param position in the listView
+         */
+        fun getItemDrawable(position: Int): Drawable? {
+            return getItem(position).drawable
+        }
+
+        /**
+         * @return selected items keys
+         */
+        fun getSelectedItems(): ArrayList<Int> {
+            return this.selectedItems
+        }
+
+        /**
+         * @return listView, where the items are displayed
+         */
+        fun getListView(): ListView {
+            return this.listView
+        }
+
+        /**
+         * Get a View that displays the data at the specified position in the data set. You can either
+         * create a View manually or inflate it from an XML layout file. When the View is inflated, the
+         * parent View (GridView, ListView...) will apply default layout parameters unless you use
+         * [android.view.LayoutInflater.inflate]
+         * to specify a root view and to prevent attachment to the root.
+         *
+         * @param position The position of the item within the adapter's data set of the item whose view
+         * we want.
+         * @param convertView The old view to reuse, if possible. Note: You should check that this view
+         * is non-null and of an appropriate type before using. If it is not possible to convert
+         * this view to display the correct data, this method can create a new view.
+         * Heterogeneous lists can specify their number of view types, so that this View is
+         * always of the right type (see [.getViewTypeCount] and
+         * [.getItemViewType]).
+         * @param parent The parent that this view will eventually be attached to
+         * @return A View corresponding to the data at the specified position.
+         */
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val view: View?
+            val viewHolder: ViewHolder
+            if (convertView == null) {
+                view = this.layoutInflater.inflate(
+                    R.layout.item_dialog_checkbox,
+                    parent,
+                    false
+                )
                 viewHolder = ViewHolder(view)
                 view.tag = viewHolder
             } else {
@@ -2875,8 +3158,8 @@ class CheckBoxesDialog private constructor(
          * data set.
          * @return The data at the specified position.
          */
-        override fun getItem(position: Int): DialogItem {
-            return this.items[position]
+        override fun getItem(position: Int): CheckBoxDialogItem {
+            return this.arrayList[position]
         }
 
         /**
@@ -2895,7 +3178,7 @@ class CheckBoxesDialog private constructor(
          * @return Count of items.
          */
         override fun getCount(): Int {
-            return this.items.size
+            return this.arrayList.size
         }
 
         private class ViewHolder(view: View) {
@@ -2908,16 +3191,16 @@ class CheckBoxesDialog private constructor(
 /**
  * Creates object for CheckBoxDialog
  *
- * @param position is position of item in original array
+ * @param position is position in the original array
  * @param text is String, which describes the item
  * @param drawable is image, which will be displayed next to text
  */
-data class DialogItem(val position: Int, val text: String, val drawable: Drawable?) {
+data class CheckBoxDialogItem(val position: Int, val text: String, val drawable: Drawable?) {
 
     /**
      * Creates object for CheckBoxDialog
      *
-     * @param position is position of item in original array
+     * @param position is position in the original array
      * @param text is String, which describes the item
      */
     constructor(position: Int, text: String) : this(position, text, null)
@@ -2926,7 +3209,7 @@ data class DialogItem(val position: Int, val text: String, val drawable: Drawabl
      * Creates object for CheckBoxDialog
      *
      * @param context of currently displayed activity
-     * @param position is position of item in original array
+     * @param position is position in the original array
      * @param text is int reference to String, which describes the item
      */
     constructor(context: Context, position: Int, text: Int) : this(
@@ -2938,9 +3221,9 @@ data class DialogItem(val position: Int, val text: String, val drawable: Drawabl
      * Creates object for CheckBoxDialog
      *
      * @param context of currently displayed activity
-     * @param context of currently displayed activity
-     * @param position is position of item in original array
+     * @param position is position in the original array
      * @param text is int reference to String, which describes the item
+     * @param drawable is image, which will be displayed next to text
      */
     constructor(
         context: Context,
@@ -2948,4 +3231,87 @@ data class DialogItem(val position: Int, val text: String, val drawable: Drawabl
         text: Int,
         drawable: Drawable
     ) : this(position, MyString(context).fromResources(text), drawable)
+}
+
+/**
+ * Creates object for ListViewDialog
+ *
+ * @param position is position in the original array
+ * @param text is String, which describes the item
+ * @param value is value, which can retrieved by a method
+ * @param drawable is image, which will be displayed next to text
+ */
+data class ListViewDialogItem(
+    val position: Int,
+    val text: String,
+    val value: Any,
+    val drawable: Drawable?
+) {
+    /**
+     * Creates object for ListViewDialog
+     *
+     * @param position is position in the original array
+     * @param text is String, which describes the item
+     * @param value is value, which can retrieved by a method
+     */
+    constructor(position: Int, text: String, value: Any) : this(position, text, value, null)
+
+    /**
+     * Creates object for ListViewDialog
+     *
+     * @param context of currently displayed activity
+     * @param position is position in the original array
+     * @param text is int reference to String, which describes the item
+     * @param value is value, which can retrieved by a method
+     * @param drawable is image, which will be displayed next to text
+     */
+    constructor(context: Context, position: Int, text: Int, value: Any, drawable: Drawable?) : this(
+        position,
+        MyString(context).fromResources(text),
+        value,
+        drawable
+    )
+
+    /**
+     * Creates object for ListViewDialog
+     *
+     * @param context of currently displayed activity
+     * @param position is position in the original array
+     * @param text is int reference to String, which describes the item
+     * @param value is value, which can retrieved by a method
+     */
+    constructor(context: Context, position: Int, text: Int, value: Any) : this(
+        position,
+        MyString(context).fromResources(text),
+        value,
+        null
+    )
+
+}
+
+private class DialogElements(private val context: Context) {
+
+    fun getSearchEditText(): EditText {
+        val editText = EditText(this.context)
+        editText.setHintTextColor(ContextCompat.getColor(this.context, R.color.hintColor))
+        editText.setTextColor(ContextCompat.getColor(this.context, R.color.textColor))
+        editText.textSize = 18f
+        editText.setCompoundDrawablesWithIntrinsicBounds(
+            R.drawable.round_search_white_18dp,
+            0, 0, 0
+        )
+
+        editText.hint = MyString(context).fromResources(R.string.hintSearch)
+        return editText
+    }
+
+    fun getNoItemFoundTextView(): TextView {
+        val textView = TextView(this.context)
+        textView.setTextColor(ContextCompat.getColor(this.context, R.color.textColor))
+        textView.textSize = 18f
+        textView.setPadding(15, 15, 0, 5)
+        textView.visibility = View.GONE
+        return textView
+    }
+
 }
