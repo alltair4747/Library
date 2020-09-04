@@ -2852,11 +2852,8 @@ class CheckBoxesDialog private constructor(
             if (getItemDrawable(position) != null) {
                 viewHolder.imageView.visibility = View.VISIBLE
                 viewHolder.imageView.background = getItemDrawable(position)
-                viewHolder.checkBox.setPadding(45, 0, 0, 0)
-            } else {
+            } else
                 viewHolder.imageView.visibility = View.GONE
-                viewHolder.checkBox.setPadding(10, 0, 0, 0)
-            }
             viewHolder.checkBox.isChecked =
                 this.selectedItems.contains(getItemOriginalPosition(position))
             viewHolder.checkBox.setOnClickListener {

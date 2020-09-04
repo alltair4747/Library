@@ -4,30 +4,59 @@ import android.content.Context
 import android.util.DisplayMetrics
 import kotlin.math.roundToInt
 
-class MyScreen(private val context: Context) {
+@Suppress("unused", "MemberVisibilityCanBePrivate")
+class MyScreen(context: Context) {
+    private val displayResources = context.resources.displayMetrics
 
+    /**
+     * @return rounded number of density points, which are created by provided number of pixels on the device display
+     * @param pixels is number pixels, that will be converted to density points
+     */
     fun pxToDp(pixels: Int): Int {
-        return (pixels / (this.context.resources.displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
+        return (pixels / (this.displayResources.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
 
+    /**
+     * @return rounded number of pixels, which creates provided number of density points on the device display
+     * @param densityPoints is number dpi, that will be converted to pixels
+     */
     fun dpToPx(densityPoints: Int): Int {
-        return (densityPoints * (this.context.resources.displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
+        return (densityPoints * (this.displayResources.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
 
-    fun getScreenWidth(): Float {
-        return this.context.resources.displayMetrics.xdpi
+    /**
+     * @return number of pixels in one inch of the display
+     */
+    fun getDisplayDensity(): Float {
+        return this.displayResources.ydpi
     }
 
+    /**
+     * @return number of pixels, which creates the height of the device display
+     */
+    fun getScreenHeight(): Int {
+        return this.displayResources.heightPixels
+    }
+
+    /**
+     * @return number of density points, which creates the height of the device display
+     */
     fun getScreenHeightDensityPoints(): Int {
-        return pxToDp(getScreenHeight2())
+        return pxToDp(getScreenHeight())
     }
 
-    fun getScreenHeight(): Float {
-        return this.context.resources.displayMetrics.ydpi
+    /**
+     * @return number of pixels, which creates the width of the device display
+     */
+    fun getScreenWidth(): Int {
+        return this.displayResources.widthPixels
     }
 
-    fun getScreenHeight2(): Int {
-        return this.context.resources.displayMetrics.heightPixels
+    /**
+     * @return number of density points, which creates the height of the device display
+     */
+    fun getScreenWidthDensityPoints(): Int {
+        return pxToDp(getScreenWidth())
     }
 
 }
