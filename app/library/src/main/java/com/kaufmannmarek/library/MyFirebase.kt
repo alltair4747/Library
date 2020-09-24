@@ -434,7 +434,7 @@ class MyFireStoreBatch(private val context: Context) {
      * @param arrayName is name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
-    fun removeElementFromDocumentArray(
+    fun removeValueFromArray(
         myFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any
@@ -453,7 +453,7 @@ class MyFireStoreBatch(private val context: Context) {
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
-    fun removeElementFromDocumentArray(
+    fun removeValueFromArray(
         myFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any
@@ -472,7 +472,7 @@ class MyFireStoreBatch(private val context: Context) {
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
-    fun moveValueToAnotherDocument(
+    fun addValueToArray(
         myFirestoreDocument: MyFirestoreDocument,
         arrayName: String,
         value: Any
@@ -491,12 +491,12 @@ class MyFireStoreBatch(private val context: Context) {
      * @param arrayName is int, which is reference to String, which holds name of the array, where the value currently is
      * @param value is the value, which should be removed
      */
-    fun moveValueToAnotherDocument(
+    fun addValueToArray(
         myFirestoreDocument: MyFirestoreDocument,
         arrayName: Int,
         value: Any
     ) {
-        moveValueToAnotherDocument(
+        addValueToArray(
             myFirestoreDocument,
             MyString(this.context).fromResources(arrayName),
             value
@@ -521,8 +521,8 @@ class MyFireStoreBatch(private val context: Context) {
         defaultArray: String,
         defaultValue: Any
     ) {
-        removeElementFromDocumentArray(defaultMyFirestoreDocument, defaultArray, defaultValue)
-        moveValueToAnotherDocument(destinationMyFirestoreDocument, destinationArray, value)
+        removeValueFromArray(defaultMyFirestoreDocument, defaultArray, defaultValue)
+        addValueToArray(destinationMyFirestoreDocument, destinationArray, value)
     }
 
     /**
