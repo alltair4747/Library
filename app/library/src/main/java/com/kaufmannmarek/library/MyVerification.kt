@@ -26,9 +26,13 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
         }
     }
 
+    fun getContext(): Context {
+        return this.context
+    }
+
     fun getMyString(): MyString {
         if (!::myString.isInitialized)
-            this.myString = MyString(this.context)
+            this.myString = MyString(getContext())
         return this.myString
     }
 
@@ -95,7 +99,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
     fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: Int) {
         if (!checkedTextView.isChecked) {
             setViewFocus(checkedTextView)
-            checkedTextView.error = this.myString.fromResources(errorText)
+            checkedTextView.error = getMyString().fromResources(errorText)
         }
     }
 
@@ -107,7 +111,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      */
     private fun errorFoundInEditText(editText: EditText, errorText: Int?) {
         setViewFocus(editText)
-        editText.error = MyString(this.context).fromResources(
+        editText.error = getMyString().fromResources(
             when (editText.text.toString().isEmpty()) {
                 true -> R.string.fieldIsEmpty
                 false -> errorText!!
