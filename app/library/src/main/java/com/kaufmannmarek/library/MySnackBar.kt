@@ -327,22 +327,41 @@ open class MySnackBarImageAndText(
  * @param context of currently displayed activity
  * @param userName is name of the user, which has login
  * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+ * @param length is duration in milliseconds, for that the snackBar will be displayed. If null, the snackBar will be displayed for 1500 milliseconds
  */
-class MySnackBarLogin(context: Context, userName: String, view: View?) : MySnackBarImageAndText(
-    context,
-    context.getString(R.string.greetingUser, userName),
-    R.drawable.ic_user,
-    1500,
-    true,
-    view
-) {
+class MySnackBarLogin(context: Context, userName: String, view: View?, length: Int?) :
+    MySnackBarImageAndText(
+        context,
+        context.getString(R.string.greetingUser, userName),
+        R.drawable.ic_user,
+        when (length == null) {
+            true -> 1500
+            false -> length
+        },
+        true,
+        view
+    ) {
     /**
      * Will display snackBar on the bottom of the activity, which notifies user about successful login in to app. It will be shown for 1500 milliseconds
      *
      * @param context of currently displayed activity
      * @param userName is name of the user, which has login
      */
-    constructor(context: Context, userName: String) : this(context, userName, null)
+    constructor(context: Context, userName: String) : this(context, userName, null, null)
+
+    /**
+     * Will display snackBar on the bottom of the activity, which notifies user about successful login in to app. It will be shown for 1500 milliseconds
+     *
+     * @param context of currently displayed activity
+     * @param userName is name of the user, which has login
+     * @param length is duration in milliseconds, for that the snackBar will be displayed
+     */
+    constructor(context: Context, userName: String, length: Int) : this(
+        context,
+        userName,
+        null,
+        length
+    )
 }
 
 /**
@@ -351,9 +370,10 @@ class MySnackBarLogin(context: Context, userName: String, view: View?) : MySnack
  * @param context of currently displayed activity
  * @param text is String to be displayed
  * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+ * @param length is duration in milliseconds, for that the snackBar will be displayed. If null, the snackBar will be displayed for 2500 milliseconds
  */
-class MySnackBarSuccess(context: Context, text: String, view: View?) :
-    MySnackBarImageAndText(context, text, R.drawable.ic_success, 2500, true, view) {
+class MySnackBarSuccess(context: Context, text: String, view: View?, length: Int?) :
+    MySnackBarImageAndText(context, text, R.drawable.ic_success, length, true, view) {
 
     /**
      * Will display snackBar, which notifies user about successful result of operation
@@ -365,7 +385,23 @@ class MySnackBarSuccess(context: Context, text: String, view: View?) :
     constructor(context: Context, text: Int, view: View?) : this(
         context,
         MyString(context).fromResources(text),
-        view
+        view,
+        null
+    )
+
+    /**
+     * Will display snackBar, which notifies user about successful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String to be displayed
+     * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: Int, view: View?, length: Int) : this(
+        context,
+        MyString(context).fromResources(text),
+        view,
+        length
     )
 
     /**
@@ -374,7 +410,16 @@ class MySnackBarSuccess(context: Context, text: String, view: View?) :
      * @param context of currently displayed activity
      * @param text is String to be displayed
      */
-    constructor(context: Context, text: String) : this(context, text, null)
+    constructor(context: Context, text: String) : this(context, text, null, null)
+
+    /**
+     * Will display snackBar on the bottom of the activity, which notifies user about successful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is String to be displayed
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: String, length: Int) : this(context, text, null, length)
 
     /**
      * Will display snackBar on the bottom of the activity, which notifies user about successful result of operation
@@ -385,7 +430,22 @@ class MySnackBarSuccess(context: Context, text: String, view: View?) :
     constructor(context: Context, text: Int) : this(
         context,
         MyString(context).fromResources(text),
+        null,
         null
+    )
+
+    /**
+     * Will display snackBar on the bottom of the activity, which notifies user about successful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String to be displayed
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: Int, length: Int) : this(
+        context,
+        MyString(context).fromResources(text),
+        null,
+        length
     )
 
 }
@@ -396,9 +456,15 @@ class MySnackBarSuccess(context: Context, text: String, view: View?) :
  * @param context of currently displayed activity
  * @param text is String to be displayed
  * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+ * @param length is duration in milliseconds, for that the snackBar will be displayed. If null, the snackBar will be displayed for 4000 milliseconds
  */
-class MySnackBarFail(context: Context, text: String, view: View?) :
-    MySnackBarImageAndText(context, text, R.drawable.ic_fail, 4000, true, view) {
+class MySnackBarFail(context: Context, text: String, view: View?, length: Int?) :
+    MySnackBarImageAndText(
+        context, text, R.drawable.ic_fail, when (length == null) {
+            true -> 4000
+            false -> length
+        }, true, view
+    ) {
 
     /**
      * Will display snackBar, which notifies user about unsuccessful result of operation
@@ -410,7 +476,23 @@ class MySnackBarFail(context: Context, text: String, view: View?) :
     constructor(context: Context, text: Int, view: View?) : this(
         context,
         MyString(context).fromResources(text),
-        view
+        view,
+        null
+    )
+
+    /**
+     * Will display snackBar, which notifies user about unsuccessful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String to be displayed
+     * @param view snackBar will be shown at the bottom of the provided View. If you want to display it on the bottom of current activity, pass null
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: Int, view: View?, length: Int) : this(
+        context,
+        MyString(context).fromResources(text),
+        view,
+        length
     )
 
     /**
@@ -419,7 +501,16 @@ class MySnackBarFail(context: Context, text: String, view: View?) :
      * @param context of currently displayed activity
      * @param text is String to be displayed
      */
-    constructor(context: Context, text: String) : this(context, text, null)
+    constructor(context: Context, text: String) : this(context, text, null, null)
+
+    /**
+     * Will display snackBar on the bottom of the activity, which notifies user about unsuccessful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is String to be displayed
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: String, length: Int) : this(context, text, null, length)
 
     /**
      * Will display snackBar on the bottom of the activity, which notifies user about unsuccessful result of operation
@@ -430,7 +521,22 @@ class MySnackBarFail(context: Context, text: String, view: View?) :
     constructor(context: Context, text: Int) : this(
         context,
         MyString(context).fromResources(text),
+        null,
         null
+    )
+
+    /**
+     * Will display snackBar on the bottom of the activity, which notifies user about unsuccessful result of operation
+     *
+     * @param context of currently displayed activity
+     * @param text is int reference to String to be displayed
+     * @param length is duration, for that the snackBar will be displayed
+     */
+    constructor(context: Context, text: Int, length: Int) : this(
+        context,
+        MyString(context).fromResources(text),
+        null,
+        length
     )
 
 }
