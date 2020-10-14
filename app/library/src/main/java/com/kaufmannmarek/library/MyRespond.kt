@@ -2,14 +2,11 @@
 
 package com.kaufmannmarek.library
 
-import androidx.appcompat.app.AppCompatActivity
-
 /**
- * Creates an interface, which serves in case, when you need to call origin activity method, when the tasks in different class are done. You must use it instead of AppCompatActivity. To make this working, you must implement this abstract class in origin activity with method onRespondReceived. Set up the request code as you need by method setRequestCode. It serves as filter at the end of the process. Then you must pass this implementation to method of the class, where the other tasks are performed. Once the tasks are done and you got it´s result, you must call setTaskResult, setTaskResultOK or setTaskResultBad. Afterwards the method onRespondReceived is called. You can implement this method as you need
+ * Creates an interface, which serves in case, when you need to call origin activity method, when the tasks in different class are done. To make this working, you must implement this abstract class in origin activity with method onRespondReceived. It serves as filter at the end of the process. Then you must pass this implementation to method of the class, where the other tasks are performed. Once the tasks are done and you got it´s result, you must call setTaskResult, setTaskResultOK or setTaskResultBad. Afterwards the method onRespondReceived is called. You can implement this method as you need
  */
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class MyRespond : AppCompatActivity() {
-    private var requestCode: Int? = null
+abstract class MyRespond(private val requestCode: Int) {
     private var resultCode: Int? = null
     private val RESULT_OK = -1
     private val RESULT_BAD = 1
@@ -26,22 +23,10 @@ abstract class MyRespond : AppCompatActivity() {
     }
 
     /**
-     * Sets request code of the task
-     *
-     * @param requestCode is code of performed task
-     */
-    fun setRequestCode(requestCode: Int) {
-        this.requestCode = requestCode
-    }
-
-    /**
-     * @return requestCode of the task. If the request code was not set, then 0 will be returned
+     * @return requestCode of the task
      */
     fun getRequestCode(): Int {
-        return if (this.requestCode != null)
-            this.requestCode!!
-        else
-            0
+        return requestCode
     }
 
     /**
