@@ -7,7 +7,7 @@ package com.kaufmannmarek.library
  */
 @Suppress("MemberVisibilityCanBePrivate")
 abstract class MyRespond {
-    abstract var requestCode: Int
+    abstract var requestCode: Int?
     private var resultCode: Int? = null
     private val RESULT_OK = -1
     private val RESULT_BAD = 1
@@ -20,7 +20,26 @@ abstract class MyRespond {
      */
     fun setTaskResult(resultCode: Int, data: Any?) {
         this.resultCode = resultCode
-        onRespondReceived(this.requestCode, resultCode, data)
+        onRespondReceived(getRequestCode(), resultCode, data)
+    }
+
+    /**
+     * Sets request code of the task
+     *
+     * @param requestCode is code of performed task
+     */
+    fun setRequestCode(requestCode: Int) {
+        this.requestCode = requestCode
+    }
+
+    /**
+     * @return requestCode of the task. If the request code was not set, then 0 will be returned
+     */
+    fun getRequestCode(): Int {
+        return if (this.requestCode != null)
+            this.requestCode!!
+        else
+            0
     }
 
     /**
