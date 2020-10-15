@@ -3159,6 +3159,7 @@ open class ListViewDialog private constructor(
 
 
     private lateinit var adapter: Adapter
+    private lateinit var sourceArrayList: ArrayList<ListViewDialogItem>
 
     private fun setupDialog(sourceArrayList: ArrayList<ListViewDialogItem>) {
         setupDialog(sourceArrayList, null)
@@ -3171,16 +3172,17 @@ open class ListViewDialog private constructor(
         sourceArrayList: ArrayList<ListViewDialogItem>,
         noItemFoundText: String?
     ) {
+        this.sourceArrayList = sourceArrayList
         val listView = ListView(getContext())
         val dialogElements = DialogElements(getContext())
         val editText = dialogElements.getSearchEditText()
         val textView = dialogElements.getNoItemFoundTextView()
         editText.addTextChangedListener {
             if (editText.text.isEmpty())
-                getAdapter().setData(sourceArrayList)
+                getAdapter().setData(this.sourceArrayList)
             else {
                 val arrayList = ArrayList<ListViewDialogItem>()
-                for (item in sourceArrayList) {
+                for (item in this.sourceArrayList) {
                     if (item.text.toLowerCase(Locale.GERMANY)
                             .contains(editText.text.toString().toLowerCase(Locale.GERMANY))
                     )
@@ -3192,7 +3194,8 @@ open class ListViewDialog private constructor(
         addContentView(editText)
         addContentView(textView)
         addContentView(listView)
-        this.adapter = Adapter(getContext(), sourceArrayList, textView, listView, noItemFoundText)
+        this.adapter =
+            Adapter(getContext(), this.sourceArrayList, textView, listView, noItemFoundText)
         listView.adapter = this.adapter
         if (this.editTextToUpdate != null)
             setOnItemClick()
@@ -3227,6 +3230,44 @@ open class ListViewDialog private constructor(
      */
     fun getItem(position: Int): ListViewDialogItem {
         return this.adapter.getItem(position)
+    }
+
+    /**
+     * Adds item to the dialog and display it
+     *
+     * @param textToDisplay is String, which will be displayed among the other items
+     * @param value is value, that might be retrieved for later usage
+     * @param drawable is picture, which will be displayed in the left to the text
+     */
+    fun addItem(textToDisplay: String, value: Any, drawable: Drawable?) {
+        var positionInArray: Int = -1
+        for (index in 0 until this.sourceArrayList.size) {
+            if (textToDisplay <= this.sourceArrayList[index].text)
+                positionInArray = index
+        }
+        if (positionInArray == -1)
+            this.sourceArrayList.add(
+                ListViewDialogItem(
+                    this.sourceArrayList.size,
+                    textToDisplay,
+                    value,
+                    drawable
+                )
+            )
+        else {
+            val updatedArrayList = ArrayList<ListViewDialogItem>()
+            for (index in 0 until positionInArray) {
+                updatedArrayList[index] = this.sourceArrayList[index]
+            }
+            updatedArrayList[positionInArray] =
+                ListViewDialogItem(positionInArray, textToDisplay, value, drawable)
+            for (index in positionInArray until this.sourceArrayList.size) {
+                updatedArrayList[index + 1] = this.sourceArrayList[index]
+            }
+            this.sourceArrayList.clear()
+            this.sourceArrayList = ArrayList(updatedArrayList)
+        }
+        this.adapter.setData(this.sourceArrayList)
     }
 
     /**
@@ -3840,6 +3881,7 @@ class CheckBoxesDialog private constructor(
     )
 
     private lateinit var adapter: Adapter
+    private lateinit var sourceArrayList: ArrayList<CheckBoxDialogItem>
 
     /**
      * Sets all required elements of the listViewDialog
@@ -3848,6 +3890,7 @@ class CheckBoxesDialog private constructor(
         sourceArrayList: ArrayList<CheckBoxDialogItem>,
         alreadySelectedItems: ArrayList<Int>?
     ) {
+        this.sourceArrayList = sourceArrayList
         val listView = ListView(getContext())
         val dialogElements = DialogElements(getContext())
         val textView = dialogElements.getNoItemFoundTextView()
@@ -3856,16 +3899,16 @@ class CheckBoxesDialog private constructor(
             getContext(),
             textView,
             listView,
-            sourceArrayList,
+            this.sourceArrayList,
             alreadySelectedItems
         )
         editText.addTextChangedListener {
             this.adapter.setData(
                 if (editText.text.isEmpty())
-                    sourceArrayList
+                    this.sourceArrayList
                 else {
                     val filteredArrayList = ArrayList<CheckBoxDialogItem>()
-                    for (item in sourceArrayList) {
+                    for (item in this.sourceArrayList) {
                         @SuppressLint("DefaultLocale")
                         if (item.text.toLowerCase()
                                 .contains(editText.text.toString().toLowerCase())
@@ -3880,6 +3923,42 @@ class CheckBoxesDialog private constructor(
         addContentView(textView)
         listView.adapter = this.adapter
         addContentView(listView)
+    }
+
+    /**
+     * Adds item to the dialog and display it
+     *
+     * @param textToDisplay is String, which will be displayed among the other items
+     * @param drawable is picture, which will be displayed in the left to the text
+     */
+    fun addItem(textToDisplay: String, drawable: Drawable?) {
+        var positionInArray: Int = -1
+        for (index in 0 until this.sourceArrayList.size) {
+            if (textToDisplay <= this.sourceArrayList[index].text)
+                positionInArray = index
+        }
+        if (positionInArray == -1)
+            this.sourceArrayList.add(
+                CheckBoxDialogItem(
+                    this.sourceArrayList.size,
+                    textToDisplay,
+                    drawable
+                )
+            )
+        else {
+            val updatedArrayList = ArrayList<CheckBoxDialogItem>()
+            for (index in 0 until positionInArray) {
+                updatedArrayList[index] = this.sourceArrayList[index]
+            }
+            updatedArrayList[positionInArray] =
+                CheckBoxDialogItem(positionInArray, textToDisplay, drawable)
+            for (index in positionInArray until this.sourceArrayList.size) {
+                updatedArrayList[index + 1] = this.sourceArrayList[index]
+            }
+            this.sourceArrayList.clear()
+            this.sourceArrayList = ArrayList(updatedArrayList)
+        }
+        this.adapter.setData(this.sourceArrayList)
     }
 
     /**
