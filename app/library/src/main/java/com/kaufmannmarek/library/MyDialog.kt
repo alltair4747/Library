@@ -1639,6 +1639,7 @@ open class ListViewDialog private constructor(
         icon,
         arrayList,
         sortAlphabetically,
+        null,
         null
     )
 
@@ -1666,6 +1667,7 @@ open class ListViewDialog private constructor(
         icon,
         arrayList,
         sortAlphabetically,
+        null,
         null
     )
 
@@ -1693,6 +1695,7 @@ open class ListViewDialog private constructor(
         icon,
         arrayList,
         sortAlphabetically,
+        null,
         null
     )
 
@@ -1720,6 +1723,7 @@ open class ListViewDialog private constructor(
         icon,
         arrayList,
         sortAlphabetically,
+        null,
         null
     )
 
@@ -1732,6 +1736,7 @@ open class ListViewDialog private constructor(
      * @param icon is int reference to drawable, which will be displayed next to title
      * @param linkedHashMap its elements will be displayed
      * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
      */
     constructor(
         context: Context,
@@ -1739,7 +1744,8 @@ open class ListViewDialog private constructor(
         message: String,
         icon: Int,
         linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
-        editTextToUpdate: EditText?
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
     ) : this(
         context,
         title,
@@ -1751,7 +1757,7 @@ open class ListViewDialog private constructor(
         for (key in linkedHashMap.keys) {
             arrayList.add(linkedHashMap[key]!!)
         }
-        setupDialog(arrayList)
+        setupDialog(arrayList, noItemFoundText)
     }
 
     /**
@@ -1853,6 +1859,7 @@ open class ListViewDialog private constructor(
         message,
         icon,
         linkedHashMap,
+        null,
         null
     )
 
@@ -1877,6 +1884,7 @@ open class ListViewDialog private constructor(
         message,
         icon,
         linkedHashMap,
+        null,
         null
     )
 
@@ -1901,6 +1909,7 @@ open class ListViewDialog private constructor(
         MyString(context).fromResources(message),
         icon,
         linkedHashMap,
+        null,
         null
     )
 
@@ -1925,6 +1934,7 @@ open class ListViewDialog private constructor(
         MyString(context).fromResources(message),
         icon,
         linkedHashMap,
+        null,
         null
     )
 
@@ -1946,7 +1956,8 @@ open class ListViewDialog private constructor(
         icon: Int,
         array: Array<String>,
         sortAlphabetically: Boolean,
-        editTextToUpdate: EditText?
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
     ) : this(context, title, message, icon, editTextToUpdate) {
         val arrayList = ArrayList<ListViewDialogItem>()
         if (sortAlphabetically) {
@@ -1965,7 +1976,7 @@ open class ListViewDialog private constructor(
                 arrayList.add(ListViewDialogItem(index, array[index], array[index], null))
             }
         }
-        setupDialog(arrayList)
+        setupDialog(arrayList, noItemFoundText)
     }
 
     /**
@@ -2279,12 +2290,887 @@ open class ListViewDialog private constructor(
         null
     )
 
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        editTextToUpdate
+    ) {
+        val newArrayList = ArrayList<ListViewDialogItem>()
+        if (sortAlphabetically) {
+            val defaultHashMap = LinkedHashMap<String, Int>()
+            val sortedArrayList = ArrayList<String>()
+            for (index in 0 until arrayList.size) {
+                defaultHashMap[arrayList[index]] = index
+                sortedArrayList.add(arrayList[index])
+            }
+            sortedArrayList.sort()
+            for (param in sortedArrayList) {
+                newArrayList.add(ListViewDialogItem(defaultHashMap[param]!!, param, param, null))
+            }
+        } else {
+            for (index in 0 until arrayList.size) {
+                newArrayList.add(
+                    ListViewDialogItem(
+                        index,
+                        arrayList[index],
+                        arrayList[index],
+                        null
+                    )
+                )
+            }
+        }
+        setupDialog(newArrayList, noItemFoundText)
+    }
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        arrayList,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is reference to editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        arrayList,
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        arrayList,
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param arrayList its elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        arrayList: ArrayList<String>,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        arrayList,
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        linkedHashMap,
+        editTextToUpdate,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        linkedHashMap,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        linkedHashMap,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        linkedHashMap,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param linkedHashMap its elements will be displayed
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        linkedHashMap: LinkedHashMap<Int, ListViewDialogItem>,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        linkedHashMap,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate,
+        null
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param array is String array, which elements will be displayed
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        array: Array<String>,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        array,
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param editTextToUpdate is editText, which will be updated on item select
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        editTextToUpdate: EditText?,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        editTextToUpdate,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: String,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        message,
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: String,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        title,
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+    /**
+     * Create ListView dialog in current context with provided items
+     *
+     * @param context of currently displayed activity
+     * @param title is int reference to String, which will be displayed at the top of dialog
+     * @param message is int reference to String, which will be displayed under the title
+     * @param icon is int reference to drawable, which will be displayed next to title
+     * @param stringArrayReference is int reference to String array
+     * @param sortAlphabetically if true, the elements will alphabetically sorted
+     * @param noItemFoundText is text, which is displayed, when there are no items displayed in listView. If null, generic text will be displayed
+     */
+    constructor(
+        context: Context,
+        title: Int,
+        message: Int,
+        icon: Int,
+        stringArrayReference: Int,
+        sortAlphabetically: Boolean,
+        noItemFoundText: String?
+    ) : this(
+        context,
+        MyString(context).fromResources(title),
+        MyString(context).fromResources(message),
+        icon,
+        context.resources.getStringArray(stringArrayReference),
+        sortAlphabetically,
+        null,
+        noItemFoundText
+    )
+
+
     private lateinit var adapter: Adapter
+
+    private fun setupDialog(sourceArrayList: ArrayList<ListViewDialogItem>) {
+        setupDialog(sourceArrayList, null)
+    }
 
     /**
      * Assign adapter to the listView and sets all required elements
      */
-    private fun setupDialog(sourceArrayList: ArrayList<ListViewDialogItem>) {
+    private fun setupDialog(
+        sourceArrayList: ArrayList<ListViewDialogItem>,
+        noItemFoundText: String?
+    ) {
         val listView = ListView(getContext())
         val dialogElements = DialogElements(getContext())
         val editText = dialogElements.getSearchEditText()
@@ -2306,7 +3192,7 @@ open class ListViewDialog private constructor(
         addContentView(editText)
         addContentView(textView)
         addContentView(listView)
-        this.adapter = Adapter(getContext(), sourceArrayList, textView, listView)
+        this.adapter = Adapter(getContext(), sourceArrayList, textView, listView, noItemFoundText)
         listView.adapter = this.adapter
         if (this.editTextToUpdate != null)
             setOnItemClick()
@@ -2358,6 +3244,12 @@ open class ListViewDialog private constructor(
         return this.adapter.getListView()
     }
 
+    /**
+     * @return textView which is displayed, when there are no items to display in listView
+     */
+    fun noItemFoundTextView(): TextView {
+        return this.adapter.noValueFoundTextView()
+    }
 
     /**
      * Sets on item click
@@ -2374,13 +3266,19 @@ open class ListViewDialog private constructor(
         private val context: Context,
         private var arrayList: ArrayList<ListViewDialogItem>,
         private val textView: TextView,
-        private val listView: ListView
+        private val listView: ListView,
+        private var noItemFoundText: String?
     ) : BaseAdapter() {
         private val layoutInflater = LayoutInflater.from(context)
 
-
         init {
+            if (this.noItemFoundText == null)
+                R.string.noItemsToDisplay
             setData(this.arrayList)
+        }
+
+        fun noValueFoundTextView(): TextView {
+            return this.textView
         }
 
         fun setData(arrayList: ArrayList<ListViewDialogItem>) {
@@ -2392,12 +3290,11 @@ open class ListViewDialog private constructor(
             notifyDataSetChanged()
             when (count) {
                 0 -> {
-                    this.textView.text = MyString(this.context).fromResources(
+                    this.textView.text =
                         when (isFiltered) {
-                            true -> R.string.noItemsFound
-                            false -> R.string.noItemsToDisplay
+                            true -> MyString(this.context).fromResources(R.string.noItemsFound)
+                            false -> this.noItemFoundText
                         }
-                    )
                     this.textView.visibility = View.VISIBLE
                     this.listView.visibility = View.GONE
                 }
@@ -3323,5 +4220,4 @@ private class DialogElements(private val context: Context) {
         textView.visibility = View.GONE
         return textView
     }
-
 }
