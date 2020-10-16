@@ -55,14 +55,21 @@ class ThisIntent(private val context: Context, intent: Intent?) {
     /**
      * Adds object to this intent
      *
+     * @param paramName is string, which holds name of the required object
+     * @param serializable is object, which should be passed to another activity
+     */
+    fun setSerializable(paramName: String, serializable: Serializable) {
+        getIntent().putExtra(paramName, serializable)
+    }
+
+    /**
+     * Adds object to this intent
+     *
      * @param paramName is int reference from string resource, which holds name of the required object
      * @param serializable is object, which should be passed to another activity
      */
     fun setSerializable(paramName: Int, serializable: Serializable) {
-        getIntent().putExtra(
-            MyString(this.context).fromResources(paramName),
-            serializable
-        )
+        setSerializable(MyString(this.context).fromResources(paramName), serializable)
     }
 
     /**
@@ -109,6 +116,47 @@ class ThisIntent(private val context: Context, intent: Intent?) {
     fun setResult(resultCode: Int, intent: Intent?) {
         getActivity().setResult(resultCode, intent)
         finish(true)
+    }
+
+    fun setResult(resultCode: Int, intent: Intent?, paramName: String, value: Serializable) {
+        setSerializable(paramName, value)
+        setResult(resultCode, intent)
+    }
+
+    fun setResult(resultCode: Int, intent: Intent?, paramName: Int, value: Serializable) {
+        setResult(resultCode, intent, MyString(this.context).fromResources(paramName), value)
+    }
+
+    fun setBoolean(paramName: String, value: Boolean) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    fun setBoolean(paramName: Int, value: Boolean) {
+        setBoolean(MyString(this.context).fromResources(paramName), value)
+    }
+
+    fun setInt(paramName: String, value: Int) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    fun setInt(paramName: Int, value: Int) {
+        setInt(MyString(this.context).fromResources(paramName), value)
+    }
+
+    fun setString(paramName: String, value: String) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    fun setString(paramName: Int, value: String) {
+        setString(MyString(this.context).fromResources(paramName), value)
+    }
+
+    fun setDouble(paramName: String, value: Double) {
+        getIntent().putExtra(paramName, value)
+    }
+
+    fun setDouble(paramName: Int, value: Double) {
+        setDouble(MyString(this.context).fromResources(paramName), value)
     }
 
     /**
