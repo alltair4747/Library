@@ -24,6 +24,16 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
     constructor(context: Context) : this(context, JSONObject())
 
     /**
+     * Creates new JSONObject from jsonObject, which is currently saved as String
+     *
+     * @param context of currently displayed activity
+     */
+    constructor(context: Context, jsonObjectAsString: String) : this(
+        context,
+        JSONObject(jsonObjectAsString)
+    )
+
+    /**
      * @return jsonObject
      */
     fun get(): JSONObject {
