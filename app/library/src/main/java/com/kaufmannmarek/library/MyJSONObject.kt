@@ -80,7 +80,7 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
      * @return String value saved under provided paramName. If the jsonObject does not contain value with paramName, return null
      * @param paramName is String, which represents name, under which is the String saved
      */
-    fun asString(paramName: String): String? {
+    fun getString(paramName: String): String? {
         return get().getString(paramName)
     }
 
@@ -88,8 +88,8 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
      * @return String value saved under provided paramName. If the jsonObject does not contain value with paramName, return null
      * @param paramName is int reference to String, which represents name, under which is the String saved
      */
-    fun asString(paramName: Int): String? {
-        return asString(myString.fromResources(paramName))
+    fun getString(paramName: Int): String? {
+        return getString(myString.fromResources(paramName))
     }
 
     /**
@@ -97,7 +97,7 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
      * @param paramName is String, which represents name, under which is the String saved
      */
     fun getStringNonNull(paramName: String): String {
-        return asString(paramName)!!
+        return getString(paramName)!!
     }
 
     /**
@@ -105,7 +105,7 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
      * @param paramName is int reference to String, which represents name, under which is the String saved
      */
     fun getStringNonNull(paramName: Int): String {
-        return asString(paramName)!!
+        return getString(paramName)!!
     }
 
     /**
