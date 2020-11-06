@@ -381,4 +381,20 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
     fun addJSONArray(paramName: Int, value: JSONArray) {
         addJSONArray(this.myString.fromResources(paramName), value)
     }
+
+    /**
+     * @return if the jsonObject has value, saved under provided name
+     * @param paramName is String, which holds name of the param, which should be in jsonObject
+     */
+    fun containsParam(paramName: String): Boolean {
+        return get().has(paramName)
+    }
+
+    /**
+     * @return if the jsonObject has value, saved under provided name
+     * @param paramName is int reference to String, which holds name of the param, which should be in jsonObject
+     */
+    fun containsParam(paramName: Int): Boolean {
+        return containsParam(this.myString.fromResources(paramName))
+    }
 }
