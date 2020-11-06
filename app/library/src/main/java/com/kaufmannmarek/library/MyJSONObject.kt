@@ -253,6 +253,38 @@ class MyJSONObject(private val context: Context, private val jsonObject: JSONObj
     }
 
     /**
+     * @return JSONArray saved under provided paramName. If the jsonObject does not contain jsonArray with paramName, return null
+     * @param paramName is String, which represents name, under which is the jsonArray saved
+     */
+    fun getJSONArray(paramName: String): JSONArray?{
+        return get().getJSONArray(paramName)
+    }
+
+    /**
+     * @return JSONArray saved under provided paramName. If the jsonObject does not contain jsonArray with paramName, return null
+     * @param paramName is int reference to String, which represents name, under which is the jsonArray saved
+     */
+    fun getJSONArray(paramName: Int): JSONArray?{
+        return getJSONArray(this.myString.fromResources(paramName))
+    }
+
+    /**
+     * @return JSONArray saved under provided paramName
+     * @param paramName is String, which represents name, under which is the jsonArray saved
+     */
+    fun getJSONArrayNonNull(paramName: String): JSONArray{
+        return getJSONArray(paramName)!!
+    }
+
+    /**
+     * @return JSONArray saved under provided paramName
+     * @param paramName is int reference to String, which represents name, under which is the jsonArray saved
+     */
+    fun getJSONArrayNonNull(paramName: Int): JSONArray{
+        return getJSONArray(paramName)!!
+    }
+
+    /**
      * Adds String to jsonObject
      *
      * @param paramName is int reference to String, which represents name, under which the value should be saved
