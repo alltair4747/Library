@@ -267,8 +267,8 @@ class MyJSONArray(private val context: Context, private val jsonArray: JSONArray
     }
 
     /**
-     * @return JSONArray as MyJSONArray saved in jsonArray in provided position. If the position does not exist or the position does not contain value of type JSONArray, null will be returned
-     * @param jsonArrayPosition is position of the JSONArray in jsonArray
+     * @return MyJSONArray as MyJSONArray saved in jsonArray in provided position. If the position does not exist or the position does not contain value of type JSONArray, null will be returned
+     * @param jsonArrayPosition is position of the MyJSONArray in jsonArray
      */
     fun getMyJSONArray(jsonArrayPosition: Int): MyJSONArray? {
         return try {
@@ -289,11 +289,71 @@ class MyJSONArray(private val context: Context, private val jsonArray: JSONArray
     }
 
     /**
-     * @return JSONArray as MyJSONArray saved in jsonArray in provided position. Be sure to use this method only in case, when you are sure, that value under provided position exists and it´s type is JSONArray
-     * @param jsonArrayPosition is position of the JSONArray in jsonArray
+     * @return MyJSONArray as MyJSONArray saved in jsonArray in provided position. Be sure to use this method only in case, when you are sure, that value under provided position exists and it´s type is JSONArray
+     * @param jsonArrayPosition is position of the MyJSONArray in jsonArray
      */
     fun getMyJSONArrayNonNull(jsonArrayPosition: Int): MyJSONArray {
         return getMyJSONArray(jsonArrayPosition)!!
+    }
+
+    /**
+     * @return JSONObject value saved in jsonArray in provided position. If the position does not exist or the position does not contain value of type JSONObject, null will be returned
+     * @param jsonObjectPosition is position of the JSONObject in jsonArray
+     */
+    fun getJSONObject(jsonObjectPosition: Int): JSONObject? {
+        return try {
+            get().getJSONObject(jsonObjectPosition)
+        } catch (exception: java.lang.IndexOutOfBoundsException) {
+            Log.e(
+                "MyJSONArray",
+                "Position " + jsonObjectPosition + " does not belong not in this jsonArray. Last value is in position with index " + getLastIndex()
+            )
+            return null
+        } catch (exception: JSONException) {
+            Log.e(
+                "MyJSONArray",
+                "Value at position $jsonObjectPosition is not of type JSONObject"
+            )
+            return null
+        }
+    }
+
+    /**
+     * @return JSONObject value saved in jsonArray in provided position. Be sure to use this method only in case, when you are sure, that value under provided position exists and it´s type is JSONObject
+     * @param jsonObjectPosition is position of the JSONArray in jsonArray
+     */
+    fun getJSONObjectNonNull(jsonObjectPosition: Int): JSONObject {
+        return getJSONObject(jsonObjectPosition)!!
+    }
+
+    /**
+     * @return MyJSONObject as MyJSONArray saved in jsonArray in provided position. If the position does not exist or the position does not contain value of type MyJSONObject, null will be returned
+     * @param jsonObjectPosition is position of the MyJSONObject in jsonArray
+     */
+    fun getMyJSONObject(jsonObjectPosition: Int): MyJSONObject? {
+        return try {
+            MyJSONObject(getContext(), getJSONObject(jsonObjectPosition)!!)
+        } catch (exception: java.lang.IndexOutOfBoundsException) {
+            Log.e(
+                "MyJSONArray",
+                "Position " + jsonObjectPosition + " does not belong not in this jsonArray. Last value is in position with index " + getLastIndex()
+            )
+            return null
+        } catch (exception: JSONException) {
+            Log.e(
+                "MyJSONArray",
+                "Value at position $jsonObjectPosition is not of type MyJSONObject"
+            )
+            return null
+        }
+    }
+
+    /**
+     * @return MyJSONObject as MyJSONArray saved in jsonArray in provided position. Be sure to use this method only in case, when you are sure, that value under provided position exists and it´s type is JSONArray
+     * @param jsonObjectPosition is position of the MyJSONObject in jsonArray
+     */
+    fun getMyJSONObjectNonNull(jsonObjectPosition: Int): MyJSONObject {
+        return getMyJSONObject(jsonObjectPosition)!!
     }
 
     /**
