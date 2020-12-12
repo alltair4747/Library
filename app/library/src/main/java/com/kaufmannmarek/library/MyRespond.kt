@@ -19,10 +19,12 @@ abstract class MyRespond(private val requestCode: Int) {
      */
     private fun setTaskResult(resultCode: Int, data: Any?) {
         this.resultCode = resultCode
+        beforeResult()
         if(resultIsOk())
             onSuccess(getRequestCode(), data)
         else
             onFailure(getRequestCode(), data)
+        afterResult()
     }
 
     /**
@@ -94,4 +96,14 @@ abstract class MyRespond(private val requestCode: Int) {
      * @param data is optional and it may contain any values or object. Can be null
      */
     abstract fun onFailure(requestCode: Int, data: Any?)
+
+    /**
+     * Everything inside this method will happen before onSuccess or onFailure is called
+     */
+    abstract fun beforeResult()
+
+    /**
+     * Everything inside this method will happen after onSuccess or onFailure is called
+     */
+    abstract fun afterResult()
 }
