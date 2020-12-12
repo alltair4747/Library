@@ -17,9 +17,12 @@ abstract class MyRespond(private val requestCode: Int) {
      * @param resultCode represents the result of the task
      * @param data are data, that needs to be passed to origin activity
      */
-    fun setTaskResult(resultCode: Int, data: Any?) {
+    private fun setTaskResult(resultCode: Int, data: Any?) {
         this.resultCode = resultCode
-        onRespondReceived(getRequestCode(), resultCode, data)
+        if(resultIsOk())
+            onSuccess(getRequestCode(), data)
+        else
+            onFailure(getRequestCode(), data)
     }
 
     /**
@@ -27,15 +30,6 @@ abstract class MyRespond(private val requestCode: Int) {
      */
     fun getRequestCode(): Int {
         return requestCode
-    }
-
-    /**
-     * Sets result of the task
-     *
-     * @param resultCode represents the result of the task
-     */
-    fun setTaskResult(resultCode: Int) {
-        setTaskResult(resultCode, null)
     }
 
     /**
@@ -53,7 +47,6 @@ abstract class MyRespond(private val requestCode: Int) {
     fun setTaskResultOK() {
         setTaskResultOK(null)
     }
-
 
     /**
      * Sets BAD result of the task and pass the data
@@ -85,12 +78,20 @@ abstract class MyRespond(private val requestCode: Int) {
         return !resultIsOk()
     }
 
+
     /**
-     * This method is called in distinct class where the task is performed. This method must be implemented in origin class. You may implement it as you need.
+     * This method is called in distinct class where the task is performed in case of success. This method must be implemented in origin class. You may implement it as you need.
      *
      * @param requestCode is code of performed operation. This is the argument, you have set before the passing the class instance to different class
-     * @param resultCode is result of operation. It is set by setTaskResult, setTaskResultOK (-1) or setTaskResultBad (1) method
      * @param data is optional and it may contain any values or object. Can be null
      */
-    abstract fun onRespondReceived(requestCode: Int, resultCode: Int, data: Any?)
+    abstract fun onSuccess(requestCode: Int, data: Any?)
+
+    /**
+     * This method is called in distinct class where the task is performed in case of failure. This method must be implemented in origin class. You may implement it as you need.
+     *
+     * @param requestCode is code of performed operation. This is the argument, you have set before the passing the class instance to different class
+     * @param data is optional and it may contain any values or object. Can be null
+     */
+    abstract fun onFailure(requestCode: Int, data: Any?)
 }
