@@ -1,168 +1,357 @@
 package com.kaufmannmarek.library
 
 import android.content.Context
+import java.lang.StringBuilder
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Suppress(
     "MemberVisibilityCanBePrivate",
-    "unused",
-    "RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS"
+    "unused"
 )
 class MyDate {
-    private val dateFormat = SimpleDateFormat("d.M.yyyy", Locale.GERMAN)
-    private val defaultDate = getDateFormat().parse("30.12.1899")
+    private var numberOfElapsedDays = 0
+    private var text = ""
 
-    /**
-     * @return number of elapsed days from 30.12.1899 to provided date
-     * @param date is date in d.M.yyyy format, which number of days since 30.12.1899 we want to know
-     */
-    private fun getNumberOfElapsedDays(date: String): Int {
-        return ((this.dateFormat.parse(date).time - defaultDate.time) / (86400000)).toInt()
+    companion object {
+        private const val DAY_MILLISECONDS = 86400000L
+        private val DATE_FORMAT = SimpleDateFormat("dd.MM.yyyy", Locale.GERMAN)
+
+        /**
+         * This constant is used to solve difference between timeFormat of google sheets and android
+         */
+        private const val DAYS_DIFFERENCE = 25569
     }
 
     /**
-     * @return number of elapsed days from 30.12.1899 to today
+     * Creates today´s date according to time of the system
+     */
+    constructor() {
+        setNumberOfElapsedDays(getNumberOfElapsedDaysUntilToday())
+        setText(getTextFromNumberOfElapsedDays())
+    }
+
+    /**
+     * Creates date from number of elapsed days since 30.12.1899
+     * @param numberOfElapsedDays is number of elapsed days since 30.12.1899
+     */
+    constructor(numberOfElapsedDays: Int) {
+        setNumberOfElapsedDays(numberOfElapsedDays)
+        setText(getTextFromNumberOfElapsedDays())
+    }
+
+    /**
+     * Creates date from provided date String, which must be in specified format
+     * @param date is date in format dd.MM.yyyy - f.e. 31.12.2020
+     */
+    constructor(date: String) {
+        setText(date)
+        setNumberOfElapsedDays(toNumberOfElapsedDays(date))
+    }
+
+    /**
+     * Sets text version of the date
+     */
+    private fun setText(date: String) {
+        this.text = date
+    }
+
+    /**
+     * @return date in format dd.MM.yyyy - f.e. 31.12.2020
+     */
+    fun text(): String {
+        return this.text
+    }
+
+    /**
+     * @return number of elapsed days since 30.12.1899 until this day
      */
     fun getNumberOfElapsedDays(): Int {
-        return getNumberOfElapsedDays(getToday())
+        return this.numberOfElapsedDays
     }
 
     /**
-     * @return number of elapsed days between provided days
-     * @param firstDate is greater date in d.M.yyyy format
-     * @param secondDate is smaller date in d.M.yyyy format
+     * Assign numberOfElapsedDays variable with value. It represents number of elapsed days since 30.12.1899
+     * @param numberOfElapsedDays variable that will be assigned
      */
-    fun getDifferenceBetweenDays(firstDate: String, secondDate: String): Int {
-        return getNumberOfElapsedDays(firstDate) - getNumberOfElapsedDays(secondDate)
+    private fun setNumberOfElapsedDays(numberOfElapsedDays: Int) {
+        this.numberOfElapsedDays = numberOfElapsedDays
     }
-
-    /**
-     * @return number of elapsed days from 30.12.1899 until date
-     * @param date is examined date
-     */
-    fun getDifferenceBetweenDays(date: String): Int {
-        return getNumberOfElapsedDays(date)
-    }
-
-    /**
-     * @return name of day for provided date (f.e. Monday)
-     * @param elapsedDays is number of elapsed days since 30.12.1899
-     */
-    fun getNameOfDay(elapsedDays: Int, context: Context): String {
-        val numberOfDay: Int
-        val remainder = elapsedDays % 7
-        numberOfDay = when (remainder) {
-            0 -> 6
-            7 -> 5
-            6 -> 4
-            5 -> 3
-            4 -> 2
-            3 -> 1
-            else -> 0
-        }
-        return context.resources.getStringArray(R.array.daysOfWeek)[numberOfDay]
-    }
-
-    /**
-     * @return name of day for provided date (f.e. Monday)
-     * @param date is date in d.M.yyyy format, which name of day we want to know
-     */
-    fun getNameOfDay(date: String, context: Context): String {
-        return getNameOfDay(getNumberOfElapsedDays(date), context)
-    }
-
 
     /**
      * @return used dateFormat
      */
-    fun getDateFormat(): SimpleDateFormat {
-        return this.dateFormat
+    private fun getDateFormat(): SimpleDateFormat {
+        return DATE_FORMAT
     }
 
     /**
-     * @return today´s date in d.M.yyyy format
+     * @return number of milliseconds in one day
      */
-    fun getToday(): String {
-        val date = Date()
-        return getDateFormat().format(date)
+    private fun getDayMilliSeconds(): Long {
+        return DAY_MILLISECONDS
     }
 
     /**
-     * @return date in format d.M.yyyy from number of elapsed days since 30.12.1899
-     * @param elapsedDays of elapsed days since 30.12.1899
+     * @return name of the day, which is associated with the date (f.e. Monday)
+     * @param context is context of currently displayed activity
      */
-    fun getDate(elapsedDays: Int): String {
-        var year = 1900
-        var numberOfDays = 1
-        var isTransitionYear: Boolean
-        if (elapsedDays < 3) {
-            return if (elapsedDays < 2) {
-                (30 + elapsedDays).toString() + ".12.1899"
-            } else {
-                "1.1.1900"
+    fun getDayName(context: Context): String {
+        return context.resources.getStringArray(R.array.daysOfWeek)[getDayIndex()]
+    }
+
+    /**
+     * return index of the day, which is associated with this date, where 0 is monday and 6 is sunday
+     */
+    fun getDayIndex(): Int {
+        return when {
+            getNumberOfElapsedDays() < 0 -> when (getNumberOfElapsedDays() % 7) {
+                -1 -> 4
+                -2 -> 3
+                -3 -> 2
+                -4 -> 1
+                -5 -> 0
+                -6 -> 6
+                else -> 5
             }
-        } else {
-            do {
-                when (year % 4) {
-                    0 -> when (year % 100) {
-                        0 -> when (year % 400) {
-                            0 -> {
-                                numberOfDays += 366
-                                isTransitionYear = true
-                            }
-                            else -> {
-                                numberOfDays += 365
-                                isTransitionYear = false
-                            }
-                        }
-                        else -> {
-                            numberOfDays += 366
-                            isTransitionYear = true
-                        }
-                    }
-                    else -> {
-                        numberOfDays += 365
-                        isTransitionYear = false
-                    }
-                }
-                if (numberOfDays < elapsedDays) {
-                    year++
-                }
-            } while (elapsedDays > numberOfDays)
-        }
-        return if (isTransitionYear) {
-            getDayAndMonth(true, 366 - (numberOfDays - elapsedDays)) + year
-        } else {
-            getDayAndMonth(false, 365 - (numberOfDays - elapsedDays)) + year
+            else -> when (getNumberOfElapsedDays() % 7) {
+                1 -> 6
+                2 -> 0
+                3 -> 1
+                4 -> 2
+                5 -> 3
+                6 -> 4
+                else -> 5
+            }
         }
     }
 
     /**
-     * @param isTransitionYear if true, year has 366 days
-     * @param daysNumber number of elapsed days in year
-     * @return date and month in d.M from number of days since 1.1. of year
+     * @return number of elapsed days as String
      */
-    private fun getDayAndMonth(isTransitionYear: Boolean, daysNumber: Int): String {
-        val part: String
-        var february = 28
-        if (isTransitionYear) {
-            february = 29
+    fun numberOfElapsedDaysToString(): String {
+        return getNumberOfElapsedDays().toString()
+    }
+
+    /**
+     * @return number of days since 30.12.1899
+     */
+    private fun getNumberOfElapsedDaysUntilToday(): Int {
+        val today = Date().time
+        return ((today / getDayMilliSeconds()) + 25569).toInt()
+    }
+
+    /**
+     * @param date is date in format dd.MM.yyyy f.e. 31.12.2020
+     * @return number of elapsed days since 30.12.1899. If the provided date is in incorrect format, -1 will be returned
+     */
+    private fun toNumberOfElapsedDays(date: String): Int {
+        return try {
+            var day = getDateFormat().parse(date)!!.time
+            day /= getDayMilliSeconds()
+            (1 + day + 25569).toInt()
+        } catch (e: ParseException) {
+            return -1
         }
-        part = when {
-            daysNumber >= 307 + february -> (daysNumber - february - 306).toString() + ".12."
-            daysNumber >= february + 277 -> (daysNumber - february - 276).toString() + ".11."
-            daysNumber >= february + 246 -> (daysNumber - february - 245).toString() + ".10."
-            daysNumber >= february + 216 -> (daysNumber - february - 215).toString() + ".9."
-            daysNumber >= february + 185 -> (daysNumber - february - 184).toString() + ".8."
-            daysNumber >= february + 154 -> (daysNumber - february - 153).toString() + ".7."
-            daysNumber >= february + 124 -> (daysNumber - february - 123).toString() + ".6."
-            daysNumber >= february + 93 -> (daysNumber - february - 92).toString() + ".5."
-            daysNumber >= february + 63 -> (daysNumber - february - 62).toString() + ".4."
-            daysNumber >= february + 32 -> (daysNumber - february - 31).toString() + ".3."
-            daysNumber >= 32 -> (daysNumber - 31).toString() + ".2."
-            else -> "$daysNumber.1."
+    }
+
+    /**
+     * @return year from this date
+     */
+    private fun getYearFromDate(): Int {
+        return text().split(".")[2].toInt()
+    }
+
+    /**
+     * @return index of month from this date, where 1 is january and 12 is december
+     */
+    fun getMonth(): Int {
+        return text().split(".")[1].toInt()
+    }
+
+    /**
+     * @return number of elapsed days since the beginning of the month´s date
+     */
+    fun getDays(): Int {
+        return text().split(".")[0].toInt()
+    }
+
+    /**
+     * @return this date is later than today´s date
+     */
+    fun isGreaterThanToday(): Boolean {
+        return isGreaterThan(getNumberOfElapsedDays(), getNumberOfElapsedDaysUntilToday())
+    }
+
+    /**
+     * @return this date is later or same as today´s date
+     */
+    fun isGreaterOrEqualToday(): Boolean {
+        return isGreaterOrEqual(getNumberOfElapsedDays(), getNumberOfElapsedDaysUntilToday())
+    }
+
+    /**
+     * @return this date is later than another´s date
+     * @param anotherDate is date used as comparator
+     */
+    fun isGreaterThan(anotherDate: MyDate): Boolean {
+        return isGreaterThan(getNumberOfElapsedDays(), anotherDate.getNumberOfElapsedDays())
+    }
+
+    /**
+     * @return this date is later or same as another´s date
+     * @param anotherDate is date used as comparator
+     */
+    fun isGreaterOrEqual(anotherDate: MyDate): Boolean {
+        return isGreaterOrEqual(getNumberOfElapsedDays(), anotherDate.getNumberOfElapsedDays())
+    }
+
+    /**
+     * @return if number of elapsed days of one date is higher than another one
+     * @param numberOfElapsedDays is number of elapsed days of the date, which should higher
+     * @param comparedNumberOfElapsedDays is number of elapsed days of the date, which should be smaller
+     */
+    private fun isGreaterThan(numberOfElapsedDays: Int, comparedNumberOfElapsedDays: Int): Boolean {
+        return numberOfElapsedDays > comparedNumberOfElapsedDays
+    }
+
+    /**
+     * @return if number of elapsed days of one date is higher or equal than another one
+     * @param numberOfElapsedDays is number of elapsed days of the date, which should higher
+     * @param comparedNumberOfElapsedDays is number of elapsed days of the date, which should be smaller
+     */
+    private fun isGreaterOrEqual(
+        numberOfElapsedDays: Int,
+        comparedNumberOfElapsedDays: Int
+    ): Boolean {
+        return numberOfElapsedDays >= comparedNumberOfElapsedDays
+    }
+
+    /**
+     * @return if this date is same as today´s
+     */
+    fun isEqualToToday(): Boolean {
+        return getNumberOfElapsedDays() == getNumberOfElapsedDaysUntilToday()
+    }
+
+    /**
+     * @return if this date is earlier than today
+     */
+    fun isLessThanToday(): Boolean {
+        return !isGreaterThanToday()
+    }
+
+    /**
+     * @return if this date is earlier or same as today´s
+     */
+    fun isLessOrEqualToday(): Boolean {
+        return !isGreaterOrEqualToday()
+    }
+
+    /**
+     * @return if this date is earlier than another´s date
+     * @param anotherDate is date used as comparator
+     */
+    fun isLessThan(anotherDate: MyDate): Boolean {
+        return !isGreaterThan(anotherDate)
+    }
+
+    /**
+     * @return if this date is earlier or same as another´s date
+     * @param anotherDate is date used as comparator
+     */
+    fun isLessOrEqual(anotherDate: MyDate): Boolean {
+        return !isGreaterOrEqual(anotherDate)
+    }
+
+    /**
+     * Converts number of elapsed days into date in format dd.MM.yyyy f.e. 30.12.2020 from number of elapsed days since 30.12.1899
+     */
+    private fun getTextFromNumberOfElapsedDays(): String {
+        return if (getNumberOfElapsedDays() < 2)
+            StringBuilder().append("3").append(numberOfElapsedDays).append(".12.1899").toString()
+        else {
+            var year = 1900
+            var remainingDays = getNumberOfElapsedDays() - 2
+            var nextYearNumberOfDays = 365
+            while (remainingDays - nextYearNumberOfDays > 0) {
+                year++
+                remainingDays -= nextYearNumberOfDays
+                nextYearNumberOfDays = if (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0))
+                    366
+                else
+                    365
+            }
+            if (nextYearNumberOfDays == 366) {
+                when {
+                    remainingDays < 32 -> StringBuilder().append(remainingDays).append(".1.")
+                        .append(year).toString()
+                    remainingDays < 61 -> StringBuilder().append(remainingDays - 31).append(".2.")
+                        .append(year).toString()
+                    remainingDays < 92 -> StringBuilder().append(remainingDays - 60).append(".3.")
+                        .append(year).toString()
+                    remainingDays < 122 -> StringBuilder().append(remainingDays - 91).append(".4.")
+                        .append(year).toString()
+                    remainingDays < 153 -> StringBuilder().append(remainingDays - 121).append(".5.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 183 -> StringBuilder().append(remainingDays - 152).append(".6.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 214 -> StringBuilder().append(remainingDays - 182).append(".7.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 245 -> StringBuilder().append(remainingDays - 213).append(".8.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 275 -> StringBuilder().append(remainingDays - 244).append(".9.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 306 -> StringBuilder().append(remainingDays - 274)
+                        .append(".10.").append(year)
+                        .toString()
+                    remainingDays < 336 -> StringBuilder().append(remainingDays - 305)
+                        .append(".11.").append(year)
+                        .toString()
+                    else -> StringBuilder().append(remainingDays - 335).append(".12.").append(year)
+                        .toString()
+                }
+            } else {
+                when {
+                    remainingDays < 32 -> StringBuilder().append(remainingDays).append(".1.")
+                        .append(year).toString()
+                    remainingDays < 60 -> StringBuilder().append(remainingDays - 31).append(".2.")
+                        .append(year).toString()
+                    remainingDays < 91 -> StringBuilder().append(remainingDays - 59).append(".3.")
+                        .append(year).toString()
+                    remainingDays < 121 -> StringBuilder().append(remainingDays - 90).append(".4.")
+                        .append(year).toString()
+                    remainingDays < 152 -> StringBuilder().append(remainingDays - 120).append(".5.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 182 -> StringBuilder().append(remainingDays - 151).append(".6.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 213 -> StringBuilder().append(remainingDays - 181).append(".7.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 244 -> StringBuilder().append(remainingDays - 212).append(".8.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 274 -> StringBuilder().append(remainingDays - 243).append(".9.")
+                        .append(year)
+                        .toString()
+                    remainingDays < 305 -> StringBuilder().append(remainingDays - 273)
+                        .append(".10.").append(year)
+                        .toString()
+                    remainingDays < 335 -> StringBuilder().append(remainingDays - 304)
+                        .append(".11.").append(year)
+                        .toString()
+                    else -> StringBuilder().append(remainingDays - 334).append(".12.").append(year)
+                        .toString()
+                }
+            }
         }
-        return part
     }
 }
