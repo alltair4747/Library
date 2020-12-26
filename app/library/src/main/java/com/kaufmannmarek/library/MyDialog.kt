@@ -544,8 +544,9 @@ class DatePickerDialog(
         setRightButtonText(R.string.select)
         if (this.editTextToUpdate != null) {
             getRightButton().setOnClickListener {
-                this.editTextToUpdate.setText(getStringDate())
-                this.editTextToUpdate.tag = getIntDate()
+                val myDate = getSelectedDate()
+                this.editTextToUpdate.setText(myDate.text())
+                this.editTextToUpdate.tag = myDate.getNumberOfElapsedDays()
                 dismiss()
             }
         }
@@ -573,18 +574,14 @@ class DatePickerDialog(
     }
 
     /**
-     * @return date as String in format D.M.yyyy
+     * @return selected date in the dialog
      */
-    fun getStringDate(): String {
-        return StringBuilder().append(getDatePicker().dayOfMonth).append(".")
-            .append(getDatePicker().month + 1).append(".").append(getDatePicker().year).toString()
-    }
-
-    /**
-     * @return number of days since the default date. See class CustomDate for details
-     */
-    fun getIntDate(): Int {
-        return MyDate().getDifferenceBetweenDays(getStringDate())
+    fun getSelectedDate(): MyDate {
+        return MyDate(
+            StringBuilder().append(getDatePicker().dayOfMonth).append(".")
+                .append(getDatePicker().month + 1).append(".").append(getDatePicker().year)
+                .toString()
+        )
     }
 }
 
