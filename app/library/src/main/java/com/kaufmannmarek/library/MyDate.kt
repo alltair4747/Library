@@ -1,6 +1,7 @@
 package com.kaufmannmarek.library
 
 import android.content.Context
+import android.widget.DatePicker
 import java.lang.StringBuilder
 import java.text.ParseException
 import java.text.SimpleDateFormat
@@ -49,6 +50,15 @@ class MyDate {
         setText(date)
         setNumberOfElapsedDays(toNumberOfElapsedDays(date))
     }
+
+    /**
+     * Creates date from selected date in datePicker
+     * @param datePicker is view, where any date is selected
+     */
+    constructor(datePicker: DatePicker) : this(
+        StringBuilder().append(datePicker.dayOfMonth).append(".").append(datePicker.month + 1)
+            .append(".").append(datePicker.year).toString()
+    )
 
     /**
      * Sets text version of the date

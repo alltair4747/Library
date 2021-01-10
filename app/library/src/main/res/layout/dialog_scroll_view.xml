@@ -23,7 +23,7 @@
             android:layout_height="48dp"
             android:contentDescription="@string/dialogIcon"
             android:scaleType="fitXY"
-            android:tint="@color/textColor" />
+            app:tint="@color/textColor" />
 
         <TextView
             android:id="@+id/dialog_title"

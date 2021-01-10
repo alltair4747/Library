@@ -2,6 +2,7 @@
 
 package com.kaufmannmarek.library
 
+import android.widget.TimePicker
 import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,6 +41,24 @@ class MyTime {
         setElapsedSeconds(getCurrentlyElapsedDaySeconds())
         setText(getTextFromElapsedSeconds())
     }
+
+    /**
+     * Create new time from time selected in TimePicker view
+     * @param timePicker is view, where the time was previously selected
+     */
+    constructor(timePicker: TimePicker) : this(
+        StringBuilder().append(
+            when (timePicker.hour < 10) {
+                true -> "0" + timePicker.hour
+                false -> timePicker.hour
+            }
+        ).append(
+            when (timePicker.minute < 10) {
+                true -> "0" + timePicker.minute
+                false -> timePicker.minute
+            }
+        ).toString()
+    )
 
     /**
      * @return number of elapsed seconds from midnight until now
