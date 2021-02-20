@@ -14,56 +14,48 @@ import java.io.Serializable
  * Creates class, which can handle basic operations of fragments
  *
  * @param context of currently displayed activity
+ * @param container is int reference to view, where the fragments will be displayed
  */
-class MyFragmentManager(private val context: Context) {
+class MyFragmentManager(private val context: Context, private val container: Int) {
     private val fragmentManager = (this.context as FragmentActivity).supportFragmentManager
     private var fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
 
-    companion object {
-        private var lastFragmentTag: String? = null
-    }
-
     /**
      * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is String used to retrieve fragment from fragment manager
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
      */
     fun replaceFragment(
         fragment: Fragment,
-        container: Int,
-        tag: String,
+        fragmentTag: String,
         enterFromLeft: Boolean,
         activityCode: Int
     ) {
         putInt(R.string.keyActivityCode, activityCode)
-        replaceFragment(fragment, container, tag, enterFromLeft, true)
+        replaceFragment(fragment, fragmentTag, enterFromLeft, true)
     }
 
     /**
      * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
      */
     fun replaceFragment(
         fragment: Fragment,
-        container: Int,
-        tag: Int,
+        fragmentTag: Int,
         enterFromLeft: Boolean,
         activityCode: Int
     ) {
         replaceFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
+            MyString(this.context).fromResources(fragmentTag),
             enterFromLeft,
             activityCode
         )
@@ -73,27 +65,24 @@ class MyFragmentManager(private val context: Context) {
      * Will replace current fragment with new specified fragment. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
-    fun replaceFragment(fragment: Fragment, container: Int, tag: String, enterFromLeft: Boolean) {
-        replaceFragment(fragment, container, tag, enterFromLeft, true)
+    fun replaceFragment(fragment: Fragment, fragmentTag: String, enterFromLeft: Boolean) {
+        replaceFragment(fragment, fragmentTag, enterFromLeft, true)
     }
 
     /**
      * Will replace current fragment with new specified fragment. Transaction will be committed immediately. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
-    fun replaceFragment(fragment: Fragment, container: Int, tag: Int, enterFromLeft: Boolean) {
+    fun replaceFragment(fragment: Fragment, fragmentTag: Int, enterFromLeft: Boolean) {
         replaceFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
+            MyString(this.context).fromResources(fragmentTag),
             enterFromLeft
         )
     }
@@ -102,22 +91,19 @@ class MyFragmentManager(private val context: Context) {
      * Will replace current fragment with new specified fragment. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun replaceFragment(
         fragment: Fragment,
-        container: Int,
-        tag: Int,
+        fragmentTag: Int,
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
         replaceFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
+            MyString(this.context).fromResources(fragmentTag),
             enterFromLeft,
             commit
         )
@@ -127,26 +113,23 @@ class MyFragmentManager(private val context: Context) {
      * Will replace current fragment with new specified fragment. All existing fragments in backStack will be removed.
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is String used to retrieve fragment from fragment manager
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun replaceFragment(
         fragment: Fragment,
-        container: Int,
-        tag: String,
+        fragmentTag: String,
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
-        lastFragmentTag = tag
         setTransactionParams(enterFromLeft, fragment)
         getFragmentTransaction().replace(
-            container,
+            getContainerId(),
             fragment,
-            tag
+            fragmentTag
         )
-        getFragmentTransaction().addToBackStack(tag)
+        getFragmentTransaction().addToBackStack(fragmentTag)
         if (commit)
             commit()
     }
@@ -192,42 +175,37 @@ class MyFragmentManager(private val context: Context) {
      * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
      * @param tag is String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
      */
     fun addFragment(
         fragment: Fragment,
-        container: Int,
         tag: String,
         enterFromLeft: Boolean,
         activityCode: Int
     ) {
         putInt(R.string.keyActivityCode, activityCode)
-        addFragment(fragment, container, tag, enterFromLeft, true)
+        addFragment(fragment, tag, enterFromLeft, true)
     }
 
     /**
      * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
      */
     fun addFragment(
         fragment: Fragment,
-        container: Int,
-        tag: Int,
+        fragmentTag: Int,
         enterFromLeft: Boolean,
         activityCode: Int
     ) {
         addFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
+            MyString(this.context).fromResources(fragmentTag),
             enterFromLeft,
             activityCode
         )
@@ -237,27 +215,24 @@ class MyFragmentManager(private val context: Context) {
      * Will add a new fragment to backStack and displays it. Transaction will be committed immediately
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
-    fun addFragment(fragment: Fragment, container: Int, tag: String, enterFromLeft: Boolean) {
-        addFragment(fragment, container, tag, enterFromLeft, true)
+    fun addFragment(fragment: Fragment, fragmentTag: String, enterFromLeft: Boolean) {
+        addFragment(fragment, fragmentTag, enterFromLeft, true)
     }
 
     /**
      * Will add a new fragment to backStack and displays it. Transaction will be committed immediately
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
-    fun addFragment(fragment: Fragment, container: Int, tag: Int, enterFromLeft: Boolean) {
+    fun addFragment(fragment: Fragment, fragmentTag: Int, enterFromLeft: Boolean) {
         addFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
+            MyString(this.context).fromResources(fragmentTag),
             enterFromLeft
         )
     }
@@ -266,21 +241,19 @@ class MyFragmentManager(private val context: Context) {
      * Will add a new fragment to backStack and displays it
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is String used to retrieve fragment from fragment manager
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun addFragment(
         fragment: Fragment,
-        container: Int,
-        tag: String,
+        fragmentTag: String,
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
         setTransactionParams(enterFromLeft, fragment)
-        getFragmentTransaction().add(container, fragment, tag)
-        getFragmentTransaction().addToBackStack(tag)
+        getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
+        getFragmentTransaction().addToBackStack(fragmentTag)
         if (commit)
             commit()
     }
@@ -289,72 +262,18 @@ class MyFragmentManager(private val context: Context) {
      * Will add a new fragment to backStack and displays it
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param tag is int reference to String, which used to retrieve fragment from fragment manager
+     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun addFragment(
         fragment: Fragment,
-        container: Int,
-        tag: Int,
+        fragmentTag: Int,
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
         addFragment(
             fragment,
-            container,
-            MyString(this.context).fromResources(tag),
-            enterFromLeft,
-            commit
-        )
-    }
-
-    /**
-     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
-     *
-     * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param fragmentTag is String, which used to retrieve fragment from fragment manager
-     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
-     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
-     */
-    fun restoreFragment(
-        fragment: Fragment,
-        container: Int,
-        fragmentTag: String,
-        enterFromLeft: Boolean,
-        commit: Boolean
-    ) {
-        if (getFragmentByTag(fragmentTag) != null)
-            getFragmentManager().popBackStackImmediate(
-                fragmentTag,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-        else {
-            addFragment(fragment, container, fragmentTag, enterFromLeft, commit)
-        }
-    }
-
-    /**
-     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
-     *
-     * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
-     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
-     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
-     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
-     */
-    fun restoreFragment(
-        fragment: Fragment,
-        container: Int,
-        fragmentTag: Int,
-        enterFromLeft: Boolean,
-        commit: Boolean
-    ) {
-        restoreFragment(
-            fragment,
-            container,
             MyString(this.context).fromResources(fragmentTag),
             enterFromLeft,
             commit
@@ -365,36 +284,77 @@ class MyFragmentManager(private val context: Context) {
      * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
      * @param fragmentTag is String, which used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
      */
     fun restoreFragment(
         fragment: Fragment,
-        container: Int,
         fragmentTag: String,
-        enterFromLeft: Boolean
+        enterFromLeft: Boolean,
+        commit: Boolean
     ) {
-        restoreFragment(fragment, container, fragmentTag, enterFromLeft, true)
+        if (getFragmentByTag(fragmentTag) != null)
+            getFragmentManager().popBackStackImmediate(
+                fragmentTag,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+        else {
+            addFragment(fragment, fragmentTag, enterFromLeft, commit)
+        }
     }
 
     /**
      * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
      *
      * @param fragment is destination fragment
-     * @param container is int reference to view, where the fragment will be displayed
+     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        commit: Boolean
+    ) {
+        restoreFragment(
+            fragment,
+            MyString(this.context).fromResources(fragmentTag),
+            enterFromLeft,
+            commit
+        )
+    }
+
+    /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     */
+    fun restoreFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean
+    ) {
+        restoreFragment(fragment, fragmentTag, enterFromLeft, true)
+    }
+
+    /**
+     * Will retrieve fragment from backStack. If the fragment is not in backStack, then it will add it and
+     *
+     * @param fragment is destination fragment
      * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      */
     fun restoreFragment(
         fragment: Fragment,
-        container: Int,
         fragmentTag: Int,
         enterFromLeft: Boolean
     ) {
         restoreFragment(
             fragment,
-            container,
             MyString(this.context).fromResources(fragmentTag),
             enterFromLeft,
             true
@@ -564,7 +524,7 @@ class MyFragmentManager(private val context: Context) {
      * @return if the fragment with provided tag is in fragment manager
      * @param fragmentTag is tag of fragment, which we examine
      */
-    fun isFragmentActive(fragmentTag: String): Boolean {
+    fun isFragmentInBackStack(fragmentTag: String): Boolean {
         return try {
             getFragmentManager().findFragmentByTag(fragmentTag)!!.isVisible
         } catch (e: Exception) {
@@ -576,16 +536,16 @@ class MyFragmentManager(private val context: Context) {
      * @return if the fragment with provided tag is in fragment manager
      * @param fragmentTag is int reference to tag of fragment, which we examine
      */
-    fun isFragmentActive(fragmentTag: Int): Boolean {
-        return isFragmentActive(MyString(this.context).fromResources(fragmentTag))
+    fun isFragmentInBackStack(fragmentTag: Int): Boolean {
+        return isFragmentInBackStack(MyString(this.context).fromResources(fragmentTag))
     }
 
     /**
-     * @return currently active fragment. If there is no active fragment or the fragment was displayed in different activity, it will return null
+     * @return currently visible fragment in container provided at the beginning. If there is no active fragment or the fragment was displayed in different activity, it will return null
      */
     fun getActiveFragment(): Fragment? {
         return try {
-            getFragmentByTag(lastFragmentTag!!)
+            getLastFragmentInContainer()
         } catch (e: Exception) {
             null
         }
@@ -593,26 +553,25 @@ class MyFragmentManager(private val context: Context) {
 
     /**
      * @return instance of active fragment in fragment manager using a fragment tag. If the fragment is not present, returns null.
-     * @param tag is String, which represents required fragment
+     * @param fragmentTag is String, which represents required fragment
      */
-    fun getFragmentByTag(tag: String): Fragment? {
-        return getFragmentManager().findFragmentByTag(tag)
+    fun getFragmentByTag(fragmentTag: String): Fragment? {
+        return getFragmentManager().findFragmentByTag(fragmentTag)
     }
 
     /**
      * @return instance of active fragment in fragment manager using a fragment tag. If the fragment is not present, returns null.
-     * @param tag is int reference to String, which represents required fragment
+     * @param fragmentTag is int reference to String, which represents required fragment
      */
-    fun getFragmentByTag(tag: Int): Fragment? {
-        return getFragmentByTag(MyString(this.context).fromResources(tag))
+    fun getFragmentByTag(fragmentTag: Int): Fragment? {
+        return getFragmentByTag(MyString(this.context).fromResources(fragmentTag))
     }
 
     /**
-     * @return instance of active fragment in fragment manager using a fragment tag.
-     * @param containerId is id of a container, from where the top fragment will be retrieved
+     * @return instance of currently visible fragment in container
      */
-    fun getFragmentById(containerId: Int): Fragment? {
-        return getFragmentManager().findFragmentById(containerId)
+    private fun getLastFragmentInContainer(): Fragment? {
+        return getFragmentManager().findFragmentById(getContainerId())
     }
 
 
@@ -628,6 +587,13 @@ class MyFragmentManager(private val context: Context) {
      */
     fun getFragmentTransaction(): FragmentTransaction {
         return this.fragmentTransaction
+    }
+
+    /**
+     * @return id of the container the fragment manager is using to display fragments
+     */
+    fun getContainerId(): Int {
+        return this.container
     }
 
     /**
