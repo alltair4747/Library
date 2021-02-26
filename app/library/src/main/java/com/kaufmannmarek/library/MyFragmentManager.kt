@@ -362,52 +362,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     }
 
     /**
-     * @return if the a container had any fragment inside it. If it had, the top fragment will be removed. Current fragment will exit to left side and a old will come from right.
-     * @param container is container, from where the fragment should be removed
-     */
-    fun thereWasFragmentToRemove(container: Int): Boolean {
-        val fragment = getFragmentManager().findFragmentById(container)
-        if (fragment != null) {
-            fragmentRemove(fragment, false)
-            return true
-        }
-        return false
-    }
-
-    /**
-     * Removes a fragment from transaction
-     *
-     * @param fragment to be removed
-     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
-     */
-    private fun fragmentRemove(fragment: Fragment, enterFromLeft: Boolean) {
-        setFragmentTransactionAnimation(enterFromLeft)
-        getFragmentTransaction().remove(fragment)
-        commit()
-        getFragmentManager().popBackStack()
-    }
-
-    /**
-     * @return number of fragments in fragment manager
-     */
-    fun getNumberOfActiveFragments(): Int {
-        return this.fragmentManager.backStackEntryCount
-    }
-
-    /**
-     * Removes a currently visible fragment
-     *
-     * @param container is container, from where the fragment should be removed
-     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
-     */
-    fun removeFragment(container: Int, enterFromLeft: Boolean) {
-        val fragment = getFragmentManager().findFragmentById(container)
-        if (fragment != null)
-            fragmentRemove(fragment, enterFromLeft)
-    }
-
-    /**
-     * Commits transaction
+     * Commits transaction and allow to perform another transaction
      */
     fun commit() {
         getFragmentTransaction().commit()
@@ -594,6 +549,50 @@ class MyFragmentManager(private val context: Context, private val container: Int
      */
     fun getContainerId(): Int {
         return this.container
+    }
+
+    /**
+     * @return if the a container had any fragment inside it. If it had, the top fragment will be removed. Current fragment will exit to left side and a old will come from right.
+     */
+    fun thereWasFragmentToRemove(): Boolean {
+        val fragment = getFragmentManager().findFragmentById(getContainerId())
+        if (fragment != null) {
+            fragmentRemove(fragment, false)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Removes a fragment from transaction
+     *
+     * @param fragment to be removed
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     */
+    private fun fragmentRemove(fragment: Fragment, enterFromLeft: Boolean) {
+        setFragmentTransactionAnimation(enterFromLeft)
+        getFragmentTransaction().remove(fragment)
+        commit()
+        getFragmentManager().popBackStackImmediate()
+    }
+
+    /**
+     * @return number of fragments in fragment manager
+     */
+    fun getNumberOfActiveFragments(): Int {
+        return this.fragmentManager.backStackEntryCount
+    }
+
+    /**
+     * Removes a currently visible fragment
+     *
+     * @param container is container, from where the fragment should be removed
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     */
+    fun removeFragment(container: Int, enterFromLeft: Boolean) {
+        val fragment = getFragmentManager().findFragmentById(container)
+        if (fragment != null)
+            fragmentRemove(fragment, enterFromLeft)
     }
 
     /**
