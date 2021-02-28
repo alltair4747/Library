@@ -5,18 +5,15 @@ package com.kaufmannmarek.library
 import android.content.Context
 import android.util.Patterns
 import android.view.View
-import android.widget.CheckedTextView
-import android.widget.EditText
-import android.widget.ExpandableListView
-import android.widget.ListView
+import android.widget.*
 
 /**
  * Creates class with functions which verify user input in ui elements or another conditions. Use available functions to verify user inputs and once you check all required view, call function verifyInput. It will return, if the input was valid according to used functions.
  *
  * @param context of currently displayed activity
- * @param dynamicFocus is condition. If true, after calling verifyInput it will focus the view, where the first error was found. Else not.
+ * @param useDynamicFocus is condition. If true, after calling verifyInput it will focus the view, where the first error was found. Else not.
  */
-class MyVerification(private val context: Context, private val dynamicFocus: Boolean) {
+class MyVerification(private val context: Context, private val useDynamicFocus: Boolean) {
     private var noErrorFound = true
     private lateinit var myString: MyString
 
@@ -49,20 +46,20 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
         if (pswd != pswdVerify) {
             errorFoundInEditText(password, R.string.passwordsDoesNotMatch)
             errorFoundInEditText(passwordVerify, R.string.passwordsDoesNotMatch)
-        } else if (pswd.length <= length) {
+        } else if (pswd.length < length) {
             errorFoundInEditText(password, R.string.passwordIsShort)
             errorFoundInEditText(passwordVerify, R.string.passwordIsShort)
         }
     }
 
     /**
-     * Checks if the provided passwords matches and if the password length is at least 5 characters
+     * Checks if the provided passwords matches and if the password length is at least 8 characters
      *
      * @param firstEditText is first editText with password
      * @param secondEditText is second editText with password verification
      */
     fun isValidPassword(firstEditText: EditText, secondEditText: EditText) {
-        isValidPassword(firstEditText, secondEditText, 5)
+        isValidPassword(firstEditText, secondEditText, 8)
     }
 
     /**
@@ -70,7 +67,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      *
      * @param editText is checked editText
      */
-    fun isNotEmpty(editText: EditText) {
+    fun editTextIsNotEmpty(editText: EditText) {
         if (editText.text.toString().isEmpty())
             errorFoundInEditText(editText, null)
         else
@@ -85,8 +82,21 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
     private fun setViewFocus(view: View) {
         if (this.noErrorFound) {
             this.noErrorFound = false
-            if (this.dynamicFocus)
+            if (this.useDynamicFocus)
                 view.isFocusable = true
+        }
+    }
+
+    /**
+     * Checks, if the provided checkedTextView is checked
+     *
+     * @param checkedTextView is examined checkedTextView
+     * @param errorText is String, which will be displayed in case of error
+     */
+    fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: String) {
+        if (!checkedTextView.isChecked) {
+            setViewFocus(checkedTextView)
+            checkedTextView.error = errorText
         }
     }
 
@@ -97,10 +107,7 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      * @param errorText is int reference to String, which will be displayed in case of error
      */
     fun textViewIsChecked(checkedTextView: CheckedTextView, errorText: Int) {
-        if (!checkedTextView.isChecked) {
-            setViewFocus(checkedTextView)
-            checkedTextView.error = getMyString().fromResources(errorText)
-        }
+        textViewIsChecked(checkedTextView, getMyString().fromResources(errorText))
     }
 
     /**
@@ -123,39 +130,14 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      * Checks, if listView contains at least one item
      *
      * @param view is listView or expandableListView
+     * @param message is optional reference to String, which will be displayed in snackBar. If is null, no message will be displayed
      */
-    fun listIsNotEmpty(view: View) {
+    fun listIsNotEmpty(view: View, message: Int?) {
         if (view is ListView && view.childCount == 0 || view is ExpandableListView && view.count == 0) {
             if (this.noErrorFound) {
                 setViewFocus(view)
-                MySnackBar(this.context, R.string.addItemError, true, 1500)
-            }
-        }
-    }
-
-    /**
-     * Call this function after checking all user inputs
-     */
-    fun validate(): Boolean {
-        val condition = this.noErrorFound
-        this.noErrorFound = true
-        return condition
-    }
-
-    /**
-     * Checks, if the provided boolean is true and display snackBar with message
-     *
-     * @param boolean is provided boolean
-     * @param message is int reference to String, which will displayed in snackBar
-     */
-    fun booleanIsTrue(boolean: Boolean, message: Int?) {
-        when (boolean) {
-            false -> {
-                if (this.noErrorFound) {
-                    this.noErrorFound = false
-                    if (message != null)
-                        MySnackBar(this.context, message, true, 1500)
-                }
+                if (message != null)
+                    MySnackBarWarning(this.context, getMyString().fromResources(message))
             }
         }
     }
@@ -164,8 +146,65 @@ class MyVerification(private val context: Context, private val dynamicFocus: Boo
      * Checks, if the provided boolean is true
      *
      * @param boolean is provided boolean
+     * @param message is int reference to String, which will be displayed in snackBar
      */
-    fun booleanIsTrue(boolean: Boolean) {
-        booleanIsTrue(boolean, null)
+    fun booleanIsTrue(boolean: Boolean, message: Int) {
+        booleanIsTrue(boolean, getMyString().fromResources(message))
+    }
+
+    /**
+     * Checks, if the provided boolean is true and display snackBar with message
+     *
+     * @param boolean is provided boolean
+     * @param message is optional int reference to String, which will displayed in snackBar. If null, no snackBar will be displayed
+     */
+    fun booleanIsTrue(boolean: Boolean, message: String?) {
+        when (boolean) {
+            false -> {
+                if (this.noErrorFound) {
+                    this.noErrorFound = false
+                    if (message != null)
+                        MySnackBarWarning(
+                            this.context,
+                            message
+                        )
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks if the provided radioGroup view has at least one selected radioButton
+     *
+     * @param radioGroup is examined radioGroup
+     * @param message is optional String, which will be displayed in snackBar. If null, no snackBar will be displayed
+     */
+    fun radioGroupHasCheckedItem(radioGroup: RadioGroup, message: String?) {
+        when (radioGroup.checkedRadioButtonId) {
+            -1 -> if (this.noErrorFound) {
+                this.noErrorFound = false
+                if (message != null)
+                    MySnackBarWarning(this.context, message)
+            }
+        }
+    }
+
+    /**
+     * Checks if the provided radioGroup view has at least one selected radioButton
+     *
+     * @param radioGroup is examined radioGroup
+     * @param message is int reference to String, which will be displayed in snackBar
+     */
+    fun radioGroupHasCheckedItem(radioGroup: RadioGroup, message: Int) {
+        radioGroupHasCheckedItem(radioGroup, getMyString().fromResources(message))
+    }
+
+    /**
+     * Call this function after checking all user inputs
+     */
+    fun errorWasFound(): Boolean {
+        val condition = this.noErrorFound
+        this.noErrorFound = true
+        return condition
     }
 }
