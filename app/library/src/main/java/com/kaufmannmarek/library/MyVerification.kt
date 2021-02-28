@@ -202,7 +202,7 @@ class MyVerification(private val context: Context, private val useDynamicFocus: 
     /**
      * Call this function after checking all user inputs
      */
-    fun errorWasFound(): Boolean {
+    fun isErrorFree(): Boolean {
         val condition = this.noErrorFound
         this.noErrorFound = true
         return condition
