@@ -143,32 +143,65 @@ class MyVerification(private val context: Context, private val useDynamicFocus: 
     }
 
     /**
+     * Checks, if the provided boolean is true and displays snackBar with message
+     *
+     * @param boolean is provided boolean
+     */
+    fun booleanIsTrue(boolean: Boolean) {
+        booleanIsTrue(boolean, null, null)
+    }
+
+    /**
      * Checks, if the provided boolean is true
      *
      * @param boolean is provided boolean
      * @param message is int reference to String, which will be displayed in snackBar
      */
     fun booleanIsTrue(boolean: Boolean, message: Int) {
-        booleanIsTrue(boolean, getMyString().fromResources(message))
+        booleanIsTrue(boolean, getMyString().fromResources(message), null)
     }
 
     /**
-     * Checks, if the provided boolean is true and display snackBar with message
+     * Checks, if the provided boolean is true and displays snackBar with message
+     *
+     * @param boolean is provided boolean
+     * @param message is optional int reference to String, which will displayed in snackBar
+     */
+    fun booleanIsTrue(boolean: Boolean, message: String) {
+        booleanIsTrue(boolean, message, null)
+    }
+
+    /**
+     * Checks, if the provided boolean is true and displays message in snackBar or as editText error
+     *
+     * @param boolean is provided boolean
+     * @param message is int reference to String, which will be displayed in snackBar
+     * @param editText is optional editText view. If it is not null and message is not null, the message will be displayed as editText error
+     */
+    fun booleanIsTrue(boolean: Boolean, message: Int, editText: EditText?) {
+        booleanIsTrue(boolean, getMyString().fromResources(message), editText)
+    }
+
+    /**
+     * Checks, if the provided boolean is true and may display message in snackBar or as editText error
      *
      * @param boolean is provided boolean
      * @param message is optional int reference to String, which will displayed in snackBar. If null, no snackBar will be displayed
+     * @param editText is optional editText view. If it is not null and message is not null, the message will be displayed as editText error
      */
-    fun booleanIsTrue(boolean: Boolean, message: String?) {
+    fun booleanIsTrue(boolean: Boolean, message: String?, editText: EditText?) {
         when (boolean) {
-            false -> {
-                if (this.noErrorFound) {
-                    this.noErrorFound = false
-                    if (message != null)
+            false -> if (this.noErrorFound) {
+                this.noErrorFound = false
+                if (message != null)
+                    if (editText != null) {
+                        editText.error = message
+                        setViewFocus(editText)
+                    } else
                         MySnackBarWarning(
                             this.context,
                             message
                         )
-                }
             }
         }
     }
