@@ -5,27 +5,60 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 /**
  * Creates database of SharedPreferences type with all necessary functions.
  *
  * @param context of currently active activity
  * @param databaseName is String, which represents name of the database
+ * @param encryptDatabase if true. the database will be encrypted. Else it will not. If you decide to use Encrypted version, please consider the performance impact on your app
  */
-open class MySharedPreferences(private val context: Context, databaseName: String) {
-    private val sharedPreferences =
-        context.getSharedPreferences(databaseName, Context.MODE_PRIVATE)
+open class MySharedPreferences(
+    private val context: Context,
+    databaseName: String,
+    encryptDatabase: Boolean
+) {
+    private val sharedPreferences: SharedPreferences = when (encryptDatabase) {
+        true -> EncryptedSharedPreferences.create(
+            this.context,
+            databaseName,
+            MasterKey.Builder(this.context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+        false -> this.context.getSharedPreferences(databaseName, Context.MODE_PRIVATE)
+    }
 
     /**
      * Creates database of SharedPreferences type with all necessary functions.
      *
      * @param context of currently active activity
      * @param databaseName is int reference to String, which represents name of the database
+     * @param encryptDatabase if true. the database will be encrypted. Else it will not. If you decide to use Encrypted version, please consider the performance impact on your app
      */
-    constructor(context: Context, databaseName: Int) : this(
+    constructor(context: Context, databaseName: Int, encryptDatabase: Boolean) : this(
         context,
-        MyString(context).fromResources(databaseName)
+        MyString(context).fromResources(databaseName),
+        encryptDatabase
     )
+
+    /**
+     * Creates non encrypted database of SharedPreferences type with all necessary functions.
+     *
+     * @param context of currently active activity
+     * @param databaseName is int reference to String, which represents name of the database
+     */
+    constructor(context: Context, databaseName: String) : this(context, databaseName, false)
+
+    /**
+     * Creates non encrypted database of SharedPreferences type with all necessary functions.
+     *
+     * @param context of currently active activity
+     * @param databaseName is int reference to String, which represents name of the database
+     */
+    constructor(context: Context, databaseName: Int) : this(context, databaseName, false)
 
     private var editor: SharedPreferences.Editor? = null
 
