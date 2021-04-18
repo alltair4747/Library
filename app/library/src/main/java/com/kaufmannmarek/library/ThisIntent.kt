@@ -16,6 +16,7 @@ import java.io.Serializable
 class ThisIntent(private val context: Context, intent: Intent?) {
     private val activity = (this.context as Activity)
     private val intent: Intent
+    private var intentHasData = false
 
     init {
         if (intent == null)
@@ -42,7 +43,15 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @return intent of this class
      */
     fun getIntent(): Intent {
+        this.intentHasData = true
         return this.intent
+    }
+
+    /**
+     * @return context used to create this class
+     */
+    fun getContext(): Context {
+        return this.context
     }
 
     /**
@@ -69,7 +78,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param serializable is object, which should be passed to another activity
      */
     fun setSerializable(paramName: Int, serializable: Serializable) {
-        setSerializable(MyString(this.context).fromResources(paramName), serializable)
+        setSerializable(MyString(getContext()).fromResources(paramName), serializable)
     }
 
     /**
@@ -78,7 +87,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      */
     fun getSerializable(paramName: Int): Serializable? {
         return getIntent().getSerializableExtra(
-            MyString(this.context).fromResources(
+            MyString(getContext()).fromResources(
                 paramName
             )
         )
@@ -88,75 +97,147 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * Will set canceled result of current activity
      */
     fun setCanceledResult() {
-        setResult(Activity.RESULT_CANCELED, null)
+        setResult(Activity.RESULT_CANCELED)
     }
 
     /**
      * Will set positive result of current activity
      */
     fun setPositiveResult() {
-        setResult(Activity.RESULT_OK, getIntent())
+        setResult(Activity.RESULT_OK)
     }
 
     /**
-     * Will set result of current activity
-     *
+     * Will set positive result of current activity and put serializable to intent which can be used in default activity
+     * @param paramName is String under which the value will retrievable in default activity
+     * @param value is serializable variable which will be put to intent
+     */
+    fun setPositiveResult(paramName: String, value: Serializable) {
+        setResult(Activity.RESULT_OK, paramName, value)
+    }
+
+    /**
+     * Will set positive result of current activity and put serializable to intent which can be used in default activity
+     * @param paramName is String under which the value will retrievable in default activity
+     * @param value is serializable variable which will be put to intent
+     */
+    fun setPositiveResult(paramName: Int, value: Serializable) {
+        setPositiveResult(MyString(getContext()).fromResources(paramName), value)
+    }
+
+    /**
+     * Will set result of current activity and finish it. If any data were put in the intent of this class or it was accessed, the intent will passed to default class
      * @param resultCode is code, which will be delivered to default activity
      */
     fun setResult(resultCode: Int) {
-        setResult(resultCode, null)
-    }
-
-    /**
-     * Will set result of current activity
-     *
-     * @param resultCode is code, which will be delivered to default activity
-     * @param intent are data, from current activity
-     */
-    fun setResult(resultCode: Int, intent: Intent?) {
-        getActivity().setResult(resultCode, intent)
+        if(this.intentHasData)
+            getActivity().setResult(resultCode, getIntent())
+        else
+            getActivity().setResult(resultCode)
         finish(true)
     }
 
-    fun setResult(resultCode: Int, intent: Intent?, paramName: String, value: Serializable) {
+    /**
+     * Will set result of current activity and finish it
+     *
+     * @param resultCode is code, which will be delivered to default activity
+     * @param paramName is String under which the serializable will be saved
+     * @param value is serializable which will be put in intent
+     */
+    fun setResult(resultCode: Int, paramName: String, value: Serializable) {
         setSerializable(paramName, value)
-        setResult(resultCode, intent)
+        setResult(resultCode)
     }
 
-    fun setResult(resultCode: Int, intent: Intent?, paramName: Int, value: Serializable) {
-        setResult(resultCode, intent, MyString(this.context).fromResources(paramName), value)
+    /**
+     * Will set result of current activity and finish it
+     *
+     * @param resultCode is code, which will be delivered to default activity
+     * @param paramName is int reference to String, under which the serializable will be saved
+     * @param value is serializable which will be put in intent
+     */
+    fun setResult(resultCode: Int, paramName: Int, value: Serializable) {
+        setResult(resultCode, MyString(getContext()).fromResources(paramName), value)
     }
 
+    /**
+     * Put Boolean value to intent
+     *
+     * @param paramName is String under which the boolean will be saved
+     * @param value is boolean which will be put in intent
+     */
     fun setBoolean(paramName: String, value: Boolean) {
         getIntent().putExtra(paramName, value)
     }
 
+    /**
+     * Put Boolean value to intent
+     *
+     * @param paramName is int reference to String, under which the boolean will be saved
+     * @param value is boolean which will be put in intent
+     */
     fun setBoolean(paramName: Int, value: Boolean) {
-        setBoolean(MyString(this.context).fromResources(paramName), value)
+        setBoolean(MyString(getContext()).fromResources(paramName), value)
     }
 
+    /**
+     * Put Int value to intent
+     *
+     * @param paramName is String, under which the boolean will be saved
+     * @param value is boolean which will be put in intent
+     */
     fun setInt(paramName: String, value: Int) {
         getIntent().putExtra(paramName, value)
     }
 
+    /**
+     * Put Int value to intent
+     *
+     * @param paramName is int reference to int, under which the boolean will be saved
+     * @param value is boolean which will be put in intent
+     */
     fun setInt(paramName: Int, value: Int) {
-        setInt(MyString(this.context).fromResources(paramName), value)
+        setInt(MyString(getContext()).fromResources(paramName), value)
     }
 
+    /**
+     * Put String value to intent
+     *
+     * @param paramName is String, under which the boolean will be saved
+     * @param value is String which will be put in intent
+     */
     fun setString(paramName: String, value: String) {
         getIntent().putExtra(paramName, value)
     }
 
+    /**
+     * Put String value to intent
+     *
+     * @param paramName is int reference to String, under which the boolean will be saved
+     * @param value is String which will be put in intent
+     */
     fun setString(paramName: Int, value: String) {
-        setString(MyString(this.context).fromResources(paramName), value)
+        setString(MyString(getContext()).fromResources(paramName), value)
     }
 
+    /**
+     * Put Double value to intent
+     *
+     * @param paramName is String, under which the boolean will be saved
+     * @param value is Double which will be put in intent
+     */
     fun setDouble(paramName: String, value: Double) {
         getIntent().putExtra(paramName, value)
     }
 
+    /**
+     * Put Double value to intent
+     *
+     * @param paramName is int reference to String, under which the boolean will be saved
+     * @param value is Double which will be put in intent
+     */
     fun setDouble(paramName: Int, value: Double) {
-        setDouble(MyString(this.context).fromResources(paramName), value)
+        setDouble(MyString(getContext()).fromResources(paramName), value)
     }
 
     /**
@@ -202,7 +283,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getString(paramName: Int): String {
-        return getString(MyString(this.context).fromResources(paramName))
+        return getString(MyString(getContext()).fromResources(paramName))
     }
 
     /**
@@ -218,7 +299,7 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getBoolean(paramName: Int): Boolean {
-        return getBoolean(MyString(this.context).fromResources(paramName))
+        return getBoolean(MyString(getContext()).fromResources(paramName))
     }
 
     /**
@@ -234,6 +315,24 @@ class ThisIntent(private val context: Context, intent: Intent?) {
      * @param paramName is int reference to String, under which the value is stored
      */
     fun getInt(paramName: Int): Int {
-        return getInt(MyString(this.context).fromResources(paramName))
+        return getInt(MyString(getContext()).fromResources(paramName))
     }
+
+    /**
+     * @return saved int under paramName
+     * @param paramName is String, under which the value is stored
+     */
+    fun getDouble(paramName: String): Double {
+        return getIntent().getDoubleExtra(paramName, 0.0)
+    }
+
+    /**
+     * @return saved int under paramName
+     * @param paramName is int reference to String, under which the value is stored
+     */
+    fun getDouble(paramName: Int): Double {
+        return getDouble(MyString(getContext()).fromResources(paramName))
+    }
+
+
 }

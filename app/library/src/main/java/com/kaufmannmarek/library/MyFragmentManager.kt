@@ -294,14 +294,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
-        if (getFragmentByTag(fragmentTag) != null)
+        if (getFragmentByTag(fragmentTag) != null) {
             getFragmentManager().popBackStackImmediate(
                 fragmentTag,
                 FragmentManager.POP_BACK_STACK_INCLUSIVE
             )
-        else {
+            if (commit)
+                commit()
+        } else
             addFragment(fragment, fragmentTag, enterFromLeft, commit)
-        }
     }
 
     /**
