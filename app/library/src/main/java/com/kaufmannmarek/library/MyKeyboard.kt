@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 
-
+/**
+ * Class to manage keyboard behaviour easily
+ */
 class MyKeyboard(private val context: Context) {
 
     /**
