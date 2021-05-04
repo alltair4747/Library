@@ -13,52 +13,80 @@ import androidx.security.crypto.MasterKey
  *
  * @param context of currently active activity
  * @param databaseName is String, which represents name of the database
- * @param encryptDatabase if true. the database will be encrypted. Else it will not. If you decide to use Encrypted version, please consider the performance impact on your app
+ * @param encrypt determine if the database will be encrypted
+ * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key. The value of param encrypt must be true to encrypt the database
  */
-open class MySharedPreferences(
+open class MySharedPreferences private constructor(
     private val context: Context,
     databaseName: String,
-    encryptDatabase: Boolean
+    encrypt: Boolean,
+    encryptKey: String?
 ) {
-    private val sharedPreferences: SharedPreferences = when (encryptDatabase) {
+
+    private val sharedPreferences: SharedPreferences = when (encrypt) {
         true -> EncryptedSharedPreferences.create(
-            this.context,
+            getContext(),
             databaseName,
-            MasterKey.Builder(this.context).setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build(),
+            when (encryptKey == null) {
+                true -> MasterKey.Builder(getContext()).setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+                    .build()
+                false -> MasterKey.Builder(getContext(), encryptKey)
+                    .setKeyScheme(MasterKey.KeyScheme.AES256_GCM).build()
+            },
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        false -> this.context.getSharedPreferences(databaseName, Context.MODE_PRIVATE)
+        false -> getContext().getSharedPreferences(databaseName, Context.MODE_PRIVATE)
     }
 
     /**
      * Creates database of SharedPreferences type with all necessary functions.
      *
      * @param context of currently active activity
-     * @param databaseName is int reference to String, which represents name of the database
-     * @param encryptDatabase if true. the database will be encrypted. Else it will not. If you decide to use Encrypted version, please consider the performance impact on your app
+     * @param databaseName is String, which represents name of the database
+     * @param encrypt determine if the database will be encrypted
+     * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key. The value of param encrypt must be true to encrypt the database
      */
-    constructor(context: Context, databaseName: Int, encryptDatabase: Boolean) : this(
+    private constructor(context: Context, databaseName: Int, encrypt: Boolean, encryptKey: String?): this(context, context.getString(databaseName), encrypt, encryptKey)
+
+    /**
+     * Creates encrypted database of SharedPreferences type with all necessary functions.
+     *
+     * @param context of currently active activity
+     * @param databaseName is String, which represents name of the database
+     * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key
+     */
+    constructor(context: Context, databaseName: String, encryptKey: String?): this(context, databaseName, true, encryptKey)
+
+    /**
+     * Creates encrypted database of SharedPreferences type with all necessary functions.
+     *
+     * @param context of currently active activity
+     * @param databaseName is int reference to String, which represents name of the database
+     * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key
+     */
+    constructor(context: Context, databaseName: Int, encryptKey: String?): this(context, databaseName, true, encryptKey)
+
+    /**
+     * Creates not encrypted database of SharedPreferences type with all necessary functions.
+     *
+     * @param context of currently active activity
+     * @param databaseName is String, which represents name of the database
+     */
+    constructor(context: Context, databaseName: String) : this(context, databaseName, false, null)
+
+    /**
+     * Creates not encrypted database of SharedPreferences type with all necessary functions
+     *
+     * @param context of currently active activity
+     * @param databaseName is int reference to String, which represents name of the database
+     */
+    constructor(context: Context, databaseName: Int) : this(
         context,
         MyString(context).fromResources(databaseName),
-        encryptDatabase
+        false,
+        null
     )
-
-    /**
-     * Creates non encrypted database of SharedPreferences type with all necessary functions.
-     *
-     * @param context of currently active activity
-     * @param databaseName is int reference to String, which represents name of the database
-     */
-    constructor(context: Context, databaseName: String) : this(context, databaseName, false)
-
-    /**
-     * Creates non encrypted database of SharedPreferences type with all necessary functions.
-     *
-     * @param context of currently active activity
-     * @param databaseName is int reference to String, which represents name of the database
-     */
-    constructor(context: Context, databaseName: Int) : this(context, databaseName, false)
 
     private var editor: SharedPreferences.Editor? = null
 
@@ -311,7 +339,7 @@ open class MySharedPreferences(
     }
 
     /**
-     * Clear all data saved in this sharedPreferences database
+     * Clear all data saved in this sharedPreferences database. Will not commit changes
      */
     fun clear() {
         clear(false)
