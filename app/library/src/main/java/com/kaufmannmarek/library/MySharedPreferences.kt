@@ -91,6 +91,22 @@ open class MySharedPreferences private constructor(
     private var editor: SharedPreferences.Editor? = null
 
     /**
+     * @return all values from this database
+     * @param V is type of values saved under string key values
+     */
+    fun <V> getAll(): Map<String, V>{
+        @Suppress("UNCHECKED_CAST")
+        return getSharedPreferences().all as Map<String, V>
+    }
+
+    /**
+     * @return all keys found in this database
+     */
+    fun getKeys(): MutableSet<String> {
+        return getSharedPreferences().all.keys
+    }
+
+    /**
      * @return reference of sharedPreference
      */
     fun getSharedPreferences(): SharedPreferences {
