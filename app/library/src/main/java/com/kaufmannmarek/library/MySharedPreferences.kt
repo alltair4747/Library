@@ -5,6 +5,7 @@ package com.kaufmannmarek.library
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -47,7 +48,12 @@ open class MySharedPreferences private constructor(
      * @param encrypt determine if the database will be encrypted
      * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key. The value of param encrypt must be true to encrypt the database
      */
-    private constructor(context: Context, databaseName: Int, encrypt: Boolean, encryptKey: String?): this(context, context.getString(databaseName), encrypt, encryptKey)
+    private constructor(
+        context: Context,
+        databaseName: Int,
+        encrypt: Boolean,
+        encryptKey: String?
+    ) : this(context, context.getString(databaseName), encrypt, encryptKey)
 
     /**
      * Creates encrypted database of SharedPreferences type with all necessary functions.
@@ -56,7 +62,12 @@ open class MySharedPreferences private constructor(
      * @param databaseName is String, which represents name of the database
      * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key
      */
-    constructor(context: Context, databaseName: String, encryptKey: String?): this(context, databaseName, true, encryptKey)
+    constructor(context: Context, databaseName: String, encryptKey: String?) : this(
+        context,
+        databaseName,
+        true,
+        encryptKey
+    )
 
     /**
      * Creates encrypted database of SharedPreferences type with all necessary functions.
@@ -65,7 +76,12 @@ open class MySharedPreferences private constructor(
      * @param databaseName is int reference to String, which represents name of the database
      * @param encryptKey is key that will be used encrypt the database. If null, then the app will generate the key
      */
-    constructor(context: Context, databaseName: Int, encryptKey: String?): this(context, databaseName, true, encryptKey)
+    constructor(context: Context, databaseName: Int, encryptKey: String?) : this(
+        context,
+        databaseName,
+        true,
+        encryptKey
+    )
 
     /**
      * Creates not encrypted database of SharedPreferences type with all necessary functions.
@@ -94,7 +110,7 @@ open class MySharedPreferences private constructor(
      * @return all values from this database
      * @param V is type of values saved under string key values
      */
-    fun <V> getAll(): Map<String, V>{
+    fun <V> getAll(): Map<String, V> {
         @Suppress("UNCHECKED_CAST")
         return getSharedPreferences().all as Map<String, V>
     }
@@ -118,6 +134,18 @@ open class MySharedPreferences private constructor(
      */
     fun applyChanges() {
         getEditor().apply()
+    }
+
+    /**
+     * Print all elements in database. Please note that all database items must use same type
+     */
+    fun <V> printDatabase() {
+        val data = getAll<V>()
+        Log.d("debug", "Begin of database")
+        for ((itemIndex, key) in getKeys().withIndex()) {
+            Log.d("debug", "item " + itemIndex + " - key: " + key + " - value: " + data[key])
+        }
+        Log.d("debug", "End of database")
     }
 
     /**

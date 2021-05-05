@@ -3180,8 +3180,8 @@ open class ListViewDialog private constructor(
             else {
                 val arrayList = ArrayList<ListViewDialogItem>()
                 for (item in this.sourceArrayList) {
-                    if (item.text.toLowerCase(Locale.GERMANY)
-                            .contains(editText.text.toString().toLowerCase(Locale.GERMANY))
+                    if (item.text.lowercase()
+                            .contains(editText.text.toString().lowercase())
                     )
                         arrayList.add(item)
                 }
@@ -3907,8 +3907,8 @@ class CheckBoxesDialog private constructor(
                     val filteredArrayList = ArrayList<CheckBoxDialogItem>()
                     for (item in this.sourceArrayList) {
                         @SuppressLint("DefaultLocale")
-                        if (item.text.toLowerCase()
-                                .contains(editText.text.toString().toLowerCase())
+                        if (item.text.lowercase()
+                                .contains(editText.text.toString().lowercase())
                         )
                             filteredArrayList.add(item)
                     }
