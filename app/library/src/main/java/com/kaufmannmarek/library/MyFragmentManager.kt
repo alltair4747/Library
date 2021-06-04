@@ -20,6 +20,157 @@ class MyFragmentManager(private val context: Context, private val container: Int
     private val fragmentManager = (this.context as FragmentActivity).supportFragmentManager
     private var fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
+    private var myString: MyString ?=null
+
+    fun getMyString(): MyString{
+        if(myString==null)
+            myString = MyString(context)
+        return myString!!
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int?,
+        serializableName: String?,
+        serializable: Serializable?,
+        commit: Boolean
+    ) {
+        setTransactionParams(enterFromLeft, fragment, activityCode, serializableName, serializable)
+        getFragmentTransaction().replace(
+            getContainerId(),
+            fragment,
+            fragmentTag
+        )
+        getFragmentTransaction().addToBackStack(fragmentTag)
+        if (commit)
+            commit()
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: String,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        replaceFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable, commit)
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        replaceFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        replaceFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        commit: Boolean
+    ) {
+        replaceFragment(fragment, fragmentTag, enterFromLeft, activityCode, null, null, commit)
+    }
+
+    /**
+     * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun replaceFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        commit: Boolean
+    ) {
+        replaceFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            commit
+        )
+    }
 
     /**
      * Will replace current fragment with new specified fragment and activity code. Transaction will be committed immediately. All existing fragments in backStack will be removed.
@@ -55,7 +206,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     ) {
         replaceFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft,
             activityCode
         )
@@ -82,7 +233,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     fun replaceFragment(fragment: Fragment, fragmentTag: Int, enterFromLeft: Boolean) {
         replaceFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft
         )
     }
@@ -103,7 +254,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     ) {
         replaceFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft,
             commit
         )
@@ -123,7 +274,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
-        setTransactionParams(enterFromLeft, fragment)
+        setTransactionParams(enterFromLeft, fragment, null, null, null)
         getFragmentTransaction().replace(
             getContainerId(),
             fragment,
@@ -140,7 +291,11 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
      * @param fragment is a fragment, where the arguments will be passed
      */
-    private fun setTransactionParams(enterFromLeft: Boolean, fragment: Fragment) {
+    private fun setTransactionParams(enterFromLeft: Boolean, fragment: Fragment, activityCode: Int?, serializableName: String?, serializable: Serializable?) {
+        if(activityCode!=null)
+            putInt(R.string.keyActivityCode, activityCode)
+        if(serializable!=null && serializableName!= null)
+            putSerializable(serializableName, serializable)
         setFragmentTransactionAnimation(enterFromLeft)
         fragment.arguments = getBundle()
     }
@@ -175,18 +330,395 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
      *
      * @param fragment is destination fragment
-     * @param tag is String used to retrieve fragment from fragment manager
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int?,
+        serializableName: String?,
+        serializable: Serializable?,
+        commit: Boolean
+    ) {
+        setTransactionParams(enterFromLeft, fragment, activityCode, serializableName, serializable)
+        getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
+        getFragmentTransaction().addToBackStack(fragmentTag)
+        if (commit)
+            commit()
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: String,
+        serializable: Serializable?,
+        commit: Boolean
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable?,
+        commit: Boolean
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable?,
+        commit: Boolean
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: String,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, serializableName, serializable, true)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: String,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        serializableName: Int,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        serializableName: String,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, null, serializableName, serializable,  commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        serializableName: String,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, serializableName, serializable, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        serializableName: Int,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, getMyString().fromResources(serializableName), serializable,  commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        serializableName: Int,
+        serializable: Serializable,
+        commit: Boolean
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, getMyString().fromResources(serializableName), serializable, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        serializableName: String,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, serializableName, serializable, true)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        serializableName: String,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, serializableName, serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        serializableName: Int,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, getMyString().fromResources(serializableName), serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, that is used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param serializableName is int reference to String, which set serializable variable name
+     * @param serializable is object, that will passed to new fragment
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        serializableName: Int,
+        serializable: Serializable
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, getMyString().fromResources(serializableName), serializable)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        commit: Boolean
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, null, null, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        activityCode: Int,
+        commit: Boolean
+    ) {
+        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, commit)
+    }
+
+    /**
+     * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
      * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
      * @param activityCode is code, which will be passed to another fragment. This code is saved under String "activityCode"
      */
     fun addFragment(
         fragment: Fragment,
-        tag: String,
+        fragmentTag: String,
         enterFromLeft: Boolean,
         activityCode: Int
     ) {
-        putInt(R.string.keyActivityCode, activityCode)
-        addFragment(fragment, tag, enterFromLeft, true)
+        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, true)
     }
 
     /**
@@ -205,9 +737,48 @@ class MyFragmentManager(private val context: Context, private val container: Int
     ) {
         addFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft,
             activityCode
+        )
+    }
+
+    /**
+     * Will add a new fragment to backStack and displays it
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is String used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: String,
+        enterFromLeft: Boolean,
+        commit: Boolean
+    ) {
+        addFragment(fragment, fragmentTag, enterFromLeft, null, null, null, commit)
+    }
+
+    /**
+     * Will add a new fragment to backStack and displays it
+     *
+     * @param fragment is destination fragment
+     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
+     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
+     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
+     */
+    fun addFragment(
+        fragment: Fragment,
+        fragmentTag: Int,
+        enterFromLeft: Boolean,
+        commit: Boolean
+    ) {
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            commit
         )
     }
 
@@ -232,51 +803,8 @@ class MyFragmentManager(private val context: Context, private val container: Int
     fun addFragment(fragment: Fragment, fragmentTag: Int, enterFromLeft: Boolean) {
         addFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft
-        )
-    }
-
-    /**
-     * Will add a new fragment to backStack and displays it
-     *
-     * @param fragment is destination fragment
-     * @param fragmentTag is String used to retrieve fragment from fragment manager
-     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
-     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
-     */
-    fun addFragment(
-        fragment: Fragment,
-        fragmentTag: String,
-        enterFromLeft: Boolean,
-        commit: Boolean
-    ) {
-        setTransactionParams(enterFromLeft, fragment)
-        getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
-        getFragmentTransaction().addToBackStack(fragmentTag)
-        if (commit)
-            commit()
-    }
-
-    /**
-     * Will add a new fragment to backStack and displays it
-     *
-     * @param fragment is destination fragment
-     * @param fragmentTag is int reference to String, which used to retrieve fragment from fragment manager
-     * @param enterFromLeft is condition, which sets correct animation in transaction. Put true, if the new fragment will appear from left side
-     * @param commit is condition. If true, transaction will commit immediately. Else wait until commit function is called
-     */
-    fun addFragment(
-        fragment: Fragment,
-        fragmentTag: Int,
-        enterFromLeft: Boolean,
-        commit: Boolean
-    ) {
-        addFragment(
-            fragment,
-            MyString(this.context).fromResources(fragmentTag),
-            enterFromLeft,
-            commit
         )
     }
 
@@ -321,7 +849,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     ) {
         restoreFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft,
             commit
         )
@@ -356,7 +884,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     ) {
         restoreFragment(
             fragment,
-            MyString(this.context).fromResources(fragmentTag),
+            getMyString().fromResources(fragmentTag),
             enterFromLeft,
             true
         )
@@ -389,7 +917,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param serializable is object, which will be added to transaction
      */
     fun putSerializable(paramName: Int, serializable: Serializable) {
-        putSerializable(MyString(this.context).fromResources(paramName), serializable)
+        putSerializable(getMyString().fromResources(paramName), serializable)
     }
 
     /**
@@ -409,7 +937,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param value is String, which will be added to transaction
      */
     fun putString(paramName: Int, value: String) {
-        putString(MyString(this.context).fromResources(paramName), value)
+        putString(getMyString().fromResources(paramName), value)
     }
 
     /**
@@ -419,7 +947,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param value is int reference to String, which will be added to transaction
      */
     fun putString(paramName: String, value: Int) {
-        putString(paramName, MyString(this.context).fromResources(value))
+        putString(paramName, getMyString().fromResources(value))
     }
 
     /**
@@ -429,10 +957,9 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param value is int reference to String, which will be added to transaction
      */
     fun putString(paramName: Int, value: Int) {
-        val myString = MyString(this.context)
         putString(
-            myString.fromResources(paramName),
-            myString.fromResources(value)
+            getMyString().fromResources(paramName),
+            getMyString().fromResources(value)
         )
     }
 
@@ -453,7 +980,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param value is int, which will be added to transaction
      */
     fun putInt(paramName: Int, value: Int) {
-        putInt(MyString(this.context).fromResources(paramName), value)
+        putInt(getMyString().fromResources(paramName), value)
     }
 
     /**
@@ -473,7 +1000,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param value is int, which will be added to transaction
      */
     fun putBoolean(paramName: Int, value: Boolean) {
-        putBoolean(MyString(this.context).fromResources(paramName), value)
+        putBoolean(getMyString().fromResources(paramName), value)
     }
 
     /**
@@ -493,7 +1020,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param fragmentTag is int reference to tag of fragment, which we examine
      */
     fun isFragmentInBackStack(fragmentTag: Int): Boolean {
-        return isFragmentInBackStack(MyString(this.context).fromResources(fragmentTag))
+        return isFragmentInBackStack(getMyString().fromResources(fragmentTag))
     }
 
     /**
@@ -520,7 +1047,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param fragmentTag is int reference to String, which represents required fragment
      */
     fun getFragmentByTag(fragmentTag: Int): Fragment? {
-        return getFragmentByTag(MyString(this.context).fromResources(fragmentTag))
+        return getFragmentByTag(getMyString().fromResources(fragmentTag))
     }
 
     /**
