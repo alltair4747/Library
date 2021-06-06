@@ -20,10 +20,10 @@ class MyFragmentManager(private val context: Context, private val container: Int
     private val fragmentManager = (this.context as FragmentActivity).supportFragmentManager
     private var fragmentTransaction = this.fragmentManager.beginTransaction()
     private val bundle = Bundle()
-    private var myString: MyString ?=null
+    private var myString: MyString? = null
 
-    fun getMyString(): MyString{
-        if(myString==null)
+    fun getMyString(): MyString {
+        if (myString == null)
             myString = MyString(context)
         return myString!!
     }
@@ -79,7 +79,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        replaceFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable, commit)
+        replaceFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            serializableName,
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -102,7 +110,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        replaceFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+        replaceFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            activityCode,
+            getMyString().fromResources(serializableName),
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -125,7 +141,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        replaceFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+        replaceFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            getMyString().fromResources(serializableName),
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -291,10 +315,37 @@ class MyFragmentManager(private val context: Context, private val container: Int
      * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
      * @param fragment is a fragment, where the arguments will be passed
      */
-    private fun setTransactionParams(enterFromLeft: Boolean, fragment: Fragment, activityCode: Int?, serializableName: String?, serializable: Serializable?) {
-        if(activityCode!=null)
+    private fun setTransactionParams(
+        enterFromLeft: Boolean,
+        fragment: Fragment,
+        activityCode: Int?,
+        serializableName: String?,
+        serializable: Serializable?
+    ) {
+        if (activityCode != null)
             putInt(R.string.keyActivityCode, activityCode)
-        if(serializable!=null && serializableName!= null)
+        if (serializable != null && serializableName != null)
+            putSerializable(serializableName, serializable)
+        setFragmentTransactionAnimation(enterFromLeft)
+        fragment.arguments = getBundle()
+    }
+
+    /**
+     * Perform basic operations before committing fragment transaction
+     *
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     * @param fragment is a fragment, where the arguments will be passed
+     */
+    private fun setTransactionParamsInt(
+        enterFromLeft: Boolean,
+        fragment: Fragment,
+        activityCode: Int?,
+        serializableName: Int?,
+        serializable: Serializable?
+    ) {
+        if (activityCode != null)
+            putInt(R.string.keyActivityCode, activityCode)
+        if (serializable != null && serializableName != null)
             putSerializable(serializableName, serializable)
         setFragmentTransactionAnimation(enterFromLeft)
         fragment.arguments = getBundle()
@@ -326,6 +377,17 @@ class MyFragmentManager(private val context: Context, private val container: Int
         }
     }
 
+    private fun afterTransactionParamsSet(
+        fragment: Fragment,
+        fragmentTag: String,
+        commit: Boolean
+    ) {
+        getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
+        getFragmentTransaction().addToBackStack(fragmentTag)
+        if (commit)
+            commit()
+    }
+
     /**
      * Will add a new fragment with activity code to backStack and displays it. Transaction will be committed immediately
      *
@@ -347,10 +409,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
         commit: Boolean
     ) {
         setTransactionParams(enterFromLeft, fragment, activityCode, serializableName, serializable)
-        getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
-        getFragmentTransaction().addToBackStack(fragmentTag)
-        if (commit)
-            commit()
+        afterTransactionParamsSet(fragment, fragmentTag, commit)
     }
 
     /**
@@ -368,12 +427,13 @@ class MyFragmentManager(private val context: Context, private val container: Int
         fragment: Fragment,
         fragmentTag: Int,
         enterFromLeft: Boolean,
-        activityCode: Int,
-        serializableName: String,
+        activityCode: Int?,
+        serializableName: String?,
         serializable: Serializable?,
         commit: Boolean
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable, commit)
+        setTransactionParams(enterFromLeft, fragment, activityCode, serializableName, serializable)
+        afterTransactionParamsSet(fragment, getMyString().fromResources(fragmentTag), commit)
     }
 
     /**
@@ -391,12 +451,19 @@ class MyFragmentManager(private val context: Context, private val container: Int
         fragment: Fragment,
         fragmentTag: String,
         enterFromLeft: Boolean,
-        activityCode: Int,
-        serializableName: Int,
+        activityCode: Int?,
+        serializableName: Int?,
         serializable: Serializable?,
         commit: Boolean
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+        setTransactionParamsInt(
+            enterFromLeft,
+            fragment,
+            activityCode,
+            serializableName,
+            serializable
+        )
+        afterTransactionParamsSet(fragment, fragmentTag, commit)
     }
 
     /**
@@ -414,12 +481,20 @@ class MyFragmentManager(private val context: Context, private val container: Int
         fragment: Fragment,
         fragmentTag: Int,
         enterFromLeft: Boolean,
-        activityCode: Int,
-        serializableName: Int,
+        activityCode: Int?,
+        serializableName: Int?,
         serializable: Serializable?,
         commit: Boolean
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable, commit)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            serializableName,
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -440,7 +515,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: String,
         serializable: Serializable
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, serializableName, serializable, true)
+        addFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            activityCode,
+            serializableName,
+            serializable,
+            true
+        )
     }
 
     /**
@@ -461,7 +544,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: String,
         serializable: Serializable
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, serializableName, serializable)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            serializableName,
+            serializable
+        )
     }
 
     /**
@@ -482,7 +572,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: Int,
         serializable: Serializable
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable)
+        addFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            activityCode,
+            getMyString().fromResources(serializableName),
+            serializable
+        )
     }
 
     /**
@@ -503,7 +600,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: Int,
         serializable: Serializable
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, getMyString().fromResources(serializableName), serializable)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            getMyString().fromResources(serializableName),
+            serializable
+        )
     }
 
     /**
@@ -524,7 +628,15 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, null, serializableName, serializable,  commit)
+        addFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            null,
+            serializableName,
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -545,7 +657,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, serializableName, serializable, commit)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            serializableName,
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -566,7 +685,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, getMyString().fromResources(serializableName), serializable,  commit)
+        addFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            getMyString().fromResources(serializableName),
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -587,7 +713,14 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializable: Serializable,
         commit: Boolean
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, getMyString().fromResources(serializableName), serializable, commit)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            getMyString().fromResources(serializableName),
+            serializable,
+            commit
+        )
     }
 
     /**
@@ -625,7 +758,13 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: String,
         serializable: Serializable
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, serializableName, serializable)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            serializableName,
+            serializable
+        )
     }
 
     /**
@@ -644,7 +783,13 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: Int,
         serializable: Serializable
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, getMyString().fromResources(serializableName), serializable)
+        addFragment(
+            fragment,
+            fragmentTag,
+            enterFromLeft,
+            getMyString().fromResources(serializableName),
+            serializable
+        )
     }
 
     /**
@@ -663,7 +808,13 @@ class MyFragmentManager(private val context: Context, private val container: Int
         serializableName: Int,
         serializable: Serializable
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, getMyString().fromResources(serializableName), serializable)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            getMyString().fromResources(serializableName),
+            serializable
+        )
     }
 
     /**
@@ -682,7 +833,8 @@ class MyFragmentManager(private val context: Context, private val container: Int
         activityCode: Int,
         commit: Boolean
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, activityCode, null, null, commit)
+        setTransactionParams(enterFromLeft, fragment, activityCode, null, null)
+        afterTransactionParamsSet(fragment, fragmentTag, commit)
     }
 
     /**
@@ -701,7 +853,13 @@ class MyFragmentManager(private val context: Context, private val container: Int
         activityCode: Int,
         commit: Boolean
     ) {
-        addFragment(fragment, getMyString().fromResources(fragmentTag), enterFromLeft, activityCode, commit)
+        addFragment(
+            fragment,
+            getMyString().fromResources(fragmentTag),
+            enterFromLeft,
+            activityCode,
+            commit
+        )
     }
 
     /**
@@ -757,7 +915,8 @@ class MyFragmentManager(private val context: Context, private val container: Int
         enterFromLeft: Boolean,
         commit: Boolean
     ) {
-        addFragment(fragment, fragmentTag, enterFromLeft, null, null, null, commit)
+        setTransactionParams(enterFromLeft, fragment, null, null, null)
+        afterTransactionParamsSet(fragment, fragmentTag, commit)
     }
 
     /**
