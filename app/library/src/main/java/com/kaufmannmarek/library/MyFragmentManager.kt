@@ -4,6 +4,7 @@ package com.kaufmannmarek.library
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
@@ -382,6 +383,8 @@ class MyFragmentManager(private val context: Context, private val container: Int
         fragmentTag: String,
         commit: Boolean
     ) {
+        if (getLastFragmentInContainer() != null)
+            getLastFragmentInContainer()!!.requireView().visibility = View.GONE
         getFragmentTransaction().add(getContainerId(), fragment, fragmentTag)
         getFragmentTransaction().addToBackStack(fragmentTag)
         if (commit)
@@ -1287,5 +1290,24 @@ class MyFragmentManager(private val context: Context, private val container: Int
      */
     fun getBundle(): Bundle {
         return this.bundle
+    }
+
+    /**
+     * @return if the fragment with provided tag was restored
+     * @param fragmentTag is String tag, which the required fragment should have
+     */
+    fun restoreFragment(fragmentTag: String): Boolean {
+        val popped = this.fragmentManager.popBackStackImmediate(fragmentTag, 0)
+        if (getLastFragmentInContainer() != null)
+            getLastFragmentInContainer()!!.requireView().visibility = View.VISIBLE
+        return popped
+    }
+
+    /**
+     * @return if the fragment with provided tag was restored
+     * @param fragmentTag is int reference to String tag, which the required fragment should have
+     */
+    fun restoreFragment(fragmentTag: Int): Boolean {
+        return restoreFragment(getMyString().fromResources(fragmentTag))
     }
 }
