@@ -1274,7 +1274,7 @@ class MyFragmentManager(private val context: Context, private val container: Int
     }
 
     /**
-     * Removes a currently visible fragment
+     * Removes a currently visible fragment and restore last saved fragment in backstack
      *
      * @param container is container, from where the fragment should be removed
      * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
@@ -1283,6 +1283,28 @@ class MyFragmentManager(private val context: Context, private val container: Int
         val fragment = getFragmentManager().findFragmentById(container)
         if (fragment != null)
             fragmentRemove(fragment, enterFromLeft)
+    }
+
+    /**
+     * Removes a currently visible fragment and restore last saved fragment in backstack
+     *
+     * @param fragmentTag is String, that is used as tag of fragment, which should be remove
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     */
+    fun removeFragmentByTag(fragmentTag: String, enterFromLeft: Boolean) {
+        val fragment = getFragmentManager().findFragmentByTag(fragmentTag)
+        if (fragment != null)
+            fragmentRemove(fragment, enterFromLeft)
+    }
+
+    /**
+     * Removes a currently visible fragment and restore last saved fragment in backstack
+     *
+     * @param fragmentTag is int reference to String, that is used as tag of fragment, which should be remove
+     * @param enterFromLeft if true, new fragment will appear from left side. Otherwise it will appear from right side
+     */
+    fun removeFragmentByTag(fragmentTag: Int, enterFromLeft: Boolean) {
+        removeFragmentByTag(getMyString().fromResources(fragmentTag), enterFromLeft)
     }
 
     /**
