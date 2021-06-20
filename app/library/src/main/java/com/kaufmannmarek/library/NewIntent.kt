@@ -59,7 +59,7 @@ class NewIntent internal constructor(private val context: Context) {
     /**
      * @return intent of a new activity
      */
-    private fun getIntent(): Intent {
+    fun getIntent(): Intent {
         return this.newIntent
     }
 
